@@ -1,0 +1,10 @@
+main{  
+	create{
+		int hola = 9.433;
+		char = 'k';
+	} execute {
+		if (hola > 3){
+			inout >> char
+		}
+	}
+}
