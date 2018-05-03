@@ -142,7 +142,7 @@ Los índices de un arreglo se encuentran en el intervalo [0,tamaño-1]. Además,
 Un arreglo se puede inicializar también de la siguiente forma:  
 
 ```
-  tipo id[tamaño] = [valor0, valor1, ... , valor(tamaño-1)];
+  tipo id[tamaño] = [valo_r0, valor_1, ... , valor_(tamaño-1)];
 ```
 
 ### Listas
@@ -218,3 +218,31 @@ Se usa para incluir librerias externas. Esto le da al programador acceso a modul
 ### module
 
 Se usa para incluir módulos que no contienen estructura principal. `module` no tiene punto y coma al final.  
+
+### structs
+
+Un `struct` es una estructura de datos que se utiliza para organizar y almacenar distintos tipos de datos. La estructura general es la siguiente:
+
+``` 
+struct id{
+	tipo_1 id_1;
+	...
+	tipo_n id_n;
+};
+```
+
+Donde `id` es el identificador de la estructura y `tipo_i id_i` se refiere al miembro de la estructura con su tipo y id asociado.
+
+### union
+
+Un `union` es una estructura de datos que se utiliza para almacenar uno de los tipos de datos presentes en la misma. La estructura general es la siguiente:
+
+``` 
+struct id{
+	tipo_1 id_1;
+	...
+	tipo_n id_n;
+};
+```
+
+Donde `id` es el identificador de la estructura y `tipo_i id_i` se refiere al miembro de la estructura con su tipo y id asociado.
