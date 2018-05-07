@@ -1,11 +1,16 @@
-bot execute
-	int 35
-		activation: on
-			store contador.
-	end
-	
-end
-	$- Asignar al contador
-	el valor 35 -$ 
-	contador end.
-activate create
+main{  
+	create{
+		/*
+			jfjfjhgfkk
+		*/
+		?
+		int hola = 9.433;	// un comentario bien bonito
+		char ch = 'k';
+		$
+	} execute {
+		/* $$#$%#13'40lf */
+		if (hola > 3){
+			inout >> ch;	#
+		}
+	}
+}

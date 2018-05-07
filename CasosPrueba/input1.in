@@ -7,7 +7,7 @@ main{
 		char = 'k';
 	} execute {
 		if (hola > 3){
-			inout >> char
+			inout >> ch;
 		}
 	}
 }
