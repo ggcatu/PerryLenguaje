@@ -79,7 +79,7 @@
 [0-9]+\.[0-9]+					return FLOAT;
 \.								return PUNTO;
 [0-9]+|0+						return INT;
-\"([^"])*\"						return LSTRING;
+\"([^"])*\"						return STRING;
 
 .								return ERROR;
 

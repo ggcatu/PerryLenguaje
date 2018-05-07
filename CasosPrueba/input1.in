@@ -1,4 +1,4 @@
-include input2.in
+include "input2.pr"
 
 main {  
 	create{
@@ -6,11 +6,14 @@ main {
 		/* 
 			comentario 
 			multilinea 
+			coñetado
+			FALTA LAS FUNCIONES DEL APUNTADOR
+			QUITAR COMILLAS DE STRING
 		*/
 		int entero = 9;
 		int out;
 		float flotante = 9.433;
-		string palabra = "string";
+		string palabra = "stñring";
 		char caracter = 'k';
 		array int arreglo[5] = [2, 4, 5, 6];
 		list int lista = {1, 2, 3, 4, 5, 6};
