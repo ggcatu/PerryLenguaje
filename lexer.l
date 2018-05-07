@@ -15,7 +15,7 @@
 "main"							return MAIN;
 
 \/\/.*							return COMENTARIOLINEA;
-\/\*[^\-\$]*\*\/				return COMENTARIO;
+\/\*.*\*\/						return COMENTARIO;
 
 "include"						return INCLUDE;
 "create"						return CREATE;
@@ -73,12 +73,13 @@
 \<<								return SALIDA;
 >> 								return ENTRADA;
 
+
+[a-zA-Z][a-zA-Z0-9_]*			return IDENTIFIER;
 '(.|\\n|\\t)' 					return CHAR;
-[0-9]+\.[0-9]+						return FLOAT;
+[0-9]+\.[0-9]+					return FLOAT;
 \.								return PUNTO;
 [0-9]+|0+						return INT;
-[a-zA-Z][a-zA-Z0-9_]*			return IDENTIFIER;
-\"(\\"|[^"])*\"					return LSTRING;
+\"(\\"|[^"])*\"					return STRING;
 
 .								return ERROR;
 
