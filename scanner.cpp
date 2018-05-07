@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
 			posicion = 1;
 		}
 
-		if (ntoken == STRING || ntoken == IDENTIFIER) {
+		if (ntoken == LSTRING || ntoken == IDENTIFIER) {
 			// Crea token identificador y coloca en el vector.
 			tokens.push_back(new TokenIdentificador(ntoken,yylineno,posicion,yytext));
 		}

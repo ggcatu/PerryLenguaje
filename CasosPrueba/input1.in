@@ -1,6 +1,9 @@
 main{  
 	create{
 		int hola = 9.433;
+		string perro = "como estas"
+		string jaja = "what"
+		string fefe = ""
 		char = 'k';
 	} execute {
 		if (hola > 3){

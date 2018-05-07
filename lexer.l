@@ -78,7 +78,7 @@
 \.								return PUNTO;
 [0-9]+|0+						return INT;
 [a-zA-Z][a-zA-Z0-9_]*			return IDENTIFIER;
-\"(\\"|[^"])*\"					return LSTRING;
+\"([^"])*\"						return LSTRING;
 
 .								return ERROR;
 
