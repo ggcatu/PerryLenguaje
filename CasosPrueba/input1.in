@@ -1,13 +1,52 @@
-main{  
+include input2.in
+
+main {  
 	create{
-		int hola = 9.433;
-		string perro = "como estas"
-		string jaja = "what"
-		string fefe = ""
-		char = 'k';
+		// comentario
+		/* 
+			comentario 
+			multilinea 
+		*/
+		int entero = 9;
+		int out;
+		float flotante = 9.433;
+		string palabra = "string";
+		char caracter = 'k';
+		array int arreglo[5] = [2, 4, 5, 6];
+		list int lista = {1, 2, 3, 4, 5, 6};
+		tuple (int,string) tupla = (2, "string"); 
+		bool booleanoTrue = True;
+		bool booleanoFalse = False;
+		ptr int apuntadorEntero = entero; 
+
+		union union_bonita {
+			int;
+			float;
+		};
+
+		struct {
+			int entero;
+			float flotante;
+		};
+
 	} execute {
-		if (hola > 3){
+		
+		if (entero > 3){
 			inout >> ch;
+		} else {
+			inout >> "hola";
+		} 
+		
+		while ( entero > 3){
+			inout << ch;
+			inout >> ch;
+			break;
+		}
+
+		for ( int entero = 5 , entero > 3, entero + 1){
+			out = suma(3, entero);
 		}
 	}
 }
+
+

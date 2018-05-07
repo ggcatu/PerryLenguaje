@@ -1,16 +1,6 @@
-main{  
-	create{
-		/*
-			jfjfjhgfkk
-		*/
-		?
-		int hola = 9.433;	// un comentario bien bonito
-		char ch = 'k';
-		$
-	} execute {
-		/* $$#$%#13'40lf */
-		if (hola > 3){
-			inout >> ch;	#
-		}
-	}
+module
+
+int suma(int a, int b){
+	return a+b;
 }
+
