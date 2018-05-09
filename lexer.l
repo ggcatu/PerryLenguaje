@@ -42,15 +42,15 @@
 "int"							return LINT;
 "ptr"							return POINTER;
 
-"True"							return TRUE;
-"False"							return FALSE;
+"true"							return TRUE;
+"false"							return FALSE;
 
 ==								return IGUALA;
 !=								return DISTINTOA;
 
 \+								return SUMA;
 \-								return RESTA;
-%								return MOD;
+mod								return MOD;
 \/								return DIV;
 \*\*							return POW;
 \*								return MULT;
@@ -60,19 +60,17 @@
 >=								return MAYORIGUAL;
 >								return MAYOR;
 
-!								return NEGACION;
-\&\&							return CONJUNCION;
-\|\|							return DISYUNCION;
+"not"							return NEGACION;
+"and"							return CONJUNCION;
+"or"							return DISYUNCION;
 
 [ ] 							return SPACE;
 \t								return TAB;
 \n								return ENTER;
 ,								return COMA;
 
-"inout"							return INOUT;
 \<<								return SALIDA;
 >> 								return ENTRADA;
-
 
 [a-zA-Z][a-zA-Z0-9_]*			return IDENTIFIER;
 '(.|\\n|\\t)' 					return CHAR;

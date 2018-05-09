@@ -87,18 +87,17 @@ using namespace std;
 #define ENTER 51
 #define COMA 52
 
-#define INOUT 53
-#define SALIDA 54
-#define ENTRADA 55
+#define SALIDA 53
+#define ENTRADA 54
 
-#define PUNTO 56
-#define CHAR 57
-#define FLOAT 58
-#define INT 59
-#define IDENTIFIER 60
-#define STRING 61
+#define PUNTO 55
+#define CHAR 56
+#define FLOAT 57
+#define INT 58
+#define IDENTIFIER 59
+#define STRING 60
 
-#define ERROR 62
+#define ERROR 61
 
 
 extern string nToWord[];

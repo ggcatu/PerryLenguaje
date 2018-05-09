@@ -132,7 +132,7 @@ Las constantes de punto flotante son cambiadas a tiempo de compilación por el v
 
 ### Booleanos
 
-La constantes boolenas seran `true` y `false`, teniendo el tipo `boolean`.  
+La constantes boolenas seran `true` y `false`, teniendo el tipo `bool`.  
 
 ### Apuntador
 
