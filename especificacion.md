@@ -40,33 +40,29 @@ Es importante resaltar que sería un error tener dos declaraciones para un mismo
 
 Una asignación `id = e` se usa para evaluar la expresión `e`  y almacenar el resultado en la variable con identificador `id`. La variable `id` debe haber sido declarada; en caso contrario dará un error. Análogamente, si se usan variables en `e` estas deben haber sido declaradas y asignadas con un valor previamente; en caso contrario dará un error. Además, `e` y `id` deben de ser del mismo tipo.  
 
-### Break
-
-`break` Se usa para salir de un ciclo (determinado o indeterminado), pasando por alto la condición normal del ciclo.  
-
 ### Secuencia
 
-La composición secuencial de las intrucciones `inst0` e `inst1` es la instrucción compuesta `inst0; inst1;`. Esta corresponde a ejecutar la instrucción `inst0` y luego la instrucción `inst1`. Es importante destacar que la secuencia es una sola instrucción compuesta, que permite combinar varias instrucciones en una sola.  
+La composición secuencial de las intrucciones `inst_0` e `inst_1` es la instrucción compuesta `inst_0; inst_1;`. Esta corresponde a ejecutar la instrucción `inst_0` y luego la instrucción `inst_1`. Es importante destacar que la secuencia es una sola instrucción compuesta, que permite combinar varias instrucciones en una sola.  
 
 ### Condicional
 
-La instrucción condicional `if (condición){ is0 } else{ is1 }` verifica una `condición` y ejecuta la intrucción `is0` si la condición es `true`. En caso contrario ejecuta la instrucción `is1`. Además `condición` es una expresion booleana. La expresión evaluada dentro de los paréntesis requieren del uso de algún operador de comparación.  
+La instrucción condicional `if (condición){ is_0 } else{ is_1 }` verifica una `condición` y ejecuta la intrucción `is_0` si la condición es `true`. En caso contrario ejecuta la instrucción `is_1`. Además `condición` es una expresion booleana. La expresión evaluada dentro de los paréntesis requieren del uso de algún operador de comparación.  
 
-### Repetición determinada
+### Iteración
+
+#### Iteración determinada
 
 La repetición determinada se declara con la instrucción `for` y se utiliza para repetir un bloque de código.  
 
 ```
-for (inicialización, condición, paso){
+for (inicialización, inicio, fin, paso){
   is;
 };
 ```
 
-La `inicialización` ocurre de primero y exactamente una vez. Cada vez que se hace una vuelta del ciclo, se verifica la `condición`, si evalúa a `true` se ejecuta el `paso` y el bloque de instrucción `is`. Cuando la `condición` evalúe a false, el ciclo terminará.  
+En `inicialización` se declara la variable, en `inicio` se establece el valor de inicio del rango de la repetición del bloque de instrucciones `is`, `fin` es el valor final de dicho rango y `paso` es el incremento de la variable declarada en `inicialización`.  
 
-Aunque el uso del punto y coma es requerido. Las expresiones de `inicialización`, `condición` y `paso` pueden ser cualquier expresión válida con variables no relacionadas, y se puede usar cualquier tipo de datos, incluyendo floats. Este tipo de declaración `for` inusual permite hallar solución a problemas de programación diferentes.  
-
-### Repetición indeterminada
+#### Iteración indeterminada
 
 Un ciclo indeterminado se expresa con la instrucción `while` y ciclará de manera continua e infinita hasta que no se cumpla una condición expresada con condicion dentro de paréntesis. Algo debe cambiar a la variable dentro de la condición, o el ciclo nunca se detendrá. Esto podráa ser una variable incremental.  
 
@@ -77,6 +73,10 @@ while (condición){
 ```
 
 Donde la `condición` es una expresión boolena. Y `is` es una secuencia de instrucciones.  
+
+### Break
+
+`break` Se usa para salir de un ciclo (determinado o indeterminado), pasando por alto la condición normal del ciclo. 
 
 ## Instrucciones
 
@@ -91,29 +91,40 @@ La sintaxis para declarar una función es:
 ```
 tipo_retorno nombre( lista_de_parámetros ){
   is;
-  return valor_retorno;
 };
 ```
 
-Donde `tipo_retorno` a retornar es el tipo de valor de retorno, `nombre` es el identificador de la función (el nombre por el que sera “llamada”), `lista_de_parámetros` es una lista de la forma `[ tipo1 var1, tipo2 var2, ... ]` donde `tipo1` es el tipo de la variable `var1` y así consecutivamente. Opcionalmente se puede declarar un valor “default” para las variables, que será tomado en el caso de que el parámetro no sea suminstrado en la llamada a la función. Dentro de las llaves va el bloque de instrucciones `is` que ejecutará la función y por último, antes de cerrar las llaves la declaracion del `return`, que indica la terminación de la función y el valor que retornará la función, esto último es opcional, pudiendo retornar `void`.  
+Donde `tipo_retorno` es el tipo de valor de retorno, `nombre` es el identificador de la función (el nombre por el que sera “llamada”), `lista_de_parámetros` es una lista de la forma `[tipo_1 var_1, tipo_2 var_2, ...]` en el cual `tipo_i` es el tipo de la variable `var_i`. Opcionalmente se puede declarar un valor “default” para las variables, que será tomado en el caso de que el parámetro no sea suministrado en la llamada a la función. 
 
-Las variables que se declaren dentro del bloque `is` sólo tendrán alcance dentro del mismo bloque, y no pueden ser utilizadas fuera de las llaves. Incluso si la función no recibe parametros, se espera que se escriban los parentesis `()` y el punto y coma `;`.  
+Dentro de las llaves va el bloque de instrucciones que ejecutará la función. Entre estas instrucciones tenemos a `return valor_retorno;`, la cual retorna `valor_retorno` del tipo `tipo_retorno` y termina la ejecución de las intrucciones en la función. Por último, una función puede tener como tipo de valor de retorno a `void` y como instrucción de retorno `return;` cuando se quiere retornar nada.   
+
+Las variables que se declaren dentro del bloque `is` sólo tendrán alcance dentro del mismo bloque mediante el uso de la instrucción de bloque y alcance, y no pueden ser utilizadas fuera de las llaves. Si la función no recibe parametros se espera que se escriban los parentesis `()` y el punto y coma `;`.  
+
+En cuanto al pasaje de parámetros, por defecto se utiliza por valor, sin embargo también se pueden pasar valores por referencia mediante el símbolo @. Por ejemplo:
+
+```
+tipo_retorno nombre( int @a, boolean b, float @b) {
+  is;
+};
+```
+
+Donde las variables a y b son pasadas por referencia y b por valor.
 
 ### Entrada/Salida
 
-La entrada y salida del programa se maneja con los símbolos `>>` y `<<`, usando el primero para la salida y el segundo para la entrada. Con la sintaxis: `inout << id`. Para la entrada, donde `id` es el identificador de la variable donde se almacenarán los datos que entrena. Mientras que la salida se expresa con la sintaxis: `inout >> id`.  
+La entrada y salida del programa se maneja con los símbolos `>>` y `<<`, usando el primero para la salida y el segundo para la entrada. Con la sintaxis: `<< id` para la entrada, donde `id` es el identificador de la variable donde se almacenarán los datos que entrena. Mientras que la salida se expresa con la sintaxis: `>> id`.  
 
 ## Expresiones
 
 Las expresiones están constituidas por variables, enteros, flotantes, literales, booleanos y operadores. En el caso de una variable, al momento de acceder a su valor, independiente de su tipo, la misma debe haber sido declarada. Partiendo de una expresión `e`, de tipo cualquiera, se puede construir la expresión `(e)` y ambas van a producir el mismo valor, es decir, evaluar `(e)` conlleva a evaluar a `e`.  
 
-### Literales
+### Caracteres 
 
 Los literales son valores fijos que no cambian en el curso del programa. Por ejemplo, si se escribe el numero 3 o 500 en el programa, estos son literales. Los literales para los caracteres se epresan entres comillas, al igual que cualquier caracter ASCII, como ‘h’. De esta forma, un caracter se expresa de la forma `char`.  
 
 ### Enteros
 
-Las constantes enteras son números que se usan directamente en el programa, como 123 o -123. Por defecto estos números son tratados como `int`. Normalmente, los enteros son tratados como enteros de base 10 (decimal).  
+Las constantes enteras son números en base 10 (decimal) que se usan directamente en el programa, como 123 o -123, lo cuales se expresan de la forma `int`.
 
 ### Flotantes
 
@@ -121,7 +132,7 @@ Las constantes de punto flotante son cambiadas a tiempo de compilación por el v
 
 ### Booleanos
 
-La constantes boolenas seran `True` y `False`, teniendo el tipo `boolean`.  
+La constantes boolenas seran `true` y `false`, teniendo el tipo `boolean`.  
 
 ### Apuntador
 
@@ -131,18 +142,16 @@ Un apuntador se incializa de la siguiente forma:
 
 ```
   ptr tipo id;
-```
+``` 
 
-### Strings
-
-Un string es una cadena de caracteres encerrada en comillas dobles `"` y se puede expresar como `string`. Además, en dicha secuencia no es posible que exista un salto de linea, comillas dobles o backslashes `\` a no ser de que estén escapados, es decir, `\\n`, `\\` y `\"`.  
+El símbolo `^` se utiliza para acceder al valor de `id` de la siguiente forma: `^id`.
 
 ### Arreglos
 
 Al igual que las variables que se han utilizado hasta este momento, un arreglo debe tener un tipo (como int, char o float) y un nombre. Además, habrá que especificar el número de valores que almacenará. Un arreglo se declara de la siguiente forma:  
 
 ```
-  arrray tipo id[tamaño];
+  array[tamaño] tipo;
 ```
 
 Donde `tipo` se refiere al tipo de dato de todos los elementos del arreglo, `id` es el identificador del arreglo y `tamaño` es el número de elementos que contiene el arreglo.  
@@ -152,7 +161,7 @@ Los índices de un arreglo se encuentran en el intervalo [0,tamaño-1]. Además,
 Un arreglo se puede inicializar también de la siguiente forma:  
 
 ```
-  array tipo id[tamaño] = [valo_r0, valor_1, ... , valor_(tamaño-1)];
+  array[tamaño] tipo id = [valo_0, valor_1, ... , valor_(tamaño-1)];
 ```
 
 ### Listas
@@ -168,7 +177,7 @@ Donde `tipo` se refiere al tipo de dato de todos los elementos del arreglo, `id`
 Una lista se puede inicializar también de la siguiente forma:  
 
 ```
-  list tipo id = {valor0, valor1, ... };
+  list tipo id = {valor_0, valor_1, ... };
 ```
 
 ### Tuplas
@@ -176,20 +185,24 @@ Una lista se puede inicializar también de la siguiente forma:
 Una tupla es una estructura de datos inmutable, la cual no puede modificarse de ningún modo después de su creación. Contiene dos tipos de datos iguales o distinos y se declara de la siguiente forma:
 
 ```
-  tuple id (tipo1, tipo2);
+  tuple (tipo_1, tipo_2) id;
 ```
 
 Y puede asignarse un valor a la tupla de la siguiente forma:
 
 ```
-  id = (valor1, valor2);
+  id = (valor_1, valor_2);
 ```
+
+### Strings
+
+Un string es una cadena de caracteres encerrada en comillas dobles `"` y se puede expresar como `string`. Además, en dicha secuencia no es posible que exista un salto de linea, comillas dobles o backslashes `\` a no ser de que estén escapados, es decir, `\\n`, `\\` y `\"`. 
 
 ### Variables
 
 Las variables en Perry tienen un alcance definido por el bloque en el cual son declaradas.  
 
-Una variable global es aquella que puede ser vista por cualquier función en el programa. Las variables locales sólo son visibles en la función en la que son declaradas. En Perry, cualquier variable declarada fuera de una función (incluyendo el programa principal main{}) es una variable global.  
+Una variable global es aquella que puede ser vista por cualquier función en el programa. Las variables locales sólo son visibles en la función en la que son declaradas. En Perry, cualquier variable declarada fuera de una función (incluyendo el programa principal main) es una variable global.  
 
 ## Sintaxis
 
@@ -202,7 +215,7 @@ Se pueden tener comentarios de una sola línea, definidos por dos slashes consec
 ### Operadores
 
 #### Operadores aritmeticos:  
-- Modulo `%`  
+- Modulo `mod`  
 - Multiplicación `*`
 - Potencia `**`
 - Suma `+`  
@@ -210,9 +223,9 @@ Se pueden tener comentarios de una sola línea, definidos por dos slashes consec
 - División `/`  
 
 #### Operadores booleanos:  
-- no lógico `!`  
-- conjunción lógica `&&`  
-- disjunción lógica `||`  
+- no lógico `not`  
+- conjunción lógica `and`  
+- disjunción lógica `or`  
 
 #### Operadores de comparación:  
 - distinto a `!=`  
@@ -224,11 +237,18 @@ Se pueden tener comentarios de una sola línea, definidos por dos slashes consec
 
 ### include
 
-Se usa para incluir librerias externas. Esto le da al programador acceso a modulos especificados especialmente para Perry. `include`, no tiene punto y coma al final.  
+Se usa para incluir librerias externas. Esto le da al programador acceso a módulos especificados especialmente para Perry. `include`, no tiene punto y coma al final y se usa de la siguiente forma:
+
+```include "archivo.extensión"```
 
 ### module
 
-Se usa para incluir módulos que no contienen estructura principal. `module` no tiene punto y coma al final.  
+Se usa para incluir módulos que no contienen estructura principal. `module` no tiene punto y coma al final. Se utiliza de la siguiente forma:
+
+```
+module
+is;
+```
 
 ### structs
 
