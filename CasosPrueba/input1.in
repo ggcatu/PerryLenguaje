@@ -18,8 +18,8 @@ main {
 		array int arreglo[5] = [2, 4, 5, 6];
 		list int lista = {1, 2, 3, 4, 5, 6};
 		tuple (int,string) tupla = (2, "string"); 
-		bool booleanoTrue = True;
-		bool booleanoFalse = False;
+		bool booleanoTrue = true;
+		bool booleanoFalse = false;
 		ptr int apuntadorEntero = entero; 
 
 		union union_bonita {

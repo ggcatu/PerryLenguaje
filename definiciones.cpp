@@ -30,12 +30,11 @@ Por otro lado facilita bastante modificar el to_string de los tokens.
 
 string nToWord[] = {  
 	"NULL", "LLAVEABRE", "LLAVECIERRA", "CORABRE", "CORCIERRA", "PARABRE", "PARCIERRA", 
-	"MAIN", "", "", "INCLUDE", "CREATE", "EXECUTE", "MODULE", 
-	"PUNTOCOMA", "WHILE", "FOR", "BREAK", "IF", "ELSE", "STRUCT", 
-	"UNION", "ARRAY", "LIST", "TUPLE", "STRING", "FLOAT", 
-	"CHAR", "BOOL", "INT", "PTR", "TRUE", "FALSE", "EQUIV", 
-	"DIST", "MAS", "MENOS", "MOD", "DIV", "POW", "POR", "IGUAL", "MENORIGUAL", "MENOR", 
-	"MAYORIGUAL", "MAYOR", "NOT", "AND", "OR", "", "", "ENTER", "COMA", "ENTRADA", "SALIDA", "PUNTO",
+	"MAIN", "", "", "INCLUDE", "CREATE", "EXECUTE", "MODULE",  "PUNTOCOMA", "WHILE", 
+	"FOR", "BREAK", "IF", "ELSE", "STRUCT", "UNION", "ARRAY", "LIST", "TUPLE", "STRING", 
+	"FLOAT", "CHAR", "BOOL", "INT", "PTR", "TRUE", "FALSE", "EQUIV", "DIST", "MAS", 
+	"MENOS", "MOD", "DIV", "POW", "POR", "IGUAL", "MENORIGUAL", "MENOR", "MAYORIGUAL", 
+	"MAYOR", "NOT", "AND", "OR", "", "", "", "COMA", "ENTRADA", "SALIDA", "PUNTO",
 	"CHAR", "FLOAT", "INT", "IDENTIFIER", "STRING", "ERROR" 
 	};
 
