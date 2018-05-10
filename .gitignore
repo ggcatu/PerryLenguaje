@@ -1,3 +1,5 @@
 lex.yy.c
 *.o
 perry
+parser.tab.h
+parser.tab.c

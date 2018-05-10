@@ -62,7 +62,9 @@ mod								return MOD;
 
 "not"							return NEGACION;
 "and"							return CONJUNCION;
+"&&"							return CONJUNCION;
 "or"							return DISYUNCION;
+"||"							return DISYUNCION;
 
 [ ] 							return SPACE;
 \t								return TAB;

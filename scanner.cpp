@@ -17,6 +17,7 @@ de las clases y funciones implementadas en definiciones.cpp
 #include <vector>
 #include <stdlib.h>
 #include "definiciones.h"
+#include "parser.tab.h"
 
 using namespace std;
 
@@ -34,17 +35,14 @@ extern int yylineno;
 extern int yyleng;
 extern char* yytext;
 extern FILE* yyin;
- 
-int main(int argc, char** argv) {
+
+
+
+void execute_lexer(){
+	cout << "Executing lexer" << endl;
 	// Vectores donde se guardarán nuestros resultados de la tokenización
 	vector<Token *> tokens;
 	vector<Token *> errors;
-
-	// Cambio del input stream al archivo en argv[1]
-    yyin = fopen(argv[1],"r");
-    if (yyin == false){
-    	return 0;
-    }
 
     // Inicialización para nuestro ciclo de lectura
 	int ntoken = yylex();
@@ -104,6 +102,36 @@ int main(int argc, char** argv) {
 	} else {
 		print_errors(errors);
 	}
+
+}
+
+void execute_parser(){
+	cout << "Executing parser" << endl;
+	yyparse();
+}
+int main(int argc, char** argv) {	
 	
+	// Cambio del input stream al archivo en argv[1]
+    yyin = fopen(argv[1],"r");
+    if (yyin == false){
+    	cout << "Error de lectura, revise el archivo " << argv[1] << endl;
+    	return 0;
+    }
+	
+	if (argc > 2){
+		for (int i = 2; i < argc; i++ ){
+			string arg(argv[i]);
+			if (arg == "-l"){
+				execute_lexer();
+			}
+			else if (arg == "-p"){
+				execute_parser();
+			}
+		}
+	} else {
+		// por ahora por defecto ejecuta el lexer
+		execute_lexer();
+	}
+
 	return 0;
 }
