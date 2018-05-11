@@ -1,6 +1,16 @@
 %{
 #include "definiciones.h"
+#include "parser.tab.h"
+
+using namespace std;
+int yycolumn = 1;
+
+#define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno; \
+    yylloc.first_column = yycolumn; yylloc.last_column = yycolumn + yyleng - 1; \
+    yycolumn += yyleng; \
+    yylval.str = strdup(yytext);
 %}
+
 %option yylineno
 
 %%
@@ -14,8 +24,8 @@
 
 "main"							return MAIN;
 
-\/\/.*							return COMENTARIOLINEA;
-\/\*(\*[^\/]|[^\*])*\*\/				return COMENTARIO;
+\/\/.*							;
+\/\*(\*[^\/]|[^\*])*\*\/		;
 
 "include"						return INCLUDE;
 "create"						return CREATE;
@@ -41,6 +51,7 @@
 "bool"							return BOOL;
 "int"							return LINT;
 "ptr"							return POINTER;
+"return"						return RETURN;
 
 "true"							return TRUE;
 "false"							return FALSE;
@@ -61,14 +72,15 @@ mod								return MOD;
 >								return MAYOR;
 
 "not"							return NEGACION;
+"!"								return NEGACION;
 "and"							return CONJUNCION;
 "&&"							return CONJUNCION;
 "or"							return DISYUNCION;
 "||"							return DISYUNCION;
 
-[ ] 							return SPACE;
-\t								return TAB;
-\n								return ENTER;
+[ ] 							;
+\t								;
+\n								;
 ,								return COMA;
 
 \<<								return SALIDA;
@@ -81,7 +93,7 @@ mod								return MOD;
 [0-9]+|0+						return INT;
 \"([^"])*\"						return STRING;
 
-.								return ERROR;
+.								;
 
 %%
 

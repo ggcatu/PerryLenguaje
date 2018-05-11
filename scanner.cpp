@@ -55,9 +55,14 @@ void execute_lexer(){
 			posicion = 1;
 		}
 
-		if (ntoken == STRING || ntoken == IDENTIFIER) {
+		if (ntoken == STRING) {
+			string completo = yytext;
+			string texto = completo.substr(1, completo.length() - 1 );
+			tokens.push_back(new TokenIdentificador(ntoken,yylineno,posicion,texto));			
+		} 
+		else if (ntoken == IDENTIFIER){
 			// Crea token identificador y coloca en el vector.
-			tokens.push_back(new TokenIdentificador(ntoken,yylineno,posicion,yytext));
+			tokens.push_back(new TokenIdentificador(ntoken,yylineno,posicion,yytext));			
 		}
 		else if (ntoken == INT) {
 			// Crea token integer y coloca en el vector.
