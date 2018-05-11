@@ -1,5 +1,5 @@
 /*
-Traductores e Interpretadores (CI-3725)
+Lenguajes de Programación II (CI-4721)
 
 Autores:
 Guillermo Betancourt, carnet 11-10103
@@ -33,7 +33,7 @@ Por otro lado facilita bastante modificar el to_string de los tokens.
 string nToWord[] = {  
 	"NULL", "LLAVEABRE", "LLAVECIERRA", "CORABRE", "CORCIERRA", "PARABRE", "PARCIERRA", 
 	"MAIN", "", "", "INCLUDE", "CREATE", "EXECUTE", "MODULE",  "PUNTOCOMA", "WHILE", 
-	"FOR", "BREAK", "IF", "ELSE", "STRUCT", "UNION", "ARRAY", "LIST", "TUPLE", "STRING", 
+	"FOR", "BREAK", "IF", "ELSE", "RETURN" "STRUCT", "UNION", "ARRAY", "LIST", "TUPLE", "STRING", 
 	"FLOAT", "CHAR", "BOOL", "INT", "PTR", "TRUE", "FALSE", "EQUIV", "DIST", "MAS", 
 	"MENOS", "MOD", "DIV", "POW", "POR", "IGUAL", "MENORIGUAL", "MENOR", "MAYORIGUAL", 
 	"MAYOR", "NOT", "AND", "OR", "", "", "", "COMA", "ENTRADA", "SALIDA", "PUNTO",

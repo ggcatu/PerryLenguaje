@@ -1,8 +1,7 @@
 /*
-Traductores e Interpretadores (CI-3725)
+Lenguajes de Programación II (CI-4721)
 
 Autores:
-Guillermo Betancourt, carnet 11-10103
 Gabriel Giménez, carnet 12-11006
 
 definiciones.h:

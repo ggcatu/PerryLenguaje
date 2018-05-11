@@ -1,5 +1,5 @@
 /*
-Traductores e Interpretadores (CI-3725)
+Lenguajes de Programación II (CI-4721)
 
 Autores:
 Guillermo Betancourt, carnet 11-10103
@@ -22,83 +22,6 @@ de las clases y funciones implementadas en definiciones.cpp
 #include <vector>
 
 using namespace std;
-
-// #define LLAVEABRE 1
-// #define LLAVECIERRA 2
-// #define CORCHETEABRE 3
-// #define CORCHETECIERRA 4
-// #define PARABRE 5
-// #define PARCIERRA 6
-
-// #define MAIN 7
-
-// #define COMENTARIOLINEA 8
-// #define COMENTARIO 9
-
-// #define INCLUDE 10
-// #define CREATE 11
-// #define EXECUTE 12
-// #define MODULE 13
-
-// #define PUNTOCOMA 14
-
-// #define WHILE 15
-// #define FOR 16
-// #define BREAK 17
-// #define IF 18
-// #define ELSE 19
-
-// #define STRUCT 20
-// #define UNION 21
-// #define ARRAY 22
-// #define LIST 23
-// #define TUPLE 24
-// #define LSTRING 25
-// #define LFLOAT 26
-// #define LCHAR 27
-// #define BOOL 28
-// #define LINT 29
-// #define POINTER 30
-
-// #define TRUE 31
-// #define FALSE 32
-
-// #define IGUALA 33
-// #define DISTINTOA 34
-
-// #define SUMA 35
-// #define RESTA 36
-// #define MOD 37
-// #define DIV 38
-// #define POW 39
-// #define MULT 40
-// #define IGUAL 41
-// #define MENORIGUAL 42
-// #define MENOR 43
-// #define MAYORIGUAL 44
-// #define MAYOR 45
-
-// #define NEGACION 46
-// #define CONJUNCION 47
-// #define DISYUNCION 48
-
-// #define SPACE 49
-// #define TAB 50
-// #define ENTER 51
-// #define COMA 52
-
-// #define SALIDA 53
-// #define ENTRADA 54
-
-// #define PUNTO 55
-// #define CHAR 56
-// #define FLOAT 57
-// #define INT 58
-// #define IDENTIFIER 59
-// #define STRING 60
-
-// #define ERROR 61
-
 
 extern string nToWord[];
 string IntToString ( int number );
