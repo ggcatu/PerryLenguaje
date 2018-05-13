@@ -15,41 +15,44 @@ main {
 		float flotante = 9.433;
 		string palabra = "stñring";
 		char caracter = 'k';
-		array int arreglo[5] = [2, 4, 5, 6];
+		array int[5] arreglo = [2, 4, 5, 6];
 		list int lista = {1, 2, 3, 4, 5, 6};
 		tuple (int,string) tupla = (2, "string"); 
 		bool booleanoTrue = true;
 		bool booleanoFalse = false;
 		ptr int apuntadorEntero = entero; 
 
-		union union_bonita {
-			int;
-			float;
-		};
-
-		struct {
+		type struct struct_fea {
 			int entero;
 			float flotante;
 		};
 
+		type union union_bonita {
+			int idq;
+			float id2;
+		};
+
+		type zGrande = int;
+
 	} execute {
 		
 		if (entero > 3){
-			inout >> ch;
+			>> ch;
 		} else {
-			inout >> "hola";
-		} 
+			>> "hola";
+		}; 
 		
 		while ( entero > 3){
-			inout << ch;
-			inout >> ch;
+			<< ch;
+			>> ch;
 			break;
-		}
+		};
 
-		for ( int entero = 5 , entero > 3, entero + 1){
-			out = suma(3, entero);
-		}
+		for ( int entero = 5 , [entero,3], entero + 1){
+			//out = suma(3, entero);
+			<< enterio;
+		};
 	}
-}
+};
 
 
