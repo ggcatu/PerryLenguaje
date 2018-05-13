@@ -205,6 +205,10 @@ Y puede asignarse un valor a la tupla de la siguiente forma:
 
 Un string es una cadena de caracteres encerrada en comillas dobles `"` y se puede expresar como `string`. Además, en dicha secuencia no es posible que exista un salto de linea, comillas dobles o backslashes `\` a no ser de que estén escapados, es decir, `\\n`, `\\` y `\"`. 
 
+### type
+
+En perry se puede declarar un tipo de datos personalizado de la siguiente forma: `type id = constructor_tipo`, donde `id` es el nombre de tipo de datos declarado y en `constructor_tipo`  se especifica la estructura del mismo.
+
 ### Variables
 
 Las variables en Perry tienen un alcance definido por el bloque en el cual son declaradas.  
