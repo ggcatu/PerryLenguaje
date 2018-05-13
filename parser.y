@@ -53,13 +53,14 @@ void yyerror (char const *s) {
 %token ERROR 61
 %token ENTER 62 
 %token COMENTARIO 63
+%token TYPE 64 MALLOC 65 FREE 66
 %token <num> number
 //%token <str> IDENTIFIER
 %token <ch> CHARACTER
 %token <arb> arbol
 //%token <boolean> TRUE FALSE
 
-%type <void> S Includelist Start Scope Type Varlist Declist Inst Sec Exp Literals List
+%type <void> S Includelist Start Scope Typedef Varlist Declist Inst Sec Exp Literals Ids List
 
 %%
 
@@ -73,47 +74,61 @@ Includelist : INCLUDE Exp Includelist									{cout << "INCLUDE Exp Includelist\
 
 Start 		: MAIN LLAVEABRE Scope LLAVECIERRA PUNTOCOMA Start			{cout << "MAIN LLAVEABRE Scope LLAVECIERRA PUNTOCOMA Start\n";}
 	 		| MAIN LLAVEABRE Scope LLAVECIERRA PUNTOCOMA				{cout << "MAIN LLAVEABRE Scope LLAVECIERRA PUNTOCOMA\n";}
-			| Type IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA PUNTOCOMA Start						{cout << "Type IDENTIFIER PARABRE Varlist PARCIERRA\n";}
-			| Type IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA PUNTOCOMA							{cout << "Type IDENTIFIER PARABRE Varlist PARCIERRA\n";}
+			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA PUNTOCOMA Start						{cout << "Typedef IDENTIFIER PARABRE Varlist PARCIERRA\n";}
+			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA PUNTOCOMA							{cout << "Typedef IDENTIFIER PARABRE Varlist PARCIERRA\n";}
 			;
 
 Scope 		: CREATE LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  			{cout << "CREATE LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  \n";}
 			| CREATE LLAVEABRE LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  					{cout << "CREATE LLAVEABRE LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  \n";}
 			;
 
-Type		: LCHAR 											{cout << "LCHAR \n";}
+Typedef		: LCHAR 											{cout << "LCHAR \n";}
 			| BOOL  											{cout << "BOOL  \n";}
 			| LINT  											{cout << "LINT  \n";}
 			| LFLOAT  											{cout << "LFLOAT  \n";}
 			| LSTRING  											{cout << "LSTRING  \n";}
-			| ARRAY Type CORCHETEABRE Exp CORCHETECIERRA 		{cout << "ARRAY Type CORCHETEABRE Exp CORCHETECIERRA \n";}
-			| LIST Type 										{cout << "LIST Type \n";}
-			| TUPLE PARABRE Type COMA Type PARCIERRA  			{cout << "TUPLE PARABRE Type COMA Type PARCIERRA  \n";}
-			| POINTER  											{cout << "POINTER  \n";}
+			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{cout << "ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA \n";}
+			| LIST Typedef 										{cout << "LIST Typedef \n";}
+			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{cout << "TUPLE PARABRE Typedef COMA Typedef PARCIERRA  \n";}
+			| POINTER Typedef  									{cout << "POINTER  \n";}
+			| IDENTIFIER										{cout << "IDENTIFIER  \n";}
 			;
 
-Varlist 	: Type IDENTIFIER COMA Varlist 						{cout << "Type IDENTIFIER COMA Varlist \n";}
-			| Type IDENTIFIER 									{cout << "Type IDENTIFIER \n";}
+Varlist 	: Typedef IDENTIFIER COMA Varlist 						{cout << "Typedef IDENTIFIER COMA Varlist \n";}
+			| Typedef IDENTIFIER 									{cout << "Typedef IDENTIFIER \n";}
 			;
 
-Declist 	: Type IDENTIFIER PUNTOCOMA Declist					{cout << "Type IDENTIFIER PUNTOCOMA Declist\n";}
-			| Type IDENTIFIER IGUAL Exp PUNTOCOMA Declist		{cout << "Type IDENTIFIER IGUAL Exp PUNTOCOMA Declist\n";}
-			| Type IDENTIFIER PUNTOCOMA 						{cout << "Type IDENTIFIER PUNTOCOMA \n";}
-			| Type IDENTIFIER IGUAL Exp PUNTOCOMA 				{cout << "Type IDENTIFIER IGUAL Exp PUNTOCOMA \n";}
+Declist 	: Typedef IDENTIFIER PUNTOCOMA Declist					{cout << "Typedef IDENTIFIER PUNTOCOMA Declist\n";}
+			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist		{cout << "Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist\n";}
+			| Typedef IDENTIFIER PUNTOCOMA 						{cout << "Typedef IDENTIFIER PUNTOCOMA \n";}
+			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA 				{cout << "Typedef IDENTIFIER IGUAL Exp PUNTOCOMA \n";}
+			| TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA				{cout << "TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA \n";}
+			| TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA Declist				{cout << "TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA Declist \n";}
+			| TYPE STRUCT IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA Declist {cout << "TYPE STRUCT IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA Declist \n";}
+			| TYPE STRUCT IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA {cout << "TYPE STRUCT IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA \n";}
+			| TYPE UNION IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA Declist {cout << "TYPE UNION IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA Declist \n";}
+			| TYPE UNION IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA {cout << "TYPE UNION IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA \n";}
+			;
+
+Subdeclist 	: Typedef IDENTIFIER PUNTOCOMA Declist					{cout << "Typedef IDENTIFIER PUNTOCOMA Declist\n";}
+			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist		{cout << "Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist\n";}
+			| Typedef IDENTIFIER PUNTOCOMA 						{cout << "Typedef IDENTIFIER PUNTOCOMA \n";}
+			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA 				{cout << "Typedef IDENTIFIER IGUAL Exp PUNTOCOMA \n";}
 			;
 
 Sec 		: Inst PUNTOCOMA Sec  								{cout << "Inst PUNTOCOMA Sec  \n";}
 			| Inst PUNTOCOMA									{cout << "Inst PUNTOCOMA\n";}
 
 Inst		: Scope					 							{cout << "Scope\n";}
-			| IDENTIFIER IGUAL Exp								{cout << "IDENTIFIER IGUAL Exp\n";}
+			| Ids IGUAL Exp										{cout << "Ids IGUAL Exp\n";}
 			| SALIDA Exp 										{cout << "SALIDA Exp \n";}
 			| ENTRADA Exp  										{cout << "ENTRADA Exp  \n";}
-			| IF PARABRE Exp PARCIERRA LLAVEABRE Inst LLAVECIERRA ELSE LLAVEABRE Inst LLAVECIERRA  										{cout << "IF PARABRE Exp PARCIERRA LLAVEABRE Inst LLAVECIERRA ELSE LLAVEABRE Inst LLAVECIERRA  \n";}
-			| IF PARABRE Exp PARCIERRA LLAVEABRE Inst LLAVECIERRA  																		{cout << "IF PARABRE Exp PARCIERRA LLAVEABRE Inst LLAVECIERRA  \n";}
-			| FOR PARABRE Type IDENTIFIER COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Inst LLAVECIERRA 	{cout << "FOR PARABRE Type IDENTIFIER COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Inst LLAVECIERRA \n";}
-			| WHILE PARABRE Exp PARCIERRA LLAVEABRE Inst LLAVECIERRA  																	{cout << "WHILE PARABRE Exp PARCIERRA LLAVEABRE Inst LLAVECIERRA  \n";}
-			| RETURN Exp								{cout << "RETURN Exp\n";}
+			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA  										{cout << "IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA  \n";}
+			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  																		{cout << "IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  \n";}
+			| FOR PARABRE Typedef IDENTIFIER IGUAL Exp COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA 	{cout << "FOR PARABRE Typedef IDENTIFIER COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA \n";}
+			| WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  																	{cout << "WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  \n";}
+			| RETURN Exp										{cout << "RETURN Exp\n";}
+			| BREAK												{cout << "BREAK\n";}
 			;
 
 Exp	 		: Exp SUMA Exp										{cout << "Exp SUMA Exp\n";}
@@ -138,7 +153,7 @@ Exp	 		: Exp SUMA Exp										{cout << "Exp SUMA Exp\n";}
 			| Literals											{cout << "Literals\n";}	
 			;
 
-Literals 	: IDENTIFIER										{cout << "IDENTIFIER\n";}
+Literals 	: Ids												{cout << "Ids\n";}
 			| CHAR 												{cout << "CHAR \n";}
 			| FLOAT 											{cout << "FLOAT \n";}
 			| INT 												{cout << "INT \n";}
@@ -148,6 +163,10 @@ Literals 	: IDENTIFIER										{cout << "IDENTIFIER\n";}
 			| PARABRE Exp COMA Exp PARCIERRA 					{cout << "PARABRE Exp COMA Exp PARCIERRA \n";}
 			| TRUE 												{cout << "TRUE \n";}
 			| FALSE 											{cout << "FALSE \n";}
+			;
+
+Ids 		: IDENTIFIER PUNTO Ids 								{cout << "IDENTIFIER PUNTO Ids \n";}
+			| IDENTIFIER 										{cout << "IDENTIFIER \n";}
 			;
 
 List		: Exp COMA List 									{cout << "Exp COMA List \n";}

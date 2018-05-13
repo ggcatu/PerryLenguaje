@@ -40,6 +40,9 @@ int yycolumn = 1;
 "if"							return IF;
 "else"							return ELSE;
 
+"malloc"						return MALLOC;
+"free"							return FREE;
+"type"							return TYPE;
 "struct"						return STRUCT;
 "union"							return UNION;
 "array"							return ARRAY;
