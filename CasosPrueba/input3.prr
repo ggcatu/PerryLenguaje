@@ -5,9 +5,9 @@ main{
 		int n = 6;
   		int m = 1;
   	}
- 	execute{
+ 	execute{ 
   		while (n > m){
-  			vamos a curucutear
+			vamos a curucutear
   		}
  	}
 };

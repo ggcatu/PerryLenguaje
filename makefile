@@ -1,7 +1,7 @@
-perr: scanner.o lex.yy.c parser.tab.c definiciones.o 
-	g++ scanner.o definiciones.o lex.yy.c parser.tab.c -o perr
+perry: scanner.o lex.yy.c parser.tab.c definiciones.o 
+	g++ scanner.o definiciones.o lex.yy.c parser.tab.c -o perry
 
-scanner.o: scanner.cpp parser.tab.c 
+scanner.o: scanner.cpp parser.tab.c definiciones.o
 	g++ -c scanner.cpp definiciones.cpp
 
 definiciones.o:
@@ -14,4 +14,4 @@ parser.tab.c: parser.y
 	bison -d --report=state parser.y
 
 clean:
-	rm lex.yy.c parser.tab.* scanner.o definiciones.o perr
+	rm lex.yy.c parser.tab.* parser.output scanner.o definiciones.o perry

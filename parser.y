@@ -21,6 +21,8 @@ void yyerror (char const *s) {
 
 %}
 
+%define parse.lac full
+
 %union {	
 			int num; 
 			bool boolean;

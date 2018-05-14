@@ -83,9 +83,9 @@ mod								return MOD;
 "or"							return DISYUNCION;
 "||"							return DISYUNCION;
 
-[ ] 							;
-\t								;
-\n								;
+[ ] 							{;}
+\t								{yycolumn+= 3;}
+\n								{yycolumn = 1;}
 ,								return COMA;
 
 \<<								return SALIDA;
@@ -99,7 +99,7 @@ mod								return MOD;
 [0-9]+|0+						return INT;
 \"([^"])*\"						return STRING;
 
-.								;
+.								return ERROR;
 
 %%
 
