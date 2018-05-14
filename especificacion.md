@@ -205,9 +205,6 @@ Y puede asignarse un valor a la tupla de la siguiente forma:
 
 Un string es una cadena de caracteres encerrada en comillas dobles `"` y se puede expresar como `string`. Además, en dicha secuencia no es posible que exista un salto de linea, comillas dobles o backslashes `\` a no ser de que estén escapados, es decir, `\\n`, `\\` y `\"`. 
 
-### type
-
-En perry se puede declarar un tipo de datos personalizado de la siguiente forma: `type id = constructor_tipo`, donde `id` es el nombre de tipo de datos declarado y en `constructor_tipo`  se especifica la estructura del mismo.
 
 ### Variables
 
@@ -266,7 +263,7 @@ is;
 Un `struct` es una estructura de datos que se utiliza para organizar y almacenar distintos tipos de datos. La estructura general es la siguiente:
 
 ``` 
-struct id{
+type struct id{
 	tipo_1 id_1;
 	...
 	tipo_n id_n;
@@ -280,7 +277,7 @@ Donde `id` es el identificador de la estructura y `tipo_i id_i` se refiere al mi
 Un `union` es una estructura de datos que se utiliza para almacenar uno de los tipos de datos presentes en la misma. La estructura general es la siguiente:
 
 ``` 
-union id{
+type union id{
 	tipo_1 id_1;
 	...
 	tipo_n id_n;
@@ -288,3 +285,7 @@ union id{
 ```
 
 Donde `id` es el identificador de la estructura y `tipo_i id_i` se refiere al miembro de la estructura con su tipo y id asociado.
+
+### type
+
+En perry se puede declarar un tipo de datos personalizado de la siguiente forma: `type id = constructor_tipo`, donde `id` es el nombre de tipo de datos declarado y en `constructor_tipo`  se especifica la estructura del mismo.

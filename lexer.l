@@ -40,7 +40,7 @@ int yycolumn = 1;
 "if"							return IF;
 "else"							return ELSE;
 
-"malloc"						return MALLOC;
+"new"							return NEW;
 "free"							return FREE;
 "type"							return TYPE;
 "struct"						return STRUCT;
@@ -55,6 +55,7 @@ int yycolumn = 1;
 "int"							return LINT;
 "ptr"							return POINTER;
 "return"						return RETURN;
+"unit"							return UNIT;
 
 "true"							return TRUE;
 "false"							return FALSE;
