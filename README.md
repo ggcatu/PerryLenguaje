@@ -12,5 +12,5 @@ Donde:
 
 * `programa` es un archivo.prr, en caso contrario el compilador retornará un error.
 * `flag` imprime alguna de las fases del desarrollo del compilador. Puede ser alguna de las siguientes opciones:
-1. -l para el lexer (utilizado por defecto).
-2. -p para el parser.
+    * -l para el lexer (utilizado por defecto).
+    * -p para el parser.
