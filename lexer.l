@@ -73,6 +73,8 @@ mod								return MOD;
 \<								return MENOR;
 >=								return MAYORIGUAL;
 >								return MAYOR;
+\@								return REFERENCE;
+\^								return OPTR;
 
 "not"							return NEGACION;
 "!"								return NEGACION;
@@ -88,6 +90,7 @@ mod								return MOD;
 
 \<<								return SALIDA;
 >> 								return ENTRADA;
+
 
 [a-zA-Z][a-zA-Z0-9_]*			return IDENTIFIER;
 '(.|\\n|\\t)' 					return CHAR;

@@ -54,6 +54,7 @@ void yyerror (char const *s) {
 %token ENTER 62 
 %token COMENTARIO 63
 %token TYPE 64 MALLOC 65 FREE 66
+%token REFERENCE 67 OPTR 68
 %token <num> number
 //%token <str> IDENTIFIER
 %token <ch> CHARACTER
@@ -67,6 +68,7 @@ void yyerror (char const *s) {
 S			: Includelist Start 										{cout << "Includelist Start \n";}
 			| MODULE Start												{cout << "MODULE Start\n";}
 			| Start      												{cout << "Start      \n";}
+			|															{cout << "";}
 			;
 
 Includelist : INCLUDE Exp Includelist									{cout << "INCLUDE Exp Includelist\n";}
@@ -74,12 +76,13 @@ Includelist : INCLUDE Exp Includelist									{cout << "INCLUDE Exp Includelist\
 
 Start 		: MAIN LLAVEABRE Scope LLAVECIERRA PUNTOCOMA Start			{cout << "MAIN LLAVEABRE Scope LLAVECIERRA PUNTOCOMA Start\n";}
 	 		| MAIN LLAVEABRE Scope LLAVECIERRA PUNTOCOMA				{cout << "MAIN LLAVEABRE Scope LLAVECIERRA PUNTOCOMA\n";}
-			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA PUNTOCOMA Start						{cout << "Typedef IDENTIFIER PARABRE Varlist PARCIERRA\n";}
-			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA PUNTOCOMA							{cout << "Typedef IDENTIFIER PARABRE Varlist PARCIERRA\n";}
+			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA PUNTOCOMA Start					{cout << "Typedef IDENTIFIER PARABRE Varlist PARCIERRA\n";}
+			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA PUNTOCOMA						{cout << "Typedef IDENTIFIER PARABRE Varlist PARCIERRA\n";}
 			;
 
 Scope 		: CREATE LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  			{cout << "CREATE LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  \n";}
 			| CREATE LLAVEABRE LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  					{cout << "CREATE LLAVEABRE LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  \n";}
+			| EXECUTE LLAVEABRE Sec LLAVECIERRA  												{cout << "EXECUTE LLAVEABRE Sec LLAVECIERRA  \n";}
 			;
 
 Typedef		: LCHAR 											{cout << "LCHAR \n";}
@@ -95,24 +98,26 @@ Typedef		: LCHAR 											{cout << "LCHAR \n";}
 			;
 
 Varlist 	: Typedef IDENTIFIER COMA Varlist 						{cout << "Typedef IDENTIFIER COMA Varlist \n";}
+			| Typedef REFERENCE IDENTIFIER COMA Varlist							{cout << "Typedef Typedef REFERENCE IDENTIFIER COMA Varlist \n";}
 			| Typedef IDENTIFIER 									{cout << "Typedef IDENTIFIER \n";}
+			| Typedef REFERENCE IDENTIFIER							{cout << "Typedef Typedef REFERENCE IDENTIFIER \n";}
 			;
 
 Declist 	: Typedef IDENTIFIER PUNTOCOMA Declist					{cout << "Typedef IDENTIFIER PUNTOCOMA Declist\n";}
 			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist		{cout << "Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist\n";}
-			| Typedef IDENTIFIER PUNTOCOMA 						{cout << "Typedef IDENTIFIER PUNTOCOMA \n";}
+			| Typedef IDENTIFIER PUNTOCOMA 							{cout << "Typedef IDENTIFIER PUNTOCOMA \n";}
 			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA 				{cout << "Typedef IDENTIFIER IGUAL Exp PUNTOCOMA \n";}
 			| TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA				{cout << "TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA \n";}
-			| TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA Declist				{cout << "TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA Declist \n";}
+			| TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA Declist		{cout << "TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA Declist \n";}
 			| TYPE STRUCT IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA Declist {cout << "TYPE STRUCT IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA Declist \n";}
-			| TYPE STRUCT IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA {cout << "TYPE STRUCT IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA \n";}
-			| TYPE UNION IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA Declist {cout << "TYPE UNION IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA Declist \n";}
-			| TYPE UNION IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA {cout << "TYPE UNION IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA \n";}
+			| TYPE STRUCT IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA 		{cout << "TYPE STRUCT IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA \n";}
+			| TYPE UNION IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA Declist 	{cout << "TYPE UNION IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA Declist \n";}
+			| TYPE UNION IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA 			{cout << "TYPE UNION IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA PUNTOCOMA \n";}
 			;
 
 Subdeclist 	: Typedef IDENTIFIER PUNTOCOMA Declist					{cout << "Typedef IDENTIFIER PUNTOCOMA Declist\n";}
 			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist		{cout << "Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist\n";}
-			| Typedef IDENTIFIER PUNTOCOMA 						{cout << "Typedef IDENTIFIER PUNTOCOMA \n";}
+			| Typedef IDENTIFIER PUNTOCOMA 							{cout << "Typedef IDENTIFIER PUNTOCOMA \n";}
 			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA 				{cout << "Typedef IDENTIFIER IGUAL Exp PUNTOCOMA \n";}
 			;
 
@@ -125,7 +130,7 @@ Inst		: Scope					 							{cout << "Scope\n";}
 			| ENTRADA Exp  										{cout << "ENTRADA Exp  \n";}
 			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA  										{cout << "IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA  \n";}
 			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  																		{cout << "IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  \n";}
-			| FOR PARABRE Typedef IDENTIFIER IGUAL Exp COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA 	{cout << "FOR PARABRE Typedef IDENTIFIER COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA \n";}
+			| FOR PARABRE Typedef IDENTIFIER IGUAL Exp COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Literals PARCIERRA LLAVEABRE Sec LLAVECIERRA 	{cout << "FOR PARABRE Typedef IDENTIFIER COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA \n";}
 			| WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  																	{cout << "WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  \n";}
 			| RETURN Exp										{cout << "RETURN Exp\n";}
 			| BREAK												{cout << "BREAK\n";}
@@ -150,7 +155,8 @@ Exp	 		: Exp SUMA Exp										{cout << "Exp SUMA Exp\n";}
 			| Exp DISYUNCION Exp								{cout << "Exp DISYUNCION Exp\n";}
 			| Exp CONJUNCION Exp								{cout << "Exp CONJUNCION Exp\n";}
 			| NEGACION Exp										{cout << "NEGACION Exp\n";}	
-			| Literals											{cout << "Literals\n";}	
+			| Literals											{cout << "Literals\n";}
+			| OPTR IDENTIFIER	 								{cout << "OPTR IDENTIFIER\n";}
 			;
 
 Literals 	: Ids												{cout << "Ids\n";}

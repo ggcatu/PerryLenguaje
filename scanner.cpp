@@ -37,7 +37,7 @@ extern FILE* yyin;
 
 
 
-void execute_lexer(){
+void execute_lexer(bool print_lexer){
 	cout << "Executing lexer" << endl;
 	// Vectores donde se guardarán nuestros resultados de la tokenización
 	vector<Token *> tokens;
@@ -101,7 +101,7 @@ void execute_lexer(){
 	Al final del ciclo, al no haber mas tokens se procede a imprimir
 	Si no hay errores, se imprime el vector de tokens.
 	*/
-	if (errors.empty()){
+	if (errors.empty() && print_lexer){
 		print_vector(tokens);
 	} else {
 		print_errors(errors);
@@ -113,6 +113,7 @@ void execute_parser(){
 	cout << "Executing parser" << endl;
 	yyparse();
 }
+
 int main(int argc, char** argv) {	
 	
 	// Cambio del input stream al archivo en argv[1]
@@ -126,7 +127,7 @@ int main(int argc, char** argv) {
 		for (int i = 2; i < argc; i++ ){
 			string arg(argv[i]);
 			if (arg == "-l"){
-				execute_lexer();
+				execute_lexer(true);
 			}
 			else if (arg == "-p"){
 				execute_parser();
@@ -134,7 +135,7 @@ int main(int argc, char** argv) {
 		}
 	} else {
 		// por ahora por defecto ejecuta el lexer
-		execute_lexer();
+		execute_lexer(true);
 	}
 
 	return 0;

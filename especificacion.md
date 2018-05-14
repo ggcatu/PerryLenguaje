@@ -114,11 +114,11 @@ Donde las variables a y b son pasadas por referencia y b por valor.
 
 La entrada y salida del programa se maneja con los símbolos `>>` y `<<`, usando el primero para la salida y el segundo para la entrada. Con la sintaxis: `<< id` para la entrada, donde `id` es el identificador de la variable donde se almacenarán los datos que entrena. Mientras que la salida se expresa con la sintaxis: `>> id`.  
 
-### allocate y free
+### malloc y free
 
-En Perry se puede reservar o liberar memoria dinámicamente, es decir, según se necesite. Para ello existen las instrucciones `allocate` y `free`, las cuales reservan un bloque en memoria o liberan el espacio ocupado respectivamente.
+En Perry se puede reservar o liberar memoria dinámicamente, es decir, según se necesite. Para ello existen las instrucciones `malloc` y `free`, las cuales reservan un bloque en memoria o liberan el espacio ocupado respectivamente.
 
-En el caso de allocate se tiene la siguiente estructura: `allocate(id);`. Por otra parte, `free` tiene la siguiente estructura:  `free(id);`.
+En el caso de malloc se tiene la siguiente estructura: `malloc(id);`. Por otra parte, `free` tiene la siguiente estructura:  `free(id);`.
 
 ## Expresiones
 

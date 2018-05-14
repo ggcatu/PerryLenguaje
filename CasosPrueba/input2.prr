@@ -1,0 +1,7 @@
+module
+
+int suma(int a, int b){
+	execute{ 
+		return a+b;
+	}
+};

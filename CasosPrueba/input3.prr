@@ -1,0 +1,13 @@
+include "input2.prr"
+
+main{
+	create{
+		int n = 6;
+  		int m = 1;
+  	}
+ 	execute{
+  		while (n > m){
+  			vamos a curucutear
+  		}
+ 	}
+};

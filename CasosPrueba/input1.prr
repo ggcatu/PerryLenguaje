@@ -1,0 +1,14 @@
+include "input2.prr"
+
+main{
+	create{
+		int n = 6;
+  		int fact = 1;
+  	}
+ 	execute{
+  		for (int c = 1, [c, n], 1){
+    		fact = fact * c;
+  		};
+  		>> fact;
+ 	}
+};
