@@ -32,16 +32,16 @@ Funciones importadas de lex.yy.c, provenientes de FLEX.
 extern int yylex();
 extern int yylineno;
 extern int yyleng;
+extern int yycolumn;
 extern char* yytext;
 extern FILE* yyin;
 
-
+// Vectores donde se guardarán nuestros resultados de la tokenización
+vector<Token *> tokens;
+vector<Token *> errors;
 
 void execute_lexer(bool print_lexer){
 	cout << "Executing lexer" << endl;
-	// Vectores donde se guardarán nuestros resultados de la tokenización
-	vector<Token *> tokens;
-	vector<Token *> errors;
 
     // Inicialización para nuestro ciclo de lectura
 	int ntoken = yylex();
@@ -50,38 +50,37 @@ void execute_lexer(bool print_lexer){
 	while (ntoken) {
 		// Verifica si hay que reiniciar la columna.
 		if (yylineno != altura) {
-			altura = yylineno;
-			posicion = 1;
+;			altura = yylineno;
 		}
 
 		if (ntoken == STRING) {
 			string completo = yytext;
 			string texto = completo.substr(1, completo.length() - 1 );
-			tokens.push_back(new TokenIdentificador(ntoken,yylineno,posicion,texto));			
+			tokens.push_back(new TokenIdentificador(ntoken,yylineno,yylloc.first_column,texto));			
 		} 
 		else if (ntoken == IDENTIFIER){
 			// Crea token identificador y coloca en el vector.
-			tokens.push_back(new TokenIdentificador(ntoken,yylineno,posicion,yytext));			
+			tokens.push_back(new TokenIdentificador(ntoken,yylineno,yylloc.first_column,yytext));			
 		}
 		else if (ntoken == INT) {
 			// Crea token integer y coloca en el vector.
-			tokens.push_back(new TokenInteger(ntoken,yylineno,posicion,atoi(yytext)));
+			tokens.push_back(new TokenInteger(ntoken,yylineno,yylloc.first_column,atoi(yytext)));
 		}
 		else if (ntoken == CHAR) {
 			// Crea token caracter y coloca en el vector.
-			tokens.push_back(new TokenCharacter(ntoken,yylineno,posicion,yytext[1]));
+			tokens.push_back(new TokenCharacter(ntoken,yylineno,yylloc.first_column,yytext[1]));
 		}
 		else if (ntoken == FLOAT) {
 			// Crea token caracter y coloca en el vector.
-			tokens.push_back(new TokenFloat(ntoken,yylineno,posicion,atof(yytext)));
+			tokens.push_back(new TokenFloat(ntoken,yylineno,yylloc.first_column,atof(yytext)));
 		}
 		else if (nToWord[ntoken] != "") {
 			if (ntoken != ERROR){
 				// Crea token normal y coloca en el vector.
-				tokens.push_back(new Token(ntoken,yylineno,posicion));
+				tokens.push_back(new Token(ntoken,yylineno,yylloc.first_column));
 			} else {
 				// Crea un token error y lo coloca en el vector de errores.
-				errors.push_back(new TokenError(ntoken, yylineno, posicion, yytext));
+				errors.push_back(new TokenError(ntoken, yylineno, yylloc.first_column, yytext));
 			}
 		}
 		if (ntoken == COMENTARIO && yytext[1] == '*') {
@@ -89,11 +88,7 @@ void execute_lexer(bool print_lexer){
 			// posicion += (yyleng - (lastOcurrence(yytext,'\n') + 1)) + (3 * numOcurrence(yytext,'\t',lastOcurrence(yytext,'\n')+1));
 			;
 		}
-		if (ntoken != ENTER) {
-			// Salta el cursor, y en el caso de encontrar un tab, cuenta 4 espacios.
-			posicion += yyleng + (3 * (ntoken == TAB));
-		}
-		
+
 		ntoken = yylex();
 	}
 
@@ -111,11 +106,23 @@ void execute_lexer(bool print_lexer){
 
 void execute_parser(){
 	cout << "Executing parser" << endl;
-	yyparse();
+    
+    try {
+		yyparse();
+	}
+	catch(const char* const errorMessage){
+		cout << "Hubo un error: " << endl;
+			cout << errorMessage << endl;
+	}
+
+	// Si hay errores del lexer, imprimirlos
+	if (!errors.empty()){
+		print_errors(errors);
+	}
 }
 
 int main(int argc, char** argv) {	
-	
+	init_strings();
 	// Cambio del input stream al archivo en argv[1]
     yyin = fopen(argv[1],"r");
     if (yyin == false){

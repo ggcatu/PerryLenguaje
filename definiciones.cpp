@@ -29,16 +29,82 @@ así como nos ayuda a detectar algunos caracteres, que queremos obviar Ej: Space
 Por otro lado facilita bastante modificar el to_string de los tokens.
 
 */
-string nToWord[] = {  
-	"NULL", "LLAVEABRE", "LLAVECIERRA", "CORABRE", "CORCIERRA", "PARABRE", "PARCIERRA", 
-	"MAIN", "", "", "INCLUDE", "CREATE", "EXECUTE", "MODULE",  "PUNTOCOMA", "WHILE", 
-	"FOR", "BREAK", "IF", "ELSE", "MALLOC", "FREE", "TYPE", "STRUCT", "UNION", "ARRAY", 
-	"LIST", "TUPLE", "STRING", "FLOAT", "CHAR", "BOOL", "INT", "PTR", "RETURN", "UNIT", 
-	"TRUE", "FALSE", "EQUIV", "DIST", "MAS", "MENOS", "MOD", "DIV", "POW", "POR", "IGUAL", 
-	"MENORIGUAL", "MENOR", "MAYORIGUAL", "MAYOR", "REFERENCE", "OPTR" "NOT", "AND", 
-	"OR", "", "", "", "COMA", "ENTRADA", "SALIDA", "PUNTO", "CHAR", "FLOAT", "INT", 
-	"IDENTIFIER", "STRING", "ERROR" 
-	};
+
+string nToWord[256];
+
+void init_strings(){
+	nToWord[LLAVEABRE] = "LLAVEABRE"; 
+	nToWord[LLAVECIERRA] = "LLAVECIERRA"; 
+	nToWord[CORCHETEABRE] = "CORCHETEABRE"; 
+	nToWord[CORCHETECIERRA] = "CORCHETECIERRA"; 
+	nToWord[PARABRE] = "PARABRE"; 
+	nToWord[PARCIERRA] = "PARCIERRA"; 
+	nToWord[MAIN] = "MAIN"; 
+	nToWord[INCLUDE] = "INCLUDE"; 
+	nToWord[CREATE] = "CREATE"; 
+	nToWord[EXECUTE] = "EXECUTE"; 
+	nToWord[MODULE] = "MODULE"; 
+	nToWord[PUNTOCOMA] = "PUNTOCOMA"; 
+	nToWord[WHILE] = "WHILE"; 
+	nToWord[FOR] = "FOR"; 
+	nToWord[BREAK] = "BREAK"; 
+	nToWord[IF] = "IF"; 
+	nToWord[ELSE] = "ELSE"; 
+	nToWord[RETURN] = "RETURN";
+	nToWord[NEW] = "NEW";
+	nToWord[FREE] = "FREE";
+	nToWord[TYPE] = "TYPE"; 
+	nToWord[STRUCT] = "STRUCT"; 
+	nToWord[UNION] = "UNION"; 
+	nToWord[ARRAY] = "ARRAY"; 
+	nToWord[LIST] = "LIST"; 
+	nToWord[TUPLE] = "TUPLE"; 
+	nToWord[LSTRING] = "LSTRING"; 
+	nToWord[LFLOAT] = "LFLOAT"; 
+	nToWord[LCHAR] = "LCHAR"; 
+	nToWord[BOOL] = "BOOL"; 
+	nToWord[LINT] = "LINT"; 
+	nToWord[POINTER] = "POINTER"; 
+	nToWord[UNIT] = "UNIT";
+
+	nToWord[TRUE] = "TRUE"; 
+	nToWord[FALSE] = "FALSE"; 
+	nToWord[IGUALA] = "IGUALA"; 
+	nToWord[DISTINTOA] = "DISTINTOA"; 
+	nToWord[SUMA] = "SUMA"; 
+	nToWord[RESTA] = "RESTA"; 
+	nToWord[MOD] = "MOD"; 
+	nToWord[DIV] = "DIV"; 
+	nToWord[POW] = "POW"; 
+	nToWord[MULT] = "MULT"; 
+	nToWord[IGUAL] = "IGUAL"; 
+	nToWord[MENORIGUAL] = "MENORIGUAL"; 
+	nToWord[MENOR] = "MENOR"; 
+	nToWord[MAYORIGUAL] = "MAYORIGUAL"; 
+	nToWord[MAYOR] = "MAYOR"; 
+	nToWord[NEGACION] = "NEGACION"; 
+	nToWord[CONJUNCION] = "CONJUNCION"; 
+	nToWord[DISYUNCION] = "DISYUNCION"; 
+	nToWord[SPACE] = "SPACE"; 
+	nToWord[TAB] = "TAB"; 
+	nToWord[COMA] = "COMA"; 
+	nToWord[SALIDA] = "SALIDA"; 
+	nToWord[ENTRADA] = "ENTRADA"; 
+	nToWord[IDENTIFIER] = "IDENTIFIER"; 
+	nToWord[CHAR] = "CHAR"; 
+	nToWord[FLOAT] = "FLOAT"; 
+	nToWord[PUNTO] = "PUNTO"; 
+	nToWord[INT] = "INT"; 
+	nToWord[STRING] = "STRING"; 
+	nToWord[ERROR] = "ERROR"; 
+	nToWord[ENTER] = "ENTER"; 
+	nToWord[COMENTARIO] = "COMENTARIO"; 
+	nToWord[TYPE] = "TYPE"; 
+	nToWord[MALLOC] = "MALLOC"; 
+	nToWord[FREE] = "FREE"; 
+	nToWord[REFERENCE] = "REFERENCE"; 
+	nToWord[OPTR] = "OPTR"; 
+}
 
 // Magia negra sacada de internet, permite pasar de int a string
 std::string IntToString (int number) {

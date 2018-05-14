@@ -39,6 +39,7 @@ int yycolumn = 1;
 "break"							return BREAK;
 "if"							return IF;
 "else"							return ELSE;
+"return"						return RETURN;
 
 "new"							return NEW;
 "free"							return FREE;
@@ -54,7 +55,6 @@ int yycolumn = 1;
 "bool"							return BOOL;
 "int"							return LINT;
 "ptr"							return POINTER;
-"return"						return RETURN;
 "unit"							return UNIT;
 
 "true"							return TRUE;
@@ -84,9 +84,9 @@ mod								return MOD;
 "or"							return DISYUNCION;
 "||"							return DISYUNCION;
 
-[ ] 							;
-\t								;
-\n								;
+[ ] 							{;}
+\t								{yycolumn+= 3;}
+\n								{yycolumn = 1;}
 ,								return COMA;
 
 \<<								return SALIDA;
@@ -100,7 +100,7 @@ mod								return MOD;
 [0-9]+|0+						return INT;
 \"([^"])*\"						return STRING;
 
-.								;
+.								return ERROR;
 
 %%
 

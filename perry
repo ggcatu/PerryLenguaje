@@ -1,0 +1,11 @@
+#!/bin/bash
+chmod +x perry
+FICHERO=$(basename $1)
+NOMBRE="${FICHERO%%.*}"
+EXTENSION="${FICHERO#*.}"
+if [ "$EXTENSION" != "prr" ]; then
+	echo "extensión inválida."
+else
+	 make --quiet perr
+	./perr $1 $2
+fi
