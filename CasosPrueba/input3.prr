@@ -21,7 +21,7 @@ main{
   	}
  	execute{
  		>> n;
- 		if (algo == algo){
+ 		if ( == algo){
  			>> algo;
  		};
  	};

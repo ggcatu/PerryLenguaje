@@ -50,10 +50,7 @@ void init_strings(){
 	nToWord[BREAK] = "BREAK"; 
 	nToWord[IF] = "IF"; 
 	nToWord[ELSE] = "ELSE"; 
-	nToWord[RETURN] = "RETURN";
-	nToWord[NEW] = "NEW";
-	nToWord[FREE] = "FREE";
-	nToWord[TYPE] = "TYPE"; 
+	nToWord[RETURN] = "RETURN"; 
 	nToWord[STRUCT] = "STRUCT"; 
 	nToWord[UNION] = "UNION"; 
 	nToWord[ARRAY] = "ARRAY"; 
@@ -66,7 +63,6 @@ void init_strings(){
 	nToWord[LINT] = "LINT"; 
 	nToWord[POINTER] = "POINTER"; 
 	nToWord[UNIT] = "UNIT";
-
 	nToWord[TRUE] = "TRUE"; 
 	nToWord[FALSE] = "FALSE"; 
 	nToWord[IGUALA] = "IGUALA"; 
@@ -100,7 +96,7 @@ void init_strings(){
 	nToWord[ENTER] = "ENTER"; 
 	nToWord[COMENTARIO] = "COMENTARIO"; 
 	nToWord[TYPE] = "TYPE"; 
-	nToWord[MALLOC] = "MALLOC"; 
+	nToWord[NEW] = "NEW"; 
 	nToWord[FREE] = "FREE"; 
 	nToWord[REFERENCE] = "REFERENCE"; 
 	nToWord[OPTR] = "OPTR"; 

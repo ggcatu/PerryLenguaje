@@ -78,11 +78,8 @@ mod								return MOD;
 \^								return OPTR;
 
 "not"							return NEGACION;
-"!"								return NEGACION;
 "and"							return CONJUNCION;
-"&&"							return CONJUNCION;
 "or"							return DISYUNCION;
-"||"							return DISYUNCION;
 
 [ ] 							{;}
 \t								{yycolumn+= 3;}
