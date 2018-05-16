@@ -1,5 +1,5 @@
-perr: scanner.o lex.yy.c parser.tab.c definiciones.o 
-	g++ scanner.o definiciones.o lex.yy.c parser.tab.c -o perr
+perry: scanner.o lex.yy.c parser.tab.c definiciones.o 
+	g++ scanner.o definiciones.o lex.yy.c parser.tab.c -o perry
 
 scanner.o: scanner.cpp parser.tab.c definiciones.o
 	g++ -c scanner.cpp definiciones.cpp

@@ -5,7 +5,7 @@ Lenguaje de programación cuyo compilador está implementado en C/C++ usando Fle
 Para compilar un programa en el lenguaje Perry debe ejecutar:
 
 ```
-./perry programa flag
+./prr programa flag
 ```
 
 Donde:
