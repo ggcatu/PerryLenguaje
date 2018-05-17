@@ -1,9 +1,6 @@
 /*
 Lenguajes de Programación II (CI-4721)
 
-Autores:
-Gabriel Giménez, carnet 12-11006
-
 definiciones.h:
 Contiene un mapeo palabra -> integer para identificar los tipos de tokens, así como las firmas 
 de las clases y funciones implementadas en definiciones.cpp
@@ -50,10 +47,11 @@ void execute_lexer(){
 	while (ntoken) {
 		// Verifica si hay que reiniciar la columna.
 		if (yylineno != altura) {
-;			altura = yylineno;
+			altura = yylineno;
 		}
 
 		if (ntoken == STRING) {
+			// Crea token string y coloca en el vector.
 			string completo = yytext;
 			string texto = completo.substr(1, completo.length() - 1 );
 			tokens.push_back(new TokenIdentificador(ntoken,yylineno,yylloc.first_column,texto));			
@@ -84,9 +82,7 @@ void execute_lexer(){
 			}
 		}
 		if (ntoken == COMENTARIO && yytext[1] == '*') {
-			// Es un comentario, simplemente se ignora
-			// posicion += (yyleng - (lastOcurrence(yytext,'\n') + 1)) + (3 * numOcurrence(yytext,'\t',lastOcurrence(yytext,'\n')+1));
-			;
+			; // Es un comentario, simplemente se ignora
 		}
 
 		ntoken = yylex();
@@ -111,7 +107,7 @@ void execute_parser(){
 		yyparse();
 	}
 	catch(const char* const errorMessage){
-		cout << "Hubo un error: " << endl;
+		cout << "Error: " << endl;
 			cout << errorMessage << endl;
 	}
 

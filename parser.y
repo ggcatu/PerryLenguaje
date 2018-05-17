@@ -12,6 +12,8 @@ extern int yycolumn;
 extern int yylineno;
 extern char * yytext;
 
+ArbolSintactico * root_ast;
+
 bool error_sintactico = 0; 
 
 void yyerror (char const *s) {
@@ -67,132 +69,125 @@ void yyerror (char const *s) {
 
 %%
 
-S			: Includelist Start 										{cout << "Includelist Start \n";}
-			| MODULE Start												{cout << "MODULE Start\n";}
-			| Start      												{cout << "Start      \n";}
-			|															{cout << "\n";}
+S			: Includelist Start 								{$$ = new raiz($1,$2); root_ast = new ArbolSintactico($$); }
+			| MODULE Start										{$$ = new raiz($2); root_ast = new ArbolSintactico($$); }
+			| Start      										{$$ = new raiz($1); root_ast = new ArbolSintactico($$); }
+			|													{$$ = new raiz(); root_ast = new ArbolSintactico($$); }
 			;
 
-Includelist : INCLUDE Exp Includelist									{cout << "INCLUDE Exp Includelist\n";}
-			| INCLUDE Exp 												{cout << "INCLUDE Exp \n";}
+Includelist : INCLUDE Exp Includelist							{$$ = new }
+			| INCLUDE Exp 										{$$ = new }
 			;
 
-Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 									{cout << "MAIN LLAVEABRE Sec LLAVECIERRA PUNTOCOMA Start\n";}
-	 		| MAIN LLAVEABRE Sec LLAVECIERRA										{cout << "MAIN LLAVEABRE Sec LLAVECIERRA\n";}
+Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{$$ = new }		
+	 		| MAIN LLAVEABRE Sec LLAVECIERRA					{$$ = new }
 			
-			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA Start				{cout << "Typedef IDENTIFIER PARABRE Varlist PARCIERRA LLAVEABRE Sec LLAVECIERRA Start\n";}
-			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA					{cout << "Typedef IDENTIFIER PARABRE Varlist PARCIERRA\n";}
+			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA Start		{$$ = new }
+			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA			{$$ = new }
 
-			| TYPE STRUCT IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA Start 		{cout << "TYPE STRUCT IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA Start\n";}
-			| TYPE STRUCT IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA				{cout << "TYPE STRUCT IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA \n";}
+			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA Start 	{$$ = new }
+			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA			{$$ = new }
 			
-			| TYPE UNION IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA Start  		{cout << "TYPE UNION IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA Start\n";}
-			| TYPE UNION IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA 				{cout << "TYPE UNION IDENTIFIER LLAVEABRE Subdeclist LLAVECIERRA \n";}
+			| TYPE UNION IDENTIFIER LLAVEABRE Declist LLAVECIERRA Start  	{$$ = new }
+			| TYPE UNION IDENTIFIER LLAVEABRE Declist LLAVECIERRA 			{$$ = new }
 			
-			| TYPE IDENTIFIER IGUAL Typedef Start								{cout << "TYPE IDENTIFIER IGUAL Typedef Start\n";}
-			| TYPE IDENTIFIER IGUAL Typedef										{cout << "TYPE IDENTIFIER IGUAL Typedef\n";}
+			| TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA Start					{$$ = new }
+			| TYPE IDENTIFIER IGUAL Typedef	PUNTOCOMA						{$$ = new }
 			; 
 
-Scope 		: CREATE LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  			{cout << "CREATE LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  \n";}
-			| CREATE LLAVEABRE LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  					{cout << "CREATE LLAVEABRE LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  \n";}
-			| EXECUTE LLAVEABRE Sec LLAVECIERRA  												{cout << "EXECUTE LLAVEABRE Sec LLAVECIERRA  \n";}
+Scope 		: CREATE LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA 	{$$ = new }
+			| CREATE LLAVEABRE LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  			{$$ = new }
+			| EXECUTE LLAVEABRE Sec LLAVECIERRA  										{$$ = new }
 			;
 
-Typedef		: LCHAR 											{cout << "LCHAR \n";}
-			| BOOL  											{cout << "BOOL  \n";}
-			| LINT  											{cout << "LINT  \n";}
-			| LFLOAT  											{cout << "LFLOAT  \n";}
-			| LSTRING  											{cout << "LSTRING  \n";}
-			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{cout << "ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA \n";}
-			| LIST Typedef 										{cout << "LIST Typedef \n";}
-			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{cout << "TUPLE PARABRE Typedef COMA Typedef PARCIERRA  \n";}
-			| POINTER Typedef  									{cout << "POINTER  \n";}
-			| IDENTIFIER										{cout << "IDENTIFIER  \n";}
-			| UNIT 												{cout << "UNIT  \n";}
+Typedef		: LCHAR 											{$$ = new }
+			| BOOL  											{$$ = new }
+			| LINT  											{$$ = new }
+			| LFLOAT  											{$$ = new }
+			| LSTRING  											{$$ = new }
+			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{$$ = new }
+			| LIST Typedef 										{$$ = new }
+			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{$$ = new }
+			| POINTER Typedef  									{$$ = new }
+			| IDENTIFIER										{$$ = new }
+			| UNIT 												{$$ = new }
 			;
 
-Varlist 	: Typedef IDENTIFIER COMA Varlist 					{cout << "Typedef IDENTIFIER COMA Varlist \n";}
-			| Typedef REFERENCE IDENTIFIER COMA Varlist			{cout << "Typedef Typedef REFERENCE IDENTIFIER COMA Varlist \n";}
-			| Typedef IDENTIFIER 								{cout << "Typedef IDENTIFIER \n";}
-			| Typedef REFERENCE IDENTIFIER						{cout << "Typedef Typedef REFERENCE IDENTIFIER \n";}
+Varlist 	: Typedef IDENTIFIER COMA Varlist 					{$$ = new }
+			| Typedef REFERENCE IDENTIFIER COMA Varlist			{$$ = new }
+			| Typedef IDENTIFIER 								{$$ = new }
+			| Typedef REFERENCE IDENTIFIER						{$$ = new }
 			;
 
-Declist 	: Typedef IDENTIFIER PUNTOCOMA Declist					{cout << "Typedef IDENTIFIER PUNTOCOMA Declist\n";}
-			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist		{cout << "Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist\n";}
-			| Typedef IDENTIFIER PUNTOCOMA 							{cout << "Typedef IDENTIFIER PUNTOCOMA \n";}
-			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA 				{cout << "Typedef IDENTIFIER IGUAL Exp PUNTOCOMA \n";}
-			| TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA				{cout << "TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA \n";}
-			| TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA Declist		{cout << "TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA Declist \n";}
+Declist 	: Typedef IDENTIFIER PUNTOCOMA Declist				{$$ = new }
+			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist	{$$ = new }
+			| Typedef IDENTIFIER PUNTOCOMA 						{$$ = new }
+			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA 			{$$ = new }
 			;
 
-Subdeclist 	: Typedef IDENTIFIER PUNTOCOMA Declist					{cout << "Typedef IDENTIFIER PUNTOCOMA Declist\n";}
-			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist		{cout << "Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist\n";}
-			| Typedef IDENTIFIER PUNTOCOMA 							{cout << "Typedef IDENTIFIER PUNTOCOMA \n";}
-			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA 				{cout << "Typedef IDENTIFIER IGUAL Exp PUNTOCOMA \n";}
+Sec 		: Inst PUNTOCOMA Sec  								{$$ = new }
+			| Inst PUNTOCOMA									{$$ = new }
 			;
 
-Sec 		: Inst PUNTOCOMA Sec  								{cout << "Inst PUNTOCOMA Sec  \n";}
-			| Inst PUNTOCOMA									{cout << "Inst PUNTOCOMA\n";}
+Inst		: Scope					 							{$$ = new }
+			| Ids IGUAL Exp										{$$ = new }
+			| SALIDA Exp 										{$$ = new }
+			| ENTRADA Exp  										{$$ = new }
+
+			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA		{$$ = new }
+			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  									{$$ = new }
+
+			| FOR PARABRE Typedef IDENTIFIER IGUAL Exp COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA 	{$$ = new }
+
+			| WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  		{$$ = new }
+			| NEW PARABRE IDENTIFIER PARCIERRA					{$$ = new }
+			| FREE PARABRE IDENTIFIER PARCIERRA					{$$ = new }
+			| IDENTIFIER PARABRE List PARCIERRA 				{$$ = new }
+			| RETURN Exp										{$$ = new }
+			| BREAK												{$$ = new }
+			| 													{$$ = new }
 			;
 
-Inst		: Scope					 							{cout << "Scope\n";}
-			| Ids IGUAL Exp										{cout << "Ids IGUAL Exp\n";}
-			| SALIDA Exp 										{cout << "SALIDA Exp \n";}
-			| ENTRADA Exp  										{cout << "ENTRADA Exp  \n";}
-			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA  										{cout << "IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA  \n";}
-			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  																		{cout << "IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  \n";}
-			| FOR PARABRE Typedef IDENTIFIER IGUAL Exp COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA 	{cout << "FOR PARABRE Typedef IDENTIFIER COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA \n";}
-			| WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  																	{cout << "WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  \n";}
-			| NEW PARABRE IDENTIFIER PARCIERRA					{cout << "NEW PARABRE IDENTIFIER PARCIERRA\n";}
-			| FREE PARABRE IDENTIFIER PARCIERRA					{cout << "FREE PARABRE IDENTIFIER PARCIERRA\n";}
-			| IDENTIFIER PARABRE List PARCIERRA 				{cout << "IDENTIFIER PARABRE List PARCIERRA\n";}
-			| RETURN Exp										{cout << "RETURN Exp\n";}
-			| BREAK												{cout << "BREAK\n";}
-			| 													{cout << "\n";}
-			;
-
-Exp	 		: Exp SUMA Exp										{cout << "Exp SUMA Exp\n";}
-			| Exp RESTA Exp		 								{cout << "Exp RESTA Exp\n";}
-			| Exp MULT Exp										{cout << "Exp MULT Exp\n";}
-			| Exp DIV Exp										{cout << "Exp DIV Exp\n";}
-			| Exp MOD Exp										{cout << "Exp MOD Exp\n";}
-			| PARABRE Exp PARCIERRA								{cout << "PARABRE Exp PARCIERRA\n";}
-			| RESTA Exp	 										{cout << "RESTA Exp\n";}
-			| Exp POW	 										{cout << "Exp POW\n";}
+Exp	 		: Exp SUMA Exp										{$$ = new }
+			| Exp RESTA Exp		 								{$$ = new }
+			| Exp MULT Exp										{$$ = new }
+			| Exp DIV Exp										{$$ = new }
+			| Exp MOD Exp										{$$ = new }
+			| PARABRE Exp PARCIERRA								{$$ = new }
+			| RESTA Exp	 										{$$ = new }
+			| Exp POW Exp 										{$$ = new }
 			
-			| Exp IGUALA Exp									{cout << "Exp IGUALA Exp\n";}
-			| Exp DISTINTOA Exp									{cout << "Exp DISTINTOA Exp\n";}
-			| Exp MENOR Exp										{cout << "Exp MENOR Exp\n";}
-			| Exp MAYOR Exp										{cout << "Exp MAYOR Exp\n";}
-			| Exp MENORIGUAL Exp								{cout << "Exp MENORIGUAL Exp\n";}
-			| Exp MAYORIGUAL Exp								{cout << "Exp MAYORIGUAL Exp\n";}
+			| Exp IGUALA Exp									{$$ = new }
+			| Exp DISTINTOA Exp									{$$ = new }
+			| Exp MENOR Exp										{$$ = new }
+			| Exp MAYOR Exp										{$$ = new }
+			| Exp MENORIGUAL Exp								{$$ = new }
+			| Exp MAYORIGUAL Exp								{$$ = new }
+			| Exp DISYUNCION Exp								{$$ = new }
+			| Exp CONJUNCION Exp								{$$ = new }
+			| NEGACION Exp										{$$ = new }
 
-			| IDENTIFIER PARABRE List PARCIERRA 				{cout << "IDENTIFIER PARABRE List PARCIERRA\n";}
-			
-			| Exp DISYUNCION Exp								{cout << "Exp DISYUNCION Exp\n";}
-			| Exp CONJUNCION Exp								{cout << "Exp CONJUNCION Exp\n";}
-			| NEGACION Exp										{cout << "NEGACION Exp\n";}	
-			| Literals											{cout << "Literals\n";}
-			| OPTR IDENTIFIER	 								{cout << "OPTR IDENTIFIER\n";}
-			| OPTR PARABRE IDENTIFIER PARCIERRA 				{cout << "OPTR PARABRE IDENTIFIER PARCIERRA\n";}
+			| Exp Exp 											{$$ = new }
+			| Literals											{$$ = new }
+			| OPTR IDENTIFIER	 								{$$ = new }
 			;
 
-Literals 	: Ids												{cout << "Ids\n";}
-			| CHAR 												{cout << "CHAR \n";}
-			| FLOAT 											{cout << "FLOAT \n";}
-			| INT 												{cout << "INT \n";}
-			| STRING 											{cout << "STRING \n";}
-			| LLAVEABRE List LLAVECIERRA 						{cout << "LLAVEABRE List LLAVECIERRA \n";}
-			| CORCHETEABRE List CORCHETECIERRA 					{cout << "CORCHETEABRE List CORCHETECIERRA \n";}
-			| PARABRE Exp COMA Exp PARCIERRA 					{cout << "PARABRE Exp COMA Exp PARCIERRA \n";}
-			| TRUE 												{cout << "TRUE \n";}
-			| FALSE 											{cout << "FALSE \n";}
+Literals 	: Ids												{$$ = new }
+			| CHAR 												{$$ = new }
+			| FLOAT 											{$$ = new }
+			| INT 												{$$ = new }
+			| STRING 											{$$ = new }
+			| LLAVEABRE List LLAVECIERRA 						{$$ = new }
+			| CORCHETEABRE List CORCHETECIERRA 					{$$ = new }
+			| PARABRE Exp COMA Exp PARCIERRA 					{$$ = new }
+			| TRUE 												{$$ = new }
+			| FALSE 											{$$ = new }
 			;
 
-Ids 		: IDENTIFIER PUNTO Ids 								{cout << "IDENTIFIER PUNTO Ids \n";}
-			| IDENTIFIER 										{cout << "IDENTIFIER \n";}
+Ids 		: IDENTIFIER PUNTO Ids 								{$$ = new }
+			| IDENTIFIER 										{$$ = new }
 			;
 
-List		: Exp COMA List 									{cout << "Exp COMA List \n";}
-			| Exp 												{cout << "Exp \n";}
+List		: Exp COMA List 									{$$ = new }
+			| Exp 												{$$ = new }
 			;

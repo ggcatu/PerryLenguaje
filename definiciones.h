@@ -1,10 +1,6 @@
 /*
 Lenguajes de Programación II (CI-4721)
 
-Autores:
-Guillermo Betancourt, carnet 11-10103
-Gabriel Giménez, carnet 12-11006
-
 definiciones.h:
 Contiene un mapeo palabra -> integer para identificar los tipos de tokens, así como las firmas 
 de las clases y funciones implementadas en definiciones.cpp
