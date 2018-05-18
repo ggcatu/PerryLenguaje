@@ -2,6 +2,7 @@
 %{
 #include <iostream>
 #include "definiciones.h"
+#include "ast.h"
 
 using namespace std;
 
@@ -69,10 +70,10 @@ void yyerror (char const *s) {
 
 %%
 
-S			: Includelist Start 								{$$ = new raiz($1,$2); root_ast = new ArbolSintactico($$); }
-			| MODULE Start										{$$ = new raiz($2); root_ast = new ArbolSintactico($$); }
-			| Start      										{$$ = new raiz($1); root_ast = new ArbolSintactico($$); }
-			|													{$$ = new raiz(); root_ast = new ArbolSintactico($$); }
+S			: Includelist Start 								{ cout << "No listo"; }
+			| MODULE Start										{ cout << "No listo"; }
+			| Start      										{ cout << "No listo"; }
+			|													{ cout << "No listo"; }
 			;
 
 Includelist : INCLUDE Exp Includelist							{ cout << "No listo"; }
