@@ -65,7 +65,7 @@ void yyerror (char const *s) {
 %token <arb> arbol
 //%token <boolean> TRUE FALSE
 
-%type <void> S Includelist Start Scope Typedef Varlist Declist Inst Sec Exp Literals Ids List
+%type <void> S Includelist Start Scope Typedef Varlist Declist Inst Sec Exp Ids List
 
 %%
 
@@ -75,119 +75,118 @@ S			: Includelist Start 								{$$ = new raiz($1,$2); root_ast = new ArbolSinta
 			|													{$$ = new raiz(); root_ast = new ArbolSintactico($$); }
 			;
 
-Includelist : INCLUDE Exp Includelist							{$$ = new }
-			| INCLUDE Exp 										{$$ = new }
+Includelist : INCLUDE Exp Includelist							{ cout << "No listo"; }
+			| INCLUDE Exp 										{ cout << "No listo"; }
 			;
 
-Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{$$ = new }		
-	 		| MAIN LLAVEABRE Sec LLAVECIERRA					{$$ = new }
+Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ cout << "No listo"; }		
+	 		| MAIN LLAVEABRE Sec LLAVECIERRA					{ cout << "No listo"; }
 			
-			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA Start		{$$ = new }
-			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA			{$$ = new }
+			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA Start		{ cout << "No listo"; }
+			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA			{ cout << "No listo"; }
 
-			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA Start 	{$$ = new }
-			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA			{$$ = new }
+			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA Start 	{ cout << "No listo"; }
+			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA			{ cout << "No listo"; }
 			
-			| TYPE UNION IDENTIFIER LLAVEABRE Declist LLAVECIERRA Start  	{$$ = new }
-			| TYPE UNION IDENTIFIER LLAVEABRE Declist LLAVECIERRA 			{$$ = new }
+			| TYPE UNION IDENTIFIER LLAVEABRE Declist LLAVECIERRA Start  	{ cout << "No listo"; }
+			| TYPE UNION IDENTIFIER LLAVEABRE Declist LLAVECIERRA 			{ cout << "No listo"; }
 			
-			| TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA Start					{$$ = new }
-			| TYPE IDENTIFIER IGUAL Typedef	PUNTOCOMA						{$$ = new }
+			| TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA Start					{ cout << "No listo"; }
+			| TYPE IDENTIFIER IGUAL Typedef	PUNTOCOMA						{ cout << "No listo"; }
 			; 
 
-Scope 		: CREATE LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA 	{$$ = new }
-			| CREATE LLAVEABRE LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  			{$$ = new }
-			| EXECUTE LLAVEABRE Sec LLAVECIERRA  										{$$ = new }
+Scope 		: CREATE LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA 	{ cout << "No listo"; }
+			| CREATE LLAVEABRE LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  			{ cout << "No listo"; }
+			| EXECUTE LLAVEABRE Sec LLAVECIERRA  										{ cout << "No listo"; }
 			;
 
-Typedef		: LCHAR 											{$$ = new }
-			| BOOL  											{$$ = new }
-			| LINT  											{$$ = new }
-			| LFLOAT  											{$$ = new }
-			| LSTRING  											{$$ = new }
-			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{$$ = new }
-			| LIST Typedef 										{$$ = new }
-			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{$$ = new }
-			| POINTER Typedef  									{$$ = new }
-			| IDENTIFIER										{$$ = new }
-			| UNIT 												{$$ = new }
+Typedef		: LCHAR 											{ cout << "No listo"; }
+			| BOOL  											{ cout << "No listo"; }
+			| LINT  											{ cout << "No listo"; }
+			| LFLOAT  											{ cout << "No listo"; }
+			| LSTRING  											{ cout << "No listo"; }
+			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{ cout << "No listo"; }
+			| LIST Typedef 										{ cout << "No listo"; }
+			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{ cout << "No listo"; }
+			| POINTER Typedef  									{ cout << "No listo"; }
+			| IDENTIFIER										{ cout << "No listo"; }
+			| UNIT 												{ cout << "No listo"; }
 			;
 
-Varlist 	: Typedef IDENTIFIER COMA Varlist 					{$$ = new }
-			| Typedef REFERENCE IDENTIFIER COMA Varlist			{$$ = new }
-			| Typedef IDENTIFIER 								{$$ = new }
-			| Typedef REFERENCE IDENTIFIER						{$$ = new }
+Varlist 	: Typedef IDENTIFIER COMA Varlist 					{ cout << "No listo"; }
+			| Typedef REFERENCE IDENTIFIER COMA Varlist			{ cout << "No listo"; }
+			| Typedef IDENTIFIER 								{ cout << "No listo"; }
+			| Typedef REFERENCE IDENTIFIER						{ cout << "No listo"; }
 			;
 
-Declist 	: Typedef IDENTIFIER PUNTOCOMA Declist				{$$ = new }
-			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist	{$$ = new }
-			| Typedef IDENTIFIER PUNTOCOMA 						{$$ = new }
-			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA 			{$$ = new }
+Declist 	: Typedef IDENTIFIER PUNTOCOMA Declist				{ cout << "No listo"; }
+			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist	{ cout << "No listo"; }
+			| Typedef IDENTIFIER PUNTOCOMA 						{ cout << "No listo"; }
+			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA 			{ cout << "No listo"; }
 			;
 
-Sec 		: Inst PUNTOCOMA Sec  								{$$ = new }
-			| Inst PUNTOCOMA									{$$ = new }
+Sec 		: Inst PUNTOCOMA Sec  								{ cout << "No listo"; }
+			| Inst PUNTOCOMA									{ cout << "No listo"; }
 			;
 
-Inst		: Scope					 							{$$ = new }
-			| Ids IGUAL Exp										{$$ = new }
-			| SALIDA Exp 										{$$ = new }
-			| ENTRADA Exp  										{$$ = new }
+Inst		: Scope					 							{ cout << "No listo"; }
+			| Ids IGUAL Exp										{ cout << "No listo"; }
+			| SALIDA Exp 										{ cout << "No listo"; }
+			| ENTRADA Exp  										{ cout << "No listo"; }
 
-			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA		{$$ = new }
-			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  									{$$ = new }
+			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA		{ cout << "No listo"; }
+			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  									{ cout << "No listo"; }
 
-			| FOR PARABRE Typedef IDENTIFIER IGUAL Exp COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA 	{$$ = new }
+			| FOR PARABRE Typedef IDENTIFIER IGUAL Exp COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA 	{ cout << "No listo"; }
 
-			| WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  		{$$ = new }
-			| NEW PARABRE IDENTIFIER PARCIERRA					{$$ = new }
-			| FREE PARABRE IDENTIFIER PARCIERRA					{$$ = new }
-			| IDENTIFIER PARABRE List PARCIERRA 				{$$ = new }
-			| RETURN Exp										{$$ = new }
-			| BREAK												{$$ = new }
-			| 													{$$ = new }
+			| WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  		{ cout << "No listo"; }
+			| NEW PARABRE IDENTIFIER PARCIERRA					{ cout << "No listo"; }
+			| FREE PARABRE IDENTIFIER PARCIERRA					{ cout << "No listo"; }
+			| IDENTIFIER PARABRE List PARCIERRA 				{ cout << "No listo"; }
+			| RETURN Exp										{ cout << "No listo"; }
+			| BREAK												{ cout << "No listo"; }
+			| 													{ cout << "No listo"; }
 			;
 
-Exp	 		: Exp SUMA Exp										{$$ = new }
-			| Exp RESTA Exp		 								{$$ = new }
-			| Exp MULT Exp										{$$ = new }
-			| Exp DIV Exp										{$$ = new }
-			| Exp MOD Exp										{$$ = new }
-			| PARABRE Exp PARCIERRA								{$$ = new }
-			| RESTA Exp	 										{$$ = new }
-			| Exp POW Exp 										{$$ = new }
+Exp	 		: Exp SUMA Exp										{ cout << "No listo"; }
+			| Exp RESTA Exp		 								{ cout << "No listo"; }
+			| Exp MULT Exp										{ cout << "No listo"; }
+			| Exp DIV Exp										{ cout << "No listo"; }
+			| Exp MOD Exp										{ cout << "No listo"; }
+			| PARABRE Exp PARCIERRA								{ cout << "No listo"; }
+			| RESTA Exp	 										{ cout << "No listo"; }
+			| Exp POW Exp 										{ cout << "No listo"; }
 			
-			| Exp IGUALA Exp									{$$ = new }
-			| Exp DISTINTOA Exp									{$$ = new }
-			| Exp MENOR Exp										{$$ = new }
-			| Exp MAYOR Exp										{$$ = new }
-			| Exp MENORIGUAL Exp								{$$ = new }
-			| Exp MAYORIGUAL Exp								{$$ = new }
-			| Exp DISYUNCION Exp								{$$ = new }
-			| Exp CONJUNCION Exp								{$$ = new }
-			| NEGACION Exp										{$$ = new }
+			| Exp IGUALA Exp									{ cout << "No listo"; }
+			| Exp DISTINTOA Exp									{ cout << "No listo"; }
+			| Exp MENOR Exp										{ cout << "No listo"; }
+			| Exp MAYOR Exp										{ cout << "No listo"; }
+			| Exp MENORIGUAL Exp								{ cout << "No listo"; }
+			| Exp MAYORIGUAL Exp								{ cout << "No listo"; }
+			| Exp DISYUNCION Exp								{ cout << "No listo"; }
+			| Exp CONJUNCION Exp								{ cout << "No listo"; }
+			| NEGACION Exp										{ cout << "No listo"; }
 
-			| Exp Exp 											{$$ = new }
-			| Literals											{$$ = new }
-			| OPTR IDENTIFIER	 								{$$ = new }
+			| IDENTIFIER PARABRE List PARCIERRA 				{ cout << "No listo"; }
+			| IDENTIFIER CORCHETEABRE Exp CORCHETECIERRA 		{ cout << "No listo"; }
+
+			| OPTR IDENTIFIER	 								{ cout << "No listo"; }
+			| Ids												{ cout << "No listo"; }
+			| CHAR 												{ cout << "No listo"; }
+			| FLOAT 											{ cout << "No listo"; }
+			| INT 												{ cout << "No listo"; }
+			| STRING 											{ cout << "No listo"; }
+			| LLAVEABRE List LLAVECIERRA 						{ cout << "No listo"; }
+			| CORCHETEABRE List CORCHETECIERRA 					{ cout << "No listo"; }
+			| PARABRE Exp COMA Exp PARCIERRA 					{ cout << "No listo"; }
+			| TRUE 												{ cout << "No listo"; }
+			| FALSE 											{ cout << "No listo"; }
 			;
 
-Literals 	: Ids												{$$ = new }
-			| CHAR 												{$$ = new }
-			| FLOAT 											{$$ = new }
-			| INT 												{$$ = new }
-			| STRING 											{$$ = new }
-			| LLAVEABRE List LLAVECIERRA 						{$$ = new }
-			| CORCHETEABRE List CORCHETECIERRA 					{$$ = new }
-			| PARABRE Exp COMA Exp PARCIERRA 					{$$ = new }
-			| TRUE 												{$$ = new }
-			| FALSE 											{$$ = new }
+Ids 		: IDENTIFIER PUNTO Ids 								{ cout << "No listo"; }
+			| IDENTIFIER 										{ cout << "No listo"; }
 			;
 
-Ids 		: IDENTIFIER PUNTO Ids 								{$$ = new }
-			| IDENTIFIER 										{$$ = new }
-			;
-
-List		: Exp COMA List 									{$$ = new }
-			| Exp 												{$$ = new }
+List		: Exp COMA List 									{ cout << "No listo"; }
+			| Exp 												{ cout << "No listo"; }
 			;
