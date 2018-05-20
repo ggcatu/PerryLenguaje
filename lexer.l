@@ -1,4 +1,5 @@
 %{
+#include "ast.h"
 #include "definiciones.h"
 #include "parser.tab.h"
 

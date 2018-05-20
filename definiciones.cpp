@@ -14,6 +14,7 @@ Así mismo contiene la definicion de las clases que se utilizaron para guardar l
 #include <stdlib.h> 
 #include <cstring>
 #include "definiciones.h"
+#include "ast.h"
 #include "parser.tab.h"
 
 

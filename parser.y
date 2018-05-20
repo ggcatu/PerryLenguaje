@@ -1,6 +1,7 @@
 %error-verbose
 %{
 #include <iostream>
+#include <map>
 #include "definiciones.h"
 #include "ast.h"
 
@@ -12,9 +13,7 @@ extern int yylex(void);
 extern int yycolumn;
 extern int yylineno;
 extern char * yytext;
-
 ArbolSintactico * root_ast;
-
 bool error_sintactico = 0; 
 
 void yyerror (char const *s) {
@@ -31,6 +30,7 @@ void yyerror (char const *s) {
 			bool boolean;
 			char * str;
 			char ch;
+			ArbolSintactico * arb;
 		}
 
 %locations
@@ -66,22 +66,22 @@ void yyerror (char const *s) {
 %token <arb> arbol
 //%token <boolean> TRUE FALSE
 
-%type <void> S Includelist Start Scope Typedef Varlist Declist Inst Sec Exp Ids List
+%type <arb> S Includelist Start Scope Typedef Varlist Declist Sec Inst Exp Literals Ids List
 
 %%
 
-S			: Includelist Start 								{ cout << "No listo"; }
-			| MODULE Start										{ cout << "No listo"; }
-			| Start      										{ cout << "No listo"; }
-			|													{ cout << "No listo"; }
+S			: Includelist Start 								{ $$ = new raiz($1,$2,false); root_ast = new ArbolSintactico($$); }
+			| MODULE Start										{ $$ = new raiz($2,true); root_ast = new ArbolSintactico($$); }
+			| Start      										{ $$ = new raiz($1,false); root_ast = new ArbolSintactico($$); }
+			|													{ $$ = new raiz(); root_ast = new ArbolSintactico($$); }
 			;
 
-Includelist : INCLUDE Exp Includelist							{ cout << "No listo"; }
-			| INCLUDE Exp 										{ cout << "No listo"; }
+Includelist : INCLUDE Exp Includelist							{ $$ = new include($2,$3); }
+			| INCLUDE Exp 										{ $$ = new include($2); }
 			;
 
-Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ cout << "No listo"; }		
-	 		| MAIN LLAVEABRE Sec LLAVECIERRA					{ cout << "No listo"; }
+Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }		
+	 		| MAIN LLAVEABRE Sec LLAVECIERRA					{ $$ = new programa($3); }
 			
 			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA Start		{ cout << "No listo"; }
 			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA			{ cout << "No listo"; }
@@ -172,7 +172,11 @@ Exp	 		: Exp SUMA Exp										{ cout << "No listo"; }
 			| IDENTIFIER CORCHETEABRE Exp CORCHETECIERRA 		{ cout << "No listo"; }
 
 			| OPTR IDENTIFIER	 								{ cout << "No listo"; }
-			| Ids												{ cout << "No listo"; }
+			| Literals											{ cout << "No listo"; }
+			;
+			
+
+Literals	: Ids												{ cout << "No listo"; }
 			| CHAR 												{ cout << "No listo"; }
 			| FLOAT 											{ cout << "No listo"; }
 			| INT 												{ cout << "No listo"; }

@@ -139,7 +139,7 @@ class programa : public ArbolSintactico {
 	public:
 		ArbolSintactico * program;
 		ArbolSintactico * sec;
-		programa(ArbolSintactico * p, ArbolSintactico * s) : program(p), sec(s) {}
+		programa(ArbolSintactico * s, ArbolSintactico * p) : program(p), sec(s) {}
 		programa(ArbolSintactico * s) : sec(s) {}
 		virtual void imprimir(int tab){
 			if (program != NULL){
@@ -260,7 +260,7 @@ class llamada : public ArbolSintactico {
 		llamada(ArbolSintactico * i, ArbolSintactico * p) : id(i), parametros(p) {}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << "	";
-			cout << "LLAMADA DE FUNCION:" << endl;
+			cout << "LLAMADA A FUNCION:" << endl;
 			for (int j = 0; j < tab+1; j++) cout << "	";
 			cout << "IDENTIFICADOR:" << endl;
 			id -> imprimir(tab+2);
@@ -378,10 +378,17 @@ class inst_guardia : public ArbolSintactico {
 		}
 };
 
+class asignacion :ArbolSintactico {
+	public:
+		ArbolSintactico * variable;
+		ArbolSintactico * valor;
+		asignacion(ArbolSintactico * v, ArbolSintactico * b) : variable(v), valor(b) {}
+
+};
 
 /* Definicion de la clase para las expresiones que retornan int o float */
 class exp_aritmetica : public ArbolSintactico {
-	enum inst {SUMA, RESTA, MULT, DIV, MOD, POW, PARENTESIS, CORCHETE, LLAVE};
+	enum inst {SUMA, RESTA, MULT, DIV, MOD, POW, PARENTESIS, CORCHETE, LLAVE, INDEX, FUNCION};
 	public:
 		ArbolSintactico * der;
 		ArbolSintactico * izq;
@@ -421,6 +428,12 @@ class exp_aritmetica : public ArbolSintactico {
 				case LLAVE:
 					cout << "LLAVE:" << endl;
 					break;
+				case INDEX:
+					cout << "INDEXACION:" << endl;
+					break;
+				case FUNCION:
+					cout << "LLAMADA A FUNCION:" << endl;
+					break;
 			}
 			if (der != NULL){
 				der -> imprimir(tab+1);
@@ -432,7 +445,7 @@ class exp_aritmetica : public ArbolSintactico {
 
 /* Definicion de la clase para las expresiones que retornan booleandos */
 class exp_booleana : public ArbolSintactico {
-	enum inst {IGUAL, DISTINTO, MENOR, MAYOR, MENORIGUAL, MAYORIGUAL, DISYUNCION, CONJUNCION, NEGACION, PARENTESIS, CORCHETE, LLAVE, CONSTANTE};
+	enum inst {IGUALA, DISTINTO, MENOR, MAYOR, MENORIGUAL, MAYORIGUAL, DISYUNCION, CONJUNCION, NEGACION, PARENTESIS, CORCHETE, LLAVE, CONSTANTE};
 	public:
 		ArbolSintactico * der;
 		ArbolSintactico * izq;
@@ -445,8 +458,8 @@ class exp_booleana : public ArbolSintactico {
 			}
 			for (int j = 0; j < tab; j++) cout << "	";
 			switch(instruccion){
-				case IGUAL:
-					cout << "IGUAL:" << endl;
+				case IGUALA:
+					cout << "IGUALA:" << endl;
 					break;
 				case MENOR:
 					cout << "MENOR:" << endl;

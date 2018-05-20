@@ -14,4 +14,4 @@ parser.tab.c: parser.y
 	bison -d --report=state parser.y
 
 clean:
-	rm lex.yy.c parser.tab.* parser.output scanner.o definiciones.o perr
+	rm lex.yy.c parser.tab.* parser.output scanner.o definiciones.o perry

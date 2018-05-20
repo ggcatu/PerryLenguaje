@@ -13,6 +13,7 @@ de las clases y funciones implementadas en definiciones.cpp
 #include <vector>
 #include <stdlib.h>
 #include "definiciones.h"
+#include "ast.h"
 #include "parser.tab.h"
 
 using namespace std;
@@ -32,13 +33,15 @@ extern int yyleng;
 extern int yycolumn;
 extern char* yytext;
 extern FILE* yyin;
+extern ArbolSintactico * root_ast;
+extern bool error_sintactico;
 
 // Vectores donde se guardarán nuestros resultados de la tokenización
 vector<Token *> tokens;
 vector<Token *> errors;
 
 void execute_lexer(){
-	cout << "Executing lexer" << endl;
+	//cout << "Executing lexer" << endl;
 
     // Inicialización para nuestro ciclo de lectura
 	int ntoken = yylex();
@@ -101,7 +104,7 @@ void execute_lexer(){
 }
 
 void execute_parser(){
-	cout << "Executing parser" << endl;
+	//cout << "Executing parser" << endl;
     
     try {
 		yyparse();
@@ -114,6 +117,17 @@ void execute_parser(){
 	// Si hay errores del lexer, imprimirlos
 	if (!errors.empty()){
 		print_errors(errors);
+	}
+
+	// Imprimir AST
+	if (!error_sintactico){
+	   try {
+		root_ast->imprimir(0);	
+		}
+		catch(...){
+			cout << "error";
+			return;
+		}
 	}
 }
 
