@@ -102,17 +102,17 @@ Scope 		: CREATE LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA
 			| EXECUTE LLAVEABRE Sec LLAVECIERRA  										{ $$ = new bloque($3); }
 			;
 
-Typedef		: BOOL  											{ $$ = new tipedec(1); }
-			| LCHAR 											{ $$ = new tipedec(2); }
-			| LSTRING  											{ $$ = new tipedec(3); }
-			| LINT  											{ $$ = new tipedec(4); }
-			| LFLOAT  											{ $$ = new tipedec(5); }
-			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{ $$ = new tipedec(6,$2,NULL,$4); }
-			| LIST Typedef 										{ $$ = new tipedec(7,$2); }
-			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{ $$ = new tipedec(8,$3,$5); }
+Typedef		: BOOL  											{ $$ = new tipedec(0); }
+			| LCHAR 											{ $$ = new tipedec(1); }
+			| LSTRING  											{ $$ = new tipedec(2); }
+			| LINT  											{ $$ = new tipedec(3); }
+			| LFLOAT  											{ $$ = new tipedec(4); }
+			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{ $$ = new tipedec(5,$2,NULL,$4); }
+			| LIST Typedef 										{ $$ = new tipedec(6,$2); }
+			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{ $$ = new tipedec(7,$3,$5); }
 			| IDENTIFIER										{ $$ = new identificador($1); }
-			| POINTER Typedef  									{ $$ = new tipedec(10,$2); }
-			| UNIT 												{ $$ = new tipedec(11); }
+			| POINTER Typedef  									{ $$ = new tipedec(9,$2); }
+			| UNIT 												{ $$ = new tipedec(10); }
 			;
 
 Varlist 	: Typedef IDENTIFIER COMA Varlist 					{ $$ = new parametros($4,$1,new identificador($2),false); }

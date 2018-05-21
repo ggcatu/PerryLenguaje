@@ -258,37 +258,37 @@ class tipedec : public ArbolSintactico {
 			for (int j = 0; j < tab; j++) cout << "	";
 			switch(names){
 				case BOOL:
-					cout << "BOOL:" << endl;
+					cout << "BOOL" << endl;
 					break;
 				case CHAR:
-					cout << "CHAR:" << endl;
+					cout << "CHAR" << endl;
 					break;
 				case STRING:
-					cout << "STRING:" << endl;
+					cout << "STRING" << endl;
 					break;
 				case INT:
-					cout << "ENTERO:" << endl;
+					cout << "ENTERO" << endl;
 					break;
 				case FLOAT:
-					cout << "FLOTANTE:" << endl;
+					cout << "FLOTANTE" << endl;
 					break;
 				case ARRAY:
-					cout << "ARREGLO:" << endl;
+					cout << "ARREGLO" << endl;
 					break;
 				case LIST:
-					cout << "LISTA:" << endl;
+					cout << "LISTA" << endl;
 					break;
 				case TUPLE:
-					cout << "TUPLA:" << endl;
+					cout << "TUPLA" << endl;
 					break;
 				case ID:
-					cout << "IDENTIFICADOR:" << endl;
+					cout << "IDENTIFICADOR" << endl;
 					break;
 				case POINTER:
-					cout << "APUNTADOR:" << endl;
+					cout << "APUNTADOR" << endl;
 					break;
 				case UNIT:
-					cout << "UNIT:" << endl;
+					cout << "UNIT" << endl;
 					break;
 			}
 			if (subtipo1 != NULL){
