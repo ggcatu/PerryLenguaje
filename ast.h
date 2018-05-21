@@ -9,10 +9,13 @@ en el proyecto
 #include <iostream>
 #include <stdexcept>
 #include <map>
-#include <vector>
 #include <ctype.h>
 #include <cstdlib>
 #include <string>
+#include <sstream>
+#include <vector>
+#include <algorithm>
+#include <iterator>
 #include "ast_def.h"
 using namespace std;
 #define ENTEROS 1
@@ -25,6 +28,8 @@ using namespace std;
 extern int yylineno;
 extern char error_strp[1000];
 extern int yyparse();
+
+//Funciones auxiliares
 
 
 /* Definicion de la clase raiz */
@@ -61,7 +66,7 @@ class funcion : public ArbolSintactico {
 		ArbolSintactico * parametros;
 		ArbolSintactico * id;
 		ArbolSintactico * instrucciones;
-		funcion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * p, ArbolSintactico * is) : tipo(t), parametros(p), ArbolSintactico(i), instrucciones(is) {}
+		funcion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * p, ArbolSintactico * is) : tipo(t), parametros(p), id(i), instrucciones(is) {}
 		virtual void imprimir(int tab){
 		
 			cout << "FUNCION:" << endl;
@@ -313,7 +318,7 @@ class entrada_salida : public ArbolSintactico {
 		}
 };
 
-
+//COMO LA ITERACION ES DETERMINADA POSIBLEMENTE NO SEA NECESARIO HACER UN ARBOL PARA EL RANGO
 /* Definicion de la clase para el for */
 class it_determinada : public ArbolSintactico {
 	public:
@@ -597,32 +602,86 @@ class ptr : public ArbolSintactico {
 		ArbolSintactico * elem; // atributo para lo que sea que apunta?
 };
 
+/* Definicion de la clase para la lista de elementos de una lista o arreglo */
+class elementos : public ArbolSintactico {
+	public:
+		ArbolSintactico * elems;
+		ArbolSintactico * val;
+		elementos( ArbolSintactico * v) : val(v) {}
+		elementos(ArbolSintactico * e, ArbolSintactico * v) : elems(e), val(v) {}
+		virtual void imprimir(int tab){
+			if (elems != NULL){
+				elems -> imprimir(tab);
+			}
+			for (int j = 0; j < tab; j++) cout << "	";
+			cout << "ELEMENTO:" << endl;
+			val -> imprimir(tab+2);
+		}
+};
 
 /* Definicion de la clase para list */
 class lista : public ArbolSintactico {
 	public:
 		ArbolSintactico * tipo;
-		string id;
-		// falta atributo para guardar elementos de la lista
+		ArbolSintactico * valor;
+		lista(ArbolSintactico * t) : tipo(t) {}
+		lista(ArbolSintactico * t, ArbolSintactico * v) : tipo(t), valor(v) {}
+		virtual void imprimir(int tab){
+			for (int j = 0; j < tab; j++) cout << "	";
+			cout << "LISTA DE TIPO:" << endl;	
+			tipo ->	imprimir(tab+2);
+			if (valor != NULL){		
+				for (int j = 0; j < tab; j++) cout << "	";
+				cout << "CON:" << endl;
+				valor -> imprimir(tab+2);
+			}
+		}
 };
-
 
 /* Definicion de la clase para array */
 class arreglo : public ArbolSintactico {
 	public:
 		ArbolSintactico * tipo;
-		int * tam;
-		string id;
-		// falta atributo para guardar elementos del arreglo
+		ArbolSintactico * tam;
+		ArbolSintactico * valor;
+		arreglo(ArbolSintactico * ta, ArbolSintactico * t) : tam(ta), tipo(t) {}
+		arreglo(ArbolSintactico * ta, ArbolSintactico * t, ArbolSintactico * v) :tam(ta), tipo(t), valor(v) {}
+		virtual void imprimir(int tab){
+			for (int j = 0; j < tab; j++) cout << "	";
+			cout << "ARREGLO DE TIPO:" << endl;	
+			tipo ->	imprimir(tab+2);
+			cout << "TAMAÑO:" << endl;	
+			tam ->	imprimir(tab+2);
+			if (valor != NULL){		
+				for (int j = 0; j < tab; j++) cout << "	";
+				cout << "CON:" << endl;
+				valor -> imprimir(tab+2);
+			}
+		}
 };
-
 
 /* Definicion de la clase para tuple */
 class tupla : public ArbolSintactico {
 	public:
 		ArbolSintactico * tipo1;
 		ArbolSintactico * tipo2;
-		string id;
 		ArbolSintactico * valor1;
 		ArbolSintactico * valor2;
+		tupla(ArbolSintactico * t1, ArbolSintactico * t2, ArbolSintactico * v1, ArbolSintactico * v2) :tipo1(t1), tipo2(t2), valor1(v1), valor2(v2) {}
+		virtual void imprimir(int tab){
+			for (int j = 0; j < tab; j++) cout << "	";
+			cout << "TUPLA:" << endl;	
+			for (int j = 0; j < tab; j++) cout << "	";
+			cout << "TIPO1:" << endl;
+			tipo1 ->	imprimir(tab+2);
+			for (int j = 0; j < tab; j++) cout << "	";
+			cout << "TIPO2:" << endl;	
+			tipo2 ->	imprimir(tab+2);
+			for (int j = 0; j < tab; j++) cout << "	";
+			cout << "VALOR1:" << endl;	
+			valor1 ->	imprimir(tab+2);
+			for (int j = 0; j < tab; j++) cout << "	";
+			cout << "VALOR2:" << endl;	
+			valor2 ->	imprimir(tab+2);
+		}
 };

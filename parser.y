@@ -83,8 +83,8 @@ Includelist : INCLUDE Exp Includelist							{ $$ = new include($2,$3); }
 Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }		
 	 		| MAIN LLAVEABRE Sec LLAVECIERRA					{ $$ = new programa($3); }
 			
-			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA Start		{ cout << "No listo"; }
-			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA			{ cout << "No listo"; }
+			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA Start		{ funcion($1,$2,$4,$7); }
+			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA			{ funcion($1,$2,$4,$7); }
 
 			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA Start 	{ cout << "No listo"; }
 			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA			{ cout << "No listo"; }
