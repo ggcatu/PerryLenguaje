@@ -81,7 +81,7 @@ Includelist : INCLUDE Exp Includelist							{ $$ = new include($2,$3); }
 			| INCLUDE Exp 										{ $$ = new include($2); }
 			;
 
-Start 		: MAIN LLAVEABRE Scope LLAVECIERRA Start 				{ $$ = new programa($3,$5); }		
+Start 		: MAIN LLAVEABRE Scope LLAVECIERRA Start 			{ $$ = new programa($3,$5); }		
 	 		| MAIN LLAVEABRE Scope LLAVECIERRA					{ $$ = new programa($3); }
 			
 			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA Start		{ $$ = new funcion($1,new identificador($2),$4,$7,$9); }
@@ -136,12 +136,12 @@ Inst		: Scope					 							{ $$ = $1; }
 			| SALIDA Exp 										{ cout << "salida" << endl; $$ = new entrada_salida($2,false); }
 			| ENTRADA Exp  										{ $$ = new entrada_salida($2,true); }
 
-			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA		{ $$ = new inst_guardia($3,$6,$10,2); }
-			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  									{ $$ = new inst_guardia($3,$6,1); }
+			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA		{ $$ = new inst_guardia($3,$6,$10,1); }
+			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  									{ $$ = new inst_guardia($3,$6,0); }
 
-			| FOR PARABRE Typedef IDENTIFIER IGUAL Exp COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA 	{$$ = new it_determinada(new declaracion($3,new identificador($4),$6),$9,$11,$17);}
+			| FOR PARABRE Typedef IDENTIFIER COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA 	{ $$ = new it_determinada(new declaracion($3,new identificador($4)),$7,$9,$12,$15); }
 
-			| WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  		{ $$ = new inst_guardia($3,$6,3); }
+			| WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  		{ $$ = new inst_guardia($3,$6,2); }
 			| NEW PARABRE IDENTIFIER PARCIERRA					{ $$ =  new memoria(new identificador($3),true); }
 			| FREE PARABRE IDENTIFIER PARCIERRA					{ $$ =  new memoria(new identificador($3),false); }
 			| IDENTIFIER PARABRE List PARCIERRA 				{ $$ = new llamada(new identificador($1),$3); }
@@ -150,24 +150,24 @@ Inst		: Scope					 							{ $$ = $1; }
 			| 													{ NULL; }
 			;
 
-Exp	 		: Exp SUMA Exp										{ $$ = new exp_aritmetica($1,$3,1); }
-			| Exp RESTA Exp		 								{ $$ = new exp_aritmetica($1,$3,2); }
-			| Exp MULT Exp										{ $$ = new exp_aritmetica($1,$3,3); }
-			| Exp DIV Exp										{ $$ = new exp_aritmetica($1,$3,4); }
-			| Exp MOD Exp										{ $$ = new exp_aritmetica($1,$3,5); }
-			| Exp POW Exp 										{ $$ = new exp_aritmetica($1,$3,6); }
+Exp	 		: Exp SUMA Exp										{ $$ = new exp_aritmetica($1,$3,0); }
+			| Exp RESTA Exp		 								{ $$ = new exp_aritmetica($1,$3,1); }
+			| Exp MULT Exp										{ $$ = new exp_aritmetica($1,$3,2); }
+			| Exp DIV Exp										{ $$ = new exp_aritmetica($1,$3,3); }
+			| Exp MOD Exp										{ $$ = new exp_aritmetica($1,$3,4); }
+			| Exp POW Exp 										{ $$ = new exp_aritmetica($1,$3,5); }
 			| PARABRE Exp PARCIERRA								{ $$ = $2; }
-			| RESTA Exp	 										{ $$ = new exp_aritmetica($2,2); }
+			| RESTA Exp	 										{ $$ = new exp_aritmetica($2,1); }
 			
-			| Exp IGUALA Exp									{ $$ = new exp_booleana($1,$3,1); }
-			| Exp DISTINTOA Exp									{ $$ = new exp_booleana($1,$3,2); }
-			| Exp MENOR Exp										{ $$ = new exp_booleana($1,$3,3); }
-			| Exp MAYOR Exp										{ $$ = new exp_booleana($1,$3,4); }
-			| Exp MENORIGUAL Exp								{ $$ = new exp_booleana($1,$3,5); }
-			| Exp MAYORIGUAL Exp								{ $$ = new exp_booleana($1,$3,6); }
-			| Exp DISYUNCION Exp								{ $$ = new exp_booleana($1,$3,7); }
-			| Exp CONJUNCION Exp								{ $$ = new exp_booleana($1,$3,8); }
-			| NEGACION Exp										{ $$ = new exp_booleana($2,9); }
+			| Exp IGUALA Exp									{ $$ = new exp_booleana($1,$3,0); }
+			| Exp DISTINTOA Exp									{ $$ = new exp_booleana($1,$3,1); }
+			| Exp MENOR Exp										{ $$ = new exp_booleana($1,$3,2); }
+			| Exp MAYOR Exp										{ $$ = new exp_booleana($1,$3,3); }
+			| Exp MENORIGUAL Exp								{ $$ = new exp_booleana($1,$3,4); }
+			| Exp MAYORIGUAL Exp								{ $$ = new exp_booleana($1,$3,5); }
+			| Exp DISYUNCION Exp								{ $$ = new exp_booleana($1,$3,6); }
+			| Exp CONJUNCION Exp								{ $$ = new exp_booleana($1,$3,7); }
+			| NEGACION Exp										{ $$ = new exp_booleana($2,8); }
 
 			| IDENTIFIER PARABRE List PARCIERRA 				{ $$ = new llamada(new identificador($1),$3); }
 			| IDENTIFIER CORCHETEABRE Exp CORCHETECIERRA 		{ $$ = new exp_index(new identificador($1),$3); }
@@ -177,7 +177,7 @@ Exp	 		: Exp SUMA Exp										{ $$ = new exp_aritmetica($1,$3,1); }
 			;
 			
 
-Literals	: Ids												{$$ = $1;}
+Literals	: Ids												{ $$ = $1;}
 			| CHAR 												{ $$ = new character($1); }
 			| FLOAT 											{ $$ = new flotante($1); }
 			| INT 												{ $$ = new entero($1); }
