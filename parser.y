@@ -27,6 +27,7 @@ void yyerror (char const *s) {
 
 %union {	
 			int num; 
+			float flot;
 			bool boolean;
 			char * str;
 			char ch;
@@ -42,32 +43,31 @@ void yyerror (char const *s) {
 %left POW MULT DIV MOD
 %right NEGACION
 
-%token <arb> LLAVEABRE 1 LLAVECIERRA 2 CORCHETEABRE 3 CORCHETECIERRA 4 PARABRE 5 PARCIERRA 6
-%token <arb> MAIN 7
-%token <arb> INCLUDE 10 CREATE 11 EXECUTE 12 MODULE 13
-%token <arb> PUNTOCOMA 14
-%token <arb> WHILE 15 FOR 16 BREAK 17 IF 18 ELSE 19 RETURN 20
-%token <arb> STRUCT 21 UNION 22 ARRAY 23 LIST 24 TUPLE 25 LSTRING 26 LFLOAT 27 LCHAR 28 BOOL 29 LINT 30 POINTER 31
-%token <arb> TRUE 32 FALSE 33
-%token <arb> IGUALA 34 DISTINTOA 35
-%token <arb> SUMA 36 RESTA 37 MOD 38 DIV 39 POW 40 MULT 41 IGUAL 42 MENORIGUAL 43 MENOR 44 MAYORIGUAL 45 MAYOR 46
-%token <arb> NEGACION 47 CONJUNCION 48 DISYUNCION 49
-%token <arb> SPACE 50 TAB 51 COMA 52
-%token <arb> SALIDA 53 ENTRADA 54
-%token <num> FLOAT 57 INT 59
-%token <str> IDENTIFIER 55 CHAR 56 STRING 60
-%token <arb> ERROR 61
-%token <arb> ENTER 62 
-%token <arb> COMENTARIO 63
-%token <arb> TYPE 64 NEW 65 FREE 66
-%token <arb> REFERENCE 67 OPTR 68 UNIT 69
-%token <num> number
-//%token <str> IDENTIFIER
-%token <ch> CHARACTER
-%token <arb> arbol
-//%token <boolean> TRUE FALSE
+%token LLAVEABRE 1 LLAVECIERRA 2 CORCHETEABRE 3 CORCHETECIERRA 4 PARABRE 5 PARCIERRA 6
+%token MAIN 7
+%token INCLUDE 10 CREATE 11 EXECUTE 12 MODULE 13
+%token PUNTOCOMA 14
+%token WHILE 15 FOR 16 BREAK 17 IF 18 ELSE 19 RETURN 20
+%token STRUCT 21 UNION 22 ARRAY 23 LIST 24 TUPLE 25 LSTRING 26 LFLOAT 27 LCHAR 28 BOOL 29 LINT 30 POINTER 31
+%token IGUALA 32 DISTINTOA 33
+%token SUMA 34 RESTA 35 MOD 36 DIV 37 POW 38 MULT 39 IGUAL 40 MENORIGUAL 41 MENOR 42 MAYORIGUAL 43 MAYOR 44
+%token NEGACION 45 CONJUNCION 46 DISYUNCION 47
+%token SPACE 48 TAB 49 COMA 50
+%token SALIDA 51 ENTRADA 52
+%token PUNTO 53
+%token ERROR 54
+%token ENTER 55 
+%token COMENTARIO 56
+%token TYPE 57 NEW 58 FREE 59
+%token REFERENCE 60 OPTR 61 UNIT 62
 
-%type <arb> S Includelist Start Scope Typedef Varlist Declist Sec Inst Exp Literals Ids List
+%token <num> INT
+%token <flot> FLOAT
+%token <str> IDENTIFIER
+%token <ch> CHAR
+%token <str> STRING
+%token <boolean> TRUE FALSE
+%type <arb> S Includelist Start Typedef Varlist Declist Sec Inst Exp Ids List
 
 %%
 
@@ -84,6 +84,7 @@ Includelist : INCLUDE Exp Includelist							{ $$ = new include($2,$3); }
 Start 		: MAIN LLAVEABRE Scope LLAVECIERRA Start 				{ $$ = new programa($3,$5); }		
 	 		| MAIN LLAVEABRE Scope LLAVECIERRA					{ $$ = new programa($3); }
 			
+<<<<<<< HEAD
 			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA Start		{ $$ = new funcion($1,$2,$4,$7,$9); }
 			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA			{ $$ = new funcion($1,$2,$4,$7); }
 
