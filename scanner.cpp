@@ -148,6 +148,7 @@ int main(int argc, char** argv) {
 			}
 			else if (arg == "-p"){
 				execute_parser();
+				root_ast->imprimir(0);
 			}
 		}
 	} else {

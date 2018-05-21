@@ -23,6 +23,8 @@ using namespace std;
 #define BOOLEANOS 4
 #define CHARACTERES 5
 #define CONDICION 6
+#define STR 7
+#define PTR 8
 
 /* Definiciones externas (parser.y) que permiten compartir el codigo. */
 extern int yylineno;
@@ -66,6 +68,8 @@ class funcion : public ArbolSintactico {
 		ArbolSintactico * parametros;
 		ArbolSintactico * id;
 		ArbolSintactico * instrucciones;
+		ArbolSintactico * sec;
+		funcion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * p, ArbolSintactico * is, ArbolSintactico * s) : tipo(t), parametros(p), id(i), instrucciones(is), sec(s){}
 		funcion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * p, ArbolSintactico * is) : tipo(t), parametros(p), id(i), instrucciones(is) {}
 		virtual void imprimir(int tab){
 		
@@ -82,6 +86,9 @@ class funcion : public ArbolSintactico {
 			for (int j = 0; j < tab+1; j++) cout << "	";
 			cout << "INSTRUCCIONES:" << endl;
 			instrucciones -> imprimir(tab+2);
+			if (sec != NULL){
+				sec -> imprimir(tab+2);
+			}
 		}
 };
 
@@ -105,28 +112,42 @@ class include : public ArbolSintactico {
 };
 
 
-/* Definicion de la clase para los structs, union, type */
+/* Definicion de la clase para los structs, union */
 class estructura : public ArbolSintactico {
 	public:
 		ArbolSintactico * id;
 		ArbolSintactico * campos;
-		estructura(ArbolSintactico * i, ArbolSintactico * c) : id(i), campos(c) {}
+		ArbolSintactico * sec;
+		bool strct;
+		estructura(ArbolSintactico * i, ArbolSintactico * c, bool st, ArbolSintactico * s) : id(i), campos(c), sec(s), strct(st) {}
+		estructura(ArbolSintactico * i, ArbolSintactico * c, bool s) : id(i), campos(c), strct(s) {}
 		virtual void imprimir(int tab){
-			cout << "ESTRUCTURA:" << endl;
+			if(strct){
+				for (int j = 0; j < tab+1; j++) cout << "	";
+				cout << "STRUCT:" << endl;
+			}
+			else{
+				for (int j = 0; j < tab+1; j++) cout << "	";
+				cout << "UNION:" << endl;
+			}
 			if (id != NULL && campos != NULL){
 				id -> imprimir(tab+1);
 				campos -> imprimir(tab+1);
 			}
+			if (sec != NULL){
+				sec -> imprimir(tab+1);
+			}
 		}
 };
-
 
 /* Definicion de la clase para los type */
 class tipo : public ArbolSintactico {
 	public:
 		ArbolSintactico * ti;
 		ArbolSintactico * id;
+		ArbolSintactico * sec;
 		tipo(ArbolSintactico * i, ArbolSintactico * t) : id(i), ti(t) {}
+		tipo(ArbolSintactico * i, ArbolSintactico * t, ArbolSintactico * s) : id(i), ti(t), sec(s) {}
 		virtual void imprimir(int tab){
 			cout << "TYPE" << endl;
 			for (int j = 0; j < tab+1; j++) cout << "	";
@@ -135,6 +156,9 @@ class tipo : public ArbolSintactico {
 			for (int j = 0; j < tab+1; j++) cout << "	";
 			cout << "TIPO:" << endl;
 			ti -> imprimir(tab+2);
+			if(sec != NULL){
+				sec-> imprimir(tab+1);
+			}
 		}
 };
 
@@ -190,7 +214,8 @@ class declaracion : public ArbolSintactico {
 		ArbolSintactico * exp;
 		ArbolSintactico * declaraciones;
 		declaracion(ArbolSintactico * d, ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * e) : declaraciones(d), tipo(t), id(i), exp(e) {}
-		declaracion(ArbolSintactico * d, ArbolSintactico * t, ArbolSintactico * i) : declaraciones(d), tipo(t), id(i) {}
+		declaracion( ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * e) : tipo(t), id(i), exp(e) {}
+		declaracion( ArbolSintactico * t, ArbolSintactico * i) : tipo(t), id(i) {}
 		virtual void imprimir(int tab){
 			if (declaraciones != NULL){
 				declaraciones -> imprimir(tab);
@@ -209,6 +234,72 @@ class declaracion : public ArbolSintactico {
 		}
 };
 
+/* Definicion de la clase para la lista de declaraciones */
+class tipedec : public ArbolSintactico {
+	enum tipes {BOOL,CHAR,STRING,INT,FLOAT,ARRAY,LIST,TUPLE,ID,POINTER,UNIT};
+	public:
+		tipes names;
+		ArbolSintactico * subtipo1;
+		ArbolSintactico * subtipo2;
+		ArbolSintactico * tam;
+		tipedec( int n, ArbolSintactico * s1, ArbolSintactico * s2, ArbolSintactico * t) : names(static_cast<tipes>(n)), subtipo1(s1), tam(t) {}
+		tipedec( int n, ArbolSintactico * s1, ArbolSintactico * s2) : names(static_cast<tipes>(n)), subtipo1(s1), subtipo2(s2) {}
+		tipedec( int n, ArbolSintactico * s1) : names(static_cast<tipes>(n)), subtipo1(s1) {}
+		tipedec( int n) : names(static_cast<tipes>(n)) {}
+		virtual void imprimir(int tab){
+			for (int j = 0; j < tab; j++) cout << "	";
+			switch(names){
+				case BOOL:
+					cout << "BOOL:" << endl;
+					break;
+				case CHAR:
+					cout << "CHAR:" << endl;
+					break;
+				case STRING:
+					cout << "STRING:" << endl;
+					break;
+				case INT:
+					cout << "ENTERO:" << endl;
+					break;
+				case FLOAT:
+					cout << "FLOTANTE:" << endl;
+					break;
+				case ARRAY:
+					cout << "ARREGLO:" << endl;
+					break;
+				case LIST:
+					cout << "LISTA:" << endl;
+					break;
+				case TUPLE:
+					cout << "TUPLA:" << endl;
+					break;
+				case ID:
+					cout << "IDENTIFICADOR:" << endl;
+					break;
+				case POINTER:
+					cout << "APUNTADOR:" << endl;
+					break;
+				case UNIT:
+					cout << "UNIT:" << endl;
+					break;
+			}
+			if (subtipo1 != NULL){
+				for (int j = 0; j < tab; j++) cout << "	";
+				cout << "DE:" << endl;
+				subtipo1 -> imprimir(tab+1); 
+			}
+			if (subtipo2 != NULL){
+				for (int j = 0; j < tab; j++) cout << "	";
+				cout << "Y DE:" << endl;
+				subtipo2 -> imprimir(tab+1); 
+			}
+			if (tam != NULL){
+				for (int j = 0; j < tab; j++) cout << "	";
+				cout << "DE TAMAÑO:" << endl;
+				tam -> imprimir(tab+1); 
+			}
+		}
+};
 
 /* Definicion de la clase para la lista de instrucciones */
 class instruccion : public ArbolSintactico {
@@ -383,12 +474,28 @@ class inst_guardia : public ArbolSintactico {
 		}
 };
 
-class asignacion :ArbolSintactico {
+/* Definicion de la clase return y el break */
+class ret_brk : public ArbolSintactico {
+	public:
+		bool ret;
+		ret_brk(bool r) : ret(r) {}
+		virtual void imprimir(int tab){
+			for (int j = 0; j < tab+1; j++) cout << "	";
+			if (ret){
+				cout << "RETURN" << endl;
+			}else{
+				cout << "BREAK" << endl;
+			}
+		}
+};
+
+class asignacion : public ArbolSintactico {
 	public:
 		ArbolSintactico * variable;
 		ArbolSintactico * valor;
 		asignacion(ArbolSintactico * v, ArbolSintactico * b) : variable(v), valor(b) {}
-
+		virtual void imprimir(int tab){
+		}
 };
 
 /* Definicion de la clase para las expresiones que retornan int o float */
@@ -507,13 +614,33 @@ class exp_booleana : public ArbolSintactico {
 };
 
 
-/* Definicion de la clase para las expresiones para apuntadores, arreglos, listas, tuplas, llamada de funcion, etc */
-class exp_otras : public ArbolSintactico {
+/* Definicion de la clase para las expresiones para apuntadores*/
+class exp_point : public ArbolSintactico {
 	public:
 		ArbolSintactico * der;
-		ArbolSintactico * izq;
+		exp_point(ArbolSintactico * d) : der(d) {}
+		virtual void imprimir(int tab) {
+			for (int j = 0; j < tab; j++) cout << "	";
+			cout << "DESREFERENCIACION: " << endl;
+			der -> imprimir(tab + 1);
+		}
 };
 
+/* Definicion de la clase para las expresiones para indexaciones*/
+class exp_index : public ArbolSintactico {
+	public:
+		ArbolSintactico * var;
+		ArbolSintactico * ind;
+		exp_index(ArbolSintactico * v,ArbolSintactico * i) : var(v), ind(i) {}
+		virtual void imprimir(int tab) {
+			for (int j = 0; j < tab; j++) cout << "	";
+			cout << "INDEXACION DE: " << endl;
+			var -> imprimir(tab + 1);
+			for (int j = 0; j < tab; j++) cout << "	";
+			cout << "EN: " << endl;
+			ind -> imprimir(tab + 1);
+		}
+};
 
 /* Definicion de la clase para los identificadores */
 class identificador : public ArbolSintactico {
@@ -591,6 +718,7 @@ class character : public ArbolSintactico {
 class str : public ArbolSintactico {
 	public:
 		string valor;
+		str() : ArbolSintactico(STR) {is_type = 1;}
 };
 
 
@@ -600,6 +728,7 @@ class ptr : public ArbolSintactico {
 		ArbolSintactico * tipo;
 		string id;
 		ArbolSintactico * elem; // atributo para lo que sea que apunta?
+		ptr() : ArbolSintactico(PTR) {is_type = 1;}
 };
 
 /* Definicion de la clase para la lista de elementos de una lista o arreglo */
@@ -622,61 +751,36 @@ class elementos : public ArbolSintactico {
 /* Definicion de la clase para list */
 class lista : public ArbolSintactico {
 	public:
-		ArbolSintactico * tipo;
 		ArbolSintactico * valor;
-		lista(ArbolSintactico * t) : tipo(t) {}
-		lista(ArbolSintactico * t, ArbolSintactico * v) : tipo(t), valor(v) {}
+		lista( ArbolSintactico * v) :  valor(v) {}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << "	";
-			cout << "LISTA DE TIPO:" << endl;	
-			tipo ->	imprimir(tab+2);
-			if (valor != NULL){		
-				for (int j = 0; j < tab; j++) cout << "	";
-				cout << "CON:" << endl;
-				valor -> imprimir(tab+2);
-			}
+			cout << "LISTA CON:" << endl;
+			valor -> imprimir(tab+2);
 		}
 };
 
 /* Definicion de la clase para array */
 class arreglo : public ArbolSintactico {
 	public:
-		ArbolSintactico * tipo;
-		ArbolSintactico * tam;
 		ArbolSintactico * valor;
-		arreglo(ArbolSintactico * ta, ArbolSintactico * t) : tam(ta), tipo(t) {}
-		arreglo(ArbolSintactico * ta, ArbolSintactico * t, ArbolSintactico * v) :tam(ta), tipo(t), valor(v) {}
+		arreglo(ArbolSintactico * v) : valor(v) {}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << "	";
-			cout << "ARREGLO DE TIPO:" << endl;	
-			tipo ->	imprimir(tab+2);
-			cout << "TAMAÑO:" << endl;	
-			tam ->	imprimir(tab+2);
-			if (valor != NULL){		
-				for (int j = 0; j < tab; j++) cout << "	";
-				cout << "CON:" << endl;
-				valor -> imprimir(tab+2);
-			}
+			cout << "ARREGLO CON:" << endl;
+			valor -> imprimir(tab+2);
 		}
 };
 
 /* Definicion de la clase para tuple */
 class tupla : public ArbolSintactico {
 	public:
-		ArbolSintactico * tipo1;
-		ArbolSintactico * tipo2;
 		ArbolSintactico * valor1;
 		ArbolSintactico * valor2;
-		tupla(ArbolSintactico * t1, ArbolSintactico * t2, ArbolSintactico * v1, ArbolSintactico * v2) :tipo1(t1), tipo2(t2), valor1(v1), valor2(v2) {}
+		tupla( ArbolSintactico * v1, ArbolSintactico * v2) : valor1(v1), valor2(v2) {}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << "	";
 			cout << "TUPLA:" << endl;	
-			for (int j = 0; j < tab; j++) cout << "	";
-			cout << "TIPO1:" << endl;
-			tipo1 ->	imprimir(tab+2);
-			for (int j = 0; j < tab; j++) cout << "	";
-			cout << "TIPO2:" << endl;	
-			tipo2 ->	imprimir(tab+2);
 			for (int j = 0; j < tab; j++) cout << "	";
 			cout << "VALOR1:" << endl;	
 			valor1 ->	imprimir(tab+2);
