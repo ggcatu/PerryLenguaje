@@ -77,15 +77,15 @@ S			: Includelist Start 								{ $$ = new raiz($1,$2,false); root_ast = new Arb
 			|													{ $$ = new raiz(); root_ast = new ArbolSintactico($$); }
 			;
 
-Includelist : INCLUDE Exp Includelist							{ $$ = new include($2,$3); }
+Includelist : INCLUDE Exp Includelist							{ $$ = new include($3,$2); }
 			| INCLUDE Exp 										{ $$ = new include($2); }
 			;
 
-Start 		: MAIN LLAVEABRE Scope LLAVECIERRA Start 			{ $$ = new programa($3,$5); }		
-	 		| MAIN LLAVEABRE Scope LLAVECIERRA					{ $$ = new programa($3); }
+Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 			{ $$ = new programa($3,$5); }		
+	 		| MAIN LLAVEABRE Sec LLAVECIERRA					{ $$ = new programa($3); }
 			
-			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA Start		{ $$ = new funcion($1,new identificador($2),$4,$7,$9); }
-			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA			{ $$ = new funcion($1,new identificador($2),$4,$7); }
+			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA Start		{ $$ = new funcion($1,new identificador($2),$4,$7,$9); }
+			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA			{ $$ = new funcion($1,new identificador($2),$4,$7); }
 
 			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA Start 	{  $$ = new estructura(new identificador($3),$5,$7,true); }
 			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA			{ $$ = new estructura(new identificador($3),$5,true); }

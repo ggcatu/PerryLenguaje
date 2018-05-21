@@ -32,9 +32,6 @@ extern int yylineno;
 extern char error_strp[1000];
 extern int yyparse();
 
-//Funciones auxiliares
-
-
 /* Definicion de la clase raiz */
 class raiz : public ArbolSintactico {
 	public:
@@ -73,9 +70,6 @@ class funcion : public ArbolSintactico {
 		funcion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * p, ArbolSintactico * is) : tipo(t), id(i), parametros(p), instrucciones(is) {}
 		funcion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * p, ArbolSintactico * is, ArbolSintactico * fs) : tipo(t), id(i), parametros(p), instrucciones(is), funciones(fs) {}
 		virtual void imprimir(int tab){
-			if (funciones != NULL){
-				funciones -> imprimir(tab);
-			}
 			cout << "FUNCION:" << endl;
 			for (int j = 0; j < tab+1; j++) cout << " ";
 			cout << "TIPO RETORNO:" << endl;
@@ -105,11 +99,11 @@ class include : public ArbolSintactico {
 		include(ArbolSintactico * a) : archivo(a) {}
 		virtual void imprimir(int tab) {
 			cout << "INCLUDE:" << endl;
-			if (includes != NULL){
-				includes -> imprimir(tab);
-			}
 			if (archivo != NULL){
 				archivo -> imprimir(tab+1);
+			}
+			if (includes != NULL){
+				includes -> imprimir(tab);
 			}
 		}
 };
@@ -125,9 +119,9 @@ class estructura : public ArbolSintactico {
 		estructura(ArbolSintactico * i, ArbolSintactico * c, bool t) : id(i), campos(c), st(t) {}
 		estructura(ArbolSintactico * i, ArbolSintactico * c, ArbolSintactico * es, bool t) : id(i), campos(c), estructuras(es), st(t) {}
 		virtual void imprimir(int tab){
-			if (estructuras != NULL){
-					estructuras -> imprimir(tab);
-			}
+			//if (estructuras != NULL){
+			//		estructuras -> imprimir(tab);
+			//}
 			if (st){
 				cout << "STRUCT:" << endl;
 			}
@@ -154,9 +148,9 @@ class tipo : public ArbolSintactico {
 		tipo(ArbolSintactico * i, ArbolSintactico * t) : id(i), ti(t) {}
 		tipo(ArbolSintactico * i, ArbolSintactico * t, ArbolSintactico * ts) : id(i), ti(t), tis(ts) {}
 		virtual void imprimir(int tab){
-			if (tis != NULL){
-				tis -> imprimir(tab);
-			}
+			//if (tis != NULL){
+			//	tis -> imprimir(tab);
+			//}
 			cout << "TYPE" << endl;
 			for (int j = 0; j < tab+1; j++) cout << " ";
 			cout << "IDENTIFICADOR:" << endl;
@@ -243,6 +237,7 @@ class declaracion : public ArbolSintactico {
 		}
 };
 
+
 /* Definicion de la clase para la lista de declaraciones */
 class tipedec : public ArbolSintactico {
 	enum tipes {BOOL,CHAR,STRING,INT,FLOAT,ARRAY,LIST,TUPLE,ID,POINTER,UNIT};
@@ -309,6 +304,7 @@ class tipedec : public ArbolSintactico {
 			}
 		}
 };
+
 
 /* Definicion de la clase para la lista de instrucciones */
 class instruccion : public ArbolSintactico {
@@ -417,6 +413,7 @@ class entrada_salida : public ArbolSintactico {
 		}
 };
 
+
 //COMO LA ITERACION ES DETERMINADA POSIBLEMENTE NO SEA NECESARIO HACER UN ARBOL PARA EL RANGO
 /* Definicion de la clase para el for */
 class it_determinada : public ArbolSintactico {
@@ -483,6 +480,7 @@ class inst_guardia : public ArbolSintactico {
 		}
 };
 
+
 /* Definicion de la clase return y el break */
 class ret_brk : public ArbolSintactico {
 	public:
@@ -500,6 +498,8 @@ class ret_brk : public ArbolSintactico {
 		}
 };
 
+
+/* Definicion de la asignacion */
 class asignacion : public ArbolSintactico {
 	public:
 		ArbolSintactico * variable;
@@ -516,6 +516,7 @@ class asignacion : public ArbolSintactico {
 			valor->imprimir(tab+2);
 		}
 };
+
 
 /* Definicion de la clase para las expresiones que retornan int o float */
 class exp_aritmetica : public ArbolSintactico {
@@ -658,6 +659,7 @@ class exp_point : public ArbolSintactico {
 		}
 };
 
+
 /* Definicion de la clase para las expresiones para indexaciones*/
 class exp_index : public ArbolSintactico {
 	public:
@@ -675,6 +677,7 @@ class exp_index : public ArbolSintactico {
 			ind -> imprimir(tab+2);
 		}
 };
+
 
 /* Definicion de la clase para los identificadores */
 class identificador : public ArbolSintactico {
@@ -747,6 +750,7 @@ class character : public ArbolSintactico {
 		}
 };
 
+
 /* Definicion de la clase para unit (tipo que no retorna nada) */
 class unit : public ArbolSintactico {
 	public:
@@ -756,6 +760,7 @@ class unit : public ArbolSintactico {
 			cout << "unit" << endl;
 		}
 };
+
 
 /* Definicion de la clase para string */
 class str : public ArbolSintactico {
@@ -795,6 +800,7 @@ class ptr : public ArbolSintactico {
 		}
 };
 
+
 /* Definicion de la clase para la lista de elementos de una lista o arreglo */
 class elementos : public ArbolSintactico {
 	public:
@@ -812,6 +818,7 @@ class elementos : public ArbolSintactico {
 		}
 };
 
+
 /* Definicion de la clase para list */
 class lista : public ArbolSintactico {
 	public:
@@ -828,6 +835,7 @@ class lista : public ArbolSintactico {
 		}
 };
 
+
 /* Definicion de la clase para array */
 class arreglo : public ArbolSintactico {
 	public:
@@ -843,6 +851,7 @@ class arreglo : public ArbolSintactico {
 			}
 		}
 };
+
 
 /* Definicion de la clase para tuple */
 class tupla : public ArbolSintactico {
