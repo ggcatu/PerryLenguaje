@@ -22,8 +22,8 @@ using namespace std;
 #define FLOTANTES 3
 #define BOOLEANOS 4
 #define CHARACTERES 5
-#define STR 6
-#define UNIT 7
+#define STRINGS 6
+#define UNITS 7
 #define CONDICION 8
 
 /* Definiciones externas (parser.y) que permiten compartir el codigo. */
@@ -69,8 +69,8 @@ class funcion : public ArbolSintactico {
 		ArbolSintactico * id;
 		ArbolSintactico * instrucciones;
 		ArbolSintactico * funciones;
-		funcion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * p, ArbolSintactico * is) : tipo(t), parametros(p), id(i), instrucciones(is) {}
-		funcion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * p, ArbolSintactico * is, ArbolSintactico * fs) : tipo(t), parametros(p), id(i), instrucciones(is), funciones(fs) {}
+		funcion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * p, ArbolSintactico * is) : tipo(t), id(i), parametros(p), instrucciones(is) {}
+		funcion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * p, ArbolSintactico * is, ArbolSintactico * fs) : tipo(t), id(i), parametros(p), instrucciones(is), funciones(fs) {}
 		virtual void imprimir(int tab){
 			if (funciones != NULL){
 				funciones -> imprimir(tab);
@@ -117,13 +117,19 @@ class estructura : public ArbolSintactico {
 		ArbolSintactico * id;
 		ArbolSintactico * campos;
 		ArbolSintactico * estructuras;
-		estructura(ArbolSintactico * i, ArbolSintactico * c) : id(i), campos(c) {}
-		estructura(ArbolSintactico * i, ArbolSintactico * c, ArbolSintactico * es) : id(i), campos(c), estructuras(es) {}
+		bool st;
+		estructura(ArbolSintactico * i, ArbolSintactico * c, bool t) : id(i), campos(c), st(t) {}
+		estructura(ArbolSintactico * i, ArbolSintactico * c, ArbolSintactico * es, bool t) : id(i), campos(c), estructuras(es), st(t) {}
 		virtual void imprimir(int tab){
 			if (estructuras != NULL){
 					estructuras -> imprimir(tab);
 			}
-			cout << "ESTRUCTURA:" << endl;
+			if (st){
+				cout << "STRUCT:" << endl;
+			}
+			else {
+				cout << "UNION:" << endl;
+			}
 			if (id != NULL && campos != NULL){
 				id -> imprimir(tab+1);
 				campos -> imprimir(tab+1);
@@ -141,8 +147,8 @@ class tipo : public ArbolSintactico {
 		tipo(ArbolSintactico * i, ArbolSintactico * t) : id(i), ti(t) {}
 		tipo(ArbolSintactico * i, ArbolSintactico * t, ArbolSintactico * ts) : id(i), ti(t), tis(ts) {}
 		virtual void imprimir(int tab){
-			if (tipos != NULL){
-				tipos -> imprimir(tab);
+			if (tis != NULL){
+				tis -> imprimir(tab);
 			}
 			cout << "TYPE" << endl;
 			for (int j = 0; j < tab+1; j++) cout << "	";
@@ -206,9 +212,9 @@ class declaracion : public ArbolSintactico {
 		ArbolSintactico * exp;
 		ArbolSintactico * declaraciones;
 		declaracion(ArbolSintactico * d, ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * e) : declaraciones(d), tipo(t), id(i), exp(e) {}
-		declaracion(ArbolSintactico * d, ArbolSintactico * t, ArbolSintactico * i) : declaraciones(d), tipo(t), id(i) {}
-		declaracion(ArbolSintactico * t, ArbolSintactico * i) : tipo(t), id(i) {}
+		declaracion(ArbolSintactico * d, ArbolSintactico * t, ArbolSintactico * i, bool aux) : declaraciones(d), tipo(t), id(i) {}
 		declaracion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * e) : tipo(t), id(i), exp(e) {}
+		declaracion(ArbolSintactico * t, ArbolSintactico * i) : tipo(t), id(i) {}
 		virtual void imprimir(int tab){
 			if (declaraciones != NULL){
 				declaraciones -> imprimir(tab);
@@ -261,9 +267,9 @@ class parametros : public ArbolSintactico {
 			}
 			for (int j = 0; j < tab; j++) cout << "	";
 			if (ref){
-				cout << "PARAMETRO POR REFERENCIA" << endl;
+				cout << "PARAMETRO POR REFERENCIA:" << endl;
 			} else {
-				cout << "PARAMETRO POR VALOR" << endl;
+				cout << "PARAMETRO POR VALOR:" << endl;
 			}
 			for (int j = 0; j < tab+1; j++) cout << "	";
 			cout << "TIPO:" << endl;
@@ -608,7 +614,7 @@ class character : public ArbolSintactico {
 
 class unit : public ArbolSintactico {
 	public:
-		unit() : ArbolSintactico(UNIT) {}
+		unit() : ArbolSintactico(UNITS) {}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << "	";
 			cout << "unit: " << endl;
@@ -619,7 +625,8 @@ class unit : public ArbolSintactico {
 class str : public ArbolSintactico {
 	public:
 		string valor;
-		string() : ArbolSintactico(STR) {}
+		str() : ArbolSintactico(STRINGS) {}
+		str(string v) : valor(v) {}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << "	";
 			cout << "string: " << endl;
