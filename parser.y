@@ -179,15 +179,15 @@ Exp	 		: Exp SUMA Exp										{ $$ = new exp_aritmetica($1,$3,1); }
 			
 
 Literals	: Ids												{$$ = $1;}
-			| CHAR 												{ $$ = new character(); }
-			| FLOAT 											{ $$ = new flotante(); }
-			| INT 												{ $$ = new entero(); }
-			| STRING 											{ $$ = new str(); }
+			| CHAR 												{ $$ = new character($1); }
+			| FLOAT 											{ $$ = new flotante($1); }
+			| INT 												{ $$ = new entero($1); }
+			| STRING 											{ $$ = new str($1); }
 			| LLAVEABRE List LLAVECIERRA 						{ $$ = new lista($2); }
 			| CORCHETEABRE List CORCHETECIERRA 					{ $$ = new arreglo($2); }
 			| PARABRE Exp COMA Exp PARCIERRA 					{ $$ = new tupla($2,$4); }
-			| TRUE 												{ $$ = new booleano(); }
-			| FALSE 											{ $$ = new booleano(); }
+			| TRUE 												{ $$ = new booleano(true); }
+			| FALSE 											{ $$ = new booleano(false); }
 			;
 
 Ids 		: IDENTIFIER PUNTO Ids 								{ $$ = $1; }
