@@ -147,7 +147,7 @@ Inst		: Scope					 							{ $$ = $1; }
 			| IDENTIFIER PARABRE List PARCIERRA 				{ $$ = new llamada(new identificador($1),$3); }
 			| RETURN Exp										{ $$ = new ret_brk(true, $2); }
 			| BREAK												{ $$ = new ret_brk(false, (ArbolSintactico*)(NULL)); }
-			| 													{ NULL; }
+			| 													{ $$ = new instruccion(); }
 			;
 
 Exp	 		: Exp SUMA Exp										{ $$ = new exp_aritmetica($1,$3,0); }
@@ -172,7 +172,7 @@ Exp	 		: Exp SUMA Exp										{ $$ = new exp_aritmetica($1,$3,0); }
 			| IDENTIFIER PARABRE List PARCIERRA 				{ $$ = new llamada(new identificador($1),$3); }
 			| IDENTIFIER CORCHETEABRE Exp CORCHETECIERRA 		{ $$ = new exp_index(new identificador($1),$3); }
 
-			| OPTR IDENTIFIER	 								{ $$ = new exp_point(new identificador($2)); }
+			| OPTR Ids	 								{ $$ = new exp_point(new ids($2)); }
 			| Literals											{ $$ = $1; }
 			;
 			
@@ -189,8 +189,8 @@ Literals	: Ids												{ $$ = $1;}
 			| FALSE 											{ $$ = new booleano(false); }
 			;
 
-Ids 		: IDENTIFIER PUNTO Ids 								{$$ = new identificador($1); }
-			| IDENTIFIER 										{$$ = new identificador($1); }
+Ids 		: IDENTIFIER PUNTO Ids 								{$$ = new ids(new identificador($1),$3); }
+			| IDENTIFIER 										{$$ = new ids(new identificador($1)); }
 			;
 
 List		: Exp COMA List 									{ $$ = new elementos($3,$1); }

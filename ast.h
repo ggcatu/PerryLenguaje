@@ -6,6 +6,7 @@ en el proyecto
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
 #include <stdexcept>
 #include <map>
@@ -16,6 +17,7 @@ en el proyecto
 #include <vector>
 #include <algorithm>
 #include <iterator>
+#include "definiciones.h"
 #include "ast_def.h"
 using namespace std;
 #define ENTEROS 1
@@ -84,7 +86,7 @@ class funcion : public ArbolSintactico {
 			cout << "INSTRUCCIONES:" << endl;
 			instrucciones -> imprimir(tab+2);
 			if (funciones != NULL){
-				funciones -> imprimir(tab+2);
+				funciones -> imprimir(tab);
 			}
 		}
 };
@@ -129,11 +131,15 @@ class estructura : public ArbolSintactico {
 				cout << "UNION:" << endl;
 			}
 			if (campos != NULL){
-				id -> imprimir(tab+1);
+				for (int j = 0; j < tab+1; j++) cout << " ";
+				cout << "INDENTIFICADOR:" << endl;
+				id -> imprimir(tab+2);
+				for (int j = 0; j < tab+1; j++) cout << " ";
+				cout << "CAMPOS:" << endl;
 				campos -> imprimir(tab+1);
 			}
 			if (estructuras != NULL){
-				estructuras -> imprimir(tab+1);
+				estructuras -> imprimir(tab);
 			}
 		}
 };
@@ -254,52 +260,52 @@ class tipedec : public ArbolSintactico {
 			for (int j = 0; j < tab; j++) cout << " ";
 			switch(names){
 				case BOOL:
-					cout << "BOOL" << endl;
+					cout << "BOOL:" << endl;
 					break;
 				case CHAR:
-					cout << "CHAR" << endl;
+					cout << "CHAR:" << endl;
 					break;
 				case STRING:
-					cout << "STRING" << endl;
+					cout << "STRING:" << endl;
 					break;
 				case INT:
-					cout << "ENTERO" << endl;
+					cout << "ENTERO:" << endl;
 					break;
 				case FLOAT:
-					cout << "FLOTANTE" << endl;
+					cout << "FLOTANTE:" << endl;
 					break;
 				case ARRAY:
-					cout << "ARREGLO" << endl;
+					cout << "ARREGLO:" << endl;
 					break;
 				case LIST:
-					cout << "LISTA" << endl;
+					cout << "LISTA:" << endl;
 					break;
 				case TUPLE:
-					cout << "TUPLA" << endl;
+					cout << "TUPLA:" << endl;
 					break;
 				case ID:
-					cout << "IDENTIFICADOR" << endl;
+					cout << "IDENTIFICADOR:" << endl;
 					break;
 				case POINTER:
-					cout << "APUNTADOR" << endl;
+					cout << "APUNTADOR:" << endl;
 					break;
 				case UNIT:
-					cout << "UNIT" << endl;
+					cout << "UNIT:" << endl;
 					break;
 			}
 			if (subtipo1 != NULL){
 				for (int j = 0; j < tab; j++) cout << " ";
-				cout << "DE:" << endl;
+				cout << "TIPO:" << endl;
 				subtipo1 -> imprimir(tab+1); 
 			}
 			if (subtipo2 != NULL){
 				for (int j = 0; j < tab; j++) cout << " ";
-				cout << "Y DE:" << endl;
+				cout << "TIPO:" << endl;
 				subtipo2 -> imprimir(tab+1); 
 			}
 			if (tam != NULL){
 				for (int j = 0; j < tab; j++) cout << " ";
-				cout << "DE TAMAÑO:" << endl;
+				cout << "TAMAÑO:" << endl;
 				tam -> imprimir(tab+1); 
 			}
 		}
@@ -311,6 +317,7 @@ class instruccion : public ArbolSintactico {
 	public:
 		ArbolSintactico * instrucciones;
 		ArbolSintactico * inst;
+		instruccion() {}
 		instruccion(ArbolSintactico * is, ArbolSintactico * i) : instrucciones(is), inst(i) {}
 		instruccion(ArbolSintactico * i) : inst(i) {}
 		virtual void imprimir(int tab){
@@ -679,6 +686,28 @@ class exp_index : public ArbolSintactico {
 };
 
 
+/* Definicion de la clase para los id.id*/
+class ids : public ArbolSintactico {
+	public:
+		ArbolSintactico * id;
+		ArbolSintactico * idr;
+		ids(ArbolSintactico * i) : id(i) {}
+		ids(ArbolSintactico * i, ArbolSintactico * is) : id(i), idr(i) {}
+		virtual void imprimir(int tab){
+			for (int j = 0; j < tab; j++) cout << " ";
+			cout << "ACCESO: " << endl;
+			for (int j = 0; j < tab+1; j++) cout << " ";
+			cout << "IDENTIFICADOR: " << endl;
+			id -> imprimir(tab+2);
+			if (idr != NULL){
+				for (int j = 0; j < tab+1; j++) cout << " ";
+				cout << "CAMPO: " << endl;
+				idr -> imprimir(tab+2);
+			}
+		}
+};
+
+
 /* Definicion de la clase para los identificadores */
 class identificador : public ArbolSintactico {
 	public:
@@ -686,7 +715,7 @@ class identificador : public ArbolSintactico {
 		identificador(string v) : valor(v) {}
 		virtual void imprimir(int tab) {
 			for (int j = 0; j < tab; j++) cout << " ";
-			cout << "identificador: " << valor << endl;
+			cout << "id: " << valor << endl;
 		}
 };
 
@@ -700,7 +729,7 @@ class entero : public ArbolSintactico {
 		virtual void imprimir(int tab) {
 			if (!is_type){
 				for (int j = 0; j < tab; j++) cout << " ";
-				cout << "entero: " << valor << endl;
+				cout << "int: " << valor << endl;
 			}
 		}
 };
@@ -715,7 +744,7 @@ class flotante : public ArbolSintactico {
 		virtual void imprimir(int tab) {
 			if (!is_type){
 				for (int j = 0; j < tab; j++) cout << " ";
-				cout << "flotante: " << valor << endl;
+				cout << "float: " << valor << endl;
 			}
 		}
 };
@@ -730,7 +759,13 @@ class booleano : public ArbolSintactico {
 		virtual void imprimir(int tab) {
 			if (!is_type){
 				for (int j = 0; j < tab; j++) cout << " ";
-				cout << "booleano: " << valor << endl;
+				if (valor){
+					cout << "bool: true" << endl;	
+				} else {
+					cout << "bool: false" << endl;
+				}
+
+				
 			}
 		}
 };
@@ -745,7 +780,7 @@ class character : public ArbolSintactico {
 		virtual void imprimir(int tab) {
 			if (!is_type){
 				for (int j = 0; j < tab; j++) cout << " ";
-				cout << "character: " << valor << endl;
+				cout << "char: " << valor << endl;
 			}
 		}
 };
@@ -813,7 +848,7 @@ class elementos : public ArbolSintactico {
 				elems -> imprimir(tab);
 			}
 			for (int j = 0; j < tab; j++) cout << " ";
-			cout << "ELEMENTO:" << endl;
+			cout << "PARAMETRO:" << endl;
 			val -> imprimir(tab+1);
 		}
 };
@@ -864,10 +899,10 @@ class tupla : public ArbolSintactico {
 			cout << "TUPLA:" << endl;	
 			if (valor1 != NULL && valor2 != NULL){ 
 				for (int j = 0; j < tab+1; j++) cout << " ";
-				cout << "VALOR1:" << endl;	
+				cout << "PRIMER VALOR:" << endl;	
 				valor1 ->	imprimir(tab+2);
 				for (int j = 0; j < tab+1; j++) cout << " ";
-				cout << "VALOR2:" << endl;	
+				cout << "SEGUNDO VALOR:" << endl;	
 				valor2 -> imprimir(tab+2);
 			}
 		}

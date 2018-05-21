@@ -21,6 +21,7 @@ using namespace std;
 
 extern string nToWord[];
 string IntToString ( int number );
+string FloatToString (float number);
 
 struct Token{
 	int identificador,fila,columna;

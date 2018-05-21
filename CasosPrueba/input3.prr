@@ -1,35 +1,10 @@
 include "input1.prr" 
-include "input2.prr"
-include "input3.prr"
-
-type ide = int;
-
-type struct id{
-	int a;
-}
-
-int suma(int a, int b){
-	create{
-		int c = 5;
-	}
-	execute{ 
-		c = a + c;
-		return a+b;
-	};
-}
-
-type struct id{
-	int a;
-}
-
-type ide = int;
 
 main{
 	create{
-		int n = 7;
-		bool hola = false;
+		ptr int id;
   	}
  	execute{
- 		>> n;
+ 		>> ^îd;
  	};
 }
