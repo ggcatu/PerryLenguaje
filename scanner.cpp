@@ -42,7 +42,6 @@ vector<Token *> errors;
 
 void execute_lexer(){
 	cout << "Executing lexer" << endl;
-
     // Inicialización para nuestro ciclo de lectura
 	int ntoken = yylex();
 	cout << "EPA " << endl;
@@ -132,6 +131,7 @@ void execute_parser(){
 
 int main(int argc, char** argv) {	
 	init_strings();
+    cout << "EPALE" << endl;
 	// Cambio del input stream al archivo en argv[1]
     yyin = fopen(argv[1],"r");
     if (yyin == false){

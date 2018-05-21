@@ -28,7 +28,7 @@ Por otro lado facilita bastante modificar el to_string de los tokens.
 
 */
 
-string nToWord[256];
+string nToWord[300];
 
 void init_strings(){
 	nToWord[LLAVEABRE] = "LLAVEABRE"; 
