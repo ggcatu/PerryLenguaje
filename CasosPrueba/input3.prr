@@ -3,12 +3,10 @@ include "input2.prr"
 
 main{
 	create{
+		int n = 7;
   	}
  	execute{
- 		>> n;
- 		if (algo == algo){
- 			>> algo;
- 		};
+ 		>> n; 		
  	}
 }
 

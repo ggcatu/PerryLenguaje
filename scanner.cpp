@@ -41,10 +41,11 @@ vector<Token *> tokens;
 vector<Token *> errors;
 
 void execute_lexer(){
-	//cout << "Executing lexer" << endl;
+	cout << "Executing lexer" << endl;
 
     // Inicialización para nuestro ciclo de lectura
 	int ntoken = yylex();
+	cout << "EPA " << endl;
 	int posicion = 1;
 	int altura = yylineno;
 	while (ntoken) {
@@ -87,7 +88,6 @@ void execute_lexer(){
 		if (ntoken == COMENTARIO && yytext[1] == '*') {
 			; // Es un comentario, simplemente se ignora
 		}
-
 		ntoken = yylex();
 	}
 
@@ -113,7 +113,6 @@ void execute_parser(){
 		cout << "Error: " << endl;
 			cout << errorMessage << endl;
 	}
-
 	// Si hay errores del lexer, imprimirlos
 	if (!errors.empty()){
 		print_errors(errors);
@@ -139,7 +138,6 @@ int main(int argc, char** argv) {
     	cout << "Error de lectura, revise el archivo " << argv[1] << endl;
     	return 0;
     }
-	
 	if (argc > 2){
 		for (int i = 2; i < argc; i++ ){
 			string arg(argv[i]);
@@ -147,8 +145,9 @@ int main(int argc, char** argv) {
 				execute_lexer();
 			}
 			else if (arg == "-p"){
+				cout << "ahhaha" << endl;
 				execute_parser();
-				root_ast->imprimir(0);
+				cout << "sdf" << endl;
 			}
 		}
 	} else {

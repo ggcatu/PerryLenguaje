@@ -65,9 +65,9 @@ void yyerror (char const *s) {
 %token <flot> FLOAT
 %token <str> IDENTIFIER
 %token <ch> CHAR
-%token <str> STRING
+%token <str> STRING 
 %token <boolean> TRUE FALSE
-%type <arb> S Includelist Start Typedef Varlist Declist Sec Inst Exp Ids List
+%type <arb> S Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals
 
 %%
 
@@ -84,18 +84,17 @@ Includelist : INCLUDE Exp Includelist							{ $$ = new include($2,$3); }
 Start 		: MAIN LLAVEABRE Scope LLAVECIERRA Start 				{ $$ = new programa($3,$5); }		
 	 		| MAIN LLAVEABRE Scope LLAVECIERRA					{ $$ = new programa($3); }
 			
-<<<<<<< HEAD
-			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA Start		{ $$ = new funcion($1,$2,$4,$7,$9); }
-			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA			{ $$ = new funcion($1,$2,$4,$7); }
+			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA Start		{ $$ = new funcion($1,new identificador($2),$4,$7,$9); }
+			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Scope LLAVECIERRA			{ $$ = new funcion($1,new identificador($2),$4,$7); }
 
-			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA Start 	{  $$ = new estructura($3,$5,true,$7); }
-			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA			{ $$ = new estructura($3,$5,true); }
+			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA Start 	{  $$ = new estructura(new identificador($3),$5,$7,true); }
+			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA			{ $$ = new estructura(new identificador($3),$5,true); }
 			
-			| TYPE UNION IDENTIFIER LLAVEABRE Declist LLAVECIERRA Start  	{ $$ = new estructura($3,$5,false,$7); }
-			| TYPE UNION IDENTIFIER LLAVEABRE Declist LLAVECIERRA 			{ $$ = new estructura($3,$5,false); }
+			| TYPE UNION IDENTIFIER LLAVEABRE Declist LLAVECIERRA Start  	{ $$ = new estructura(new identificador($3),$5,$7,false); }
+			| TYPE UNION IDENTIFIER LLAVEABRE Declist LLAVECIERRA 			{ $$ = new estructura(new identificador($3),$5,false); }
 			
-			| TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA Start					{ $$ = new tipo($2,$4,$6); }
-			| TYPE IDENTIFIER IGUAL Typedef	PUNTOCOMA						{ $$ = new tipo($2,$4); }
+			| TYPE IDENTIFIER IGUAL Typedef PUNTOCOMA Start					{ $$ = new tipo(new identificador($2),$4,$6); }
+			| TYPE IDENTIFIER IGUAL Typedef	PUNTOCOMA						{ $$ = new tipo(new identificador($2),$4); }
 			; 
 
 Scope 		: CREATE LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA 	{ $$ = new bloque($3,$7); }
@@ -103,29 +102,29 @@ Scope 		: CREATE LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA
 			| EXECUTE LLAVEABRE Sec LLAVECIERRA  										{ $$ = new bloque($3); }
 			;
 
-			| BOOL  											{ $$ = new tipedec(1); }
-Typedef		: LCHAR 											{ $$ = new tipedec(2); }
+Typedef		: BOOL  											{ $$ = new tipedec(1); }
+			| LCHAR 											{ $$ = new tipedec(2); }
 			| LSTRING  											{ $$ = new tipedec(3); }
 			| LINT  											{ $$ = new tipedec(4); }
 			| LFLOAT  											{ $$ = new tipedec(5); }
 			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{ $$ = new tipedec(6,$2,NULL,$4); }
 			| LIST Typedef 										{ $$ = new tipedec(7,$2); }
 			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{ $$ = new tipedec(8,$3,$5); }
-			| IDENTIFIER										{ $$ = new tipedec(9); }
+			| IDENTIFIER										{ $$ = new identificador($1); }
 			| POINTER Typedef  									{ $$ = new tipedec(10,$2); }
 			| UNIT 												{ $$ = new tipedec(11); }
 			;
 
-Varlist 	: Typedef IDENTIFIER COMA Varlist 					{ $$ = new parametros($4,$1,$2,false); }
-			| Typedef REFERENCE IDENTIFIER COMA Varlist			{ $$ = new parametros($5,$1,$3,true); }
-			| Typedef IDENTIFIER 								{ $$ = new parametros($1,$2,false); }
-			| Typedef REFERENCE IDENTIFIER						{ $$ = new parametros($1,$3,true);}
+Varlist 	: Typedef IDENTIFIER COMA Varlist 					{ $$ = new parametros($4,$1,new identificador($2),false); }
+			| Typedef REFERENCE IDENTIFIER COMA Varlist			{ $$ = new parametros($5,$1,new identificador($3),true); }
+			| Typedef IDENTIFIER 								{ $$ = new parametros($1,new identificador($2),false); }
+			| Typedef REFERENCE IDENTIFIER						{ $$ = new parametros($1,new identificador($3),true);}
 			;
 
-Declist 	: Typedef IDENTIFIER PUNTOCOMA Declist				{ $$ = new declaracion($4,$1,$2,NULL); }
-			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist	{ $$ = new declaracion($6,$1,$2,$4); }
-			| Typedef IDENTIFIER PUNTOCOMA 						{ $$ = new declaracion($1,$2); }
-			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA 			{ $$ = new declaracion($1,$2,$3);}
+Declist 	: Typedef IDENTIFIER PUNTOCOMA Declist				{ $$ = new declaracion($4,$1, new identificador($2),(ArbolSintactico*)(NULL)); }
+			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist	{ $$ = new declaracion($6,$1,new identificador($2),$4); }
+			| Typedef IDENTIFIER PUNTOCOMA 						{ $$ = new declaracion($1,new identificador($2)); }
+			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA 			{ $$ = new declaracion($1,new identificador($2),$4);}
 			;
 
 Sec 		: Inst PUNTOCOMA Sec  								{ $$ = new instruccion($3,$1); }
@@ -134,18 +133,18 @@ Sec 		: Inst PUNTOCOMA Sec  								{ $$ = new instruccion($3,$1); }
 
 Inst		: Scope					 							{ $$ = $1; }
 			| Ids IGUAL Exp										{ $$ = new asignacion($1,$3);}
-			| SALIDA Exp 										{ $$ = new entrada_salida($2,false); }
+			| SALIDA Exp 										{ cout << "salida" << endl; $$ = new entrada_salida($2,false); }
 			| ENTRADA Exp  										{ $$ = new entrada_salida($2,true); }
 
 			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA		{ $$ = new inst_guardia($3,$6,$10,2); }
 			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  									{ $$ = new inst_guardia($3,$6,1); }
 
-			| FOR PARABRE Typedef IDENTIFIER IGUAL Exp COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA 	{$$ = new it_determinada($4,$9,$11,$17);}
+			| FOR PARABRE Typedef IDENTIFIER IGUAL Exp COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA 	{$$ = new it_determinada(new declaracion($3,new identificador($4),$6),$9,$11,$17);}
 
 			| WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  		{ $$ = new inst_guardia($3,$6,3); }
-			| NEW PARABRE IDENTIFIER PARCIERRA					{ $$ =  new memoria($3,true); }
-			| FREE PARABRE IDENTIFIER PARCIERRA					{ $$ =  new memoria($3,false); }
-			| IDENTIFIER PARABRE List PARCIERRA 				{ $$ = new llamada($1,$3); }
+			| NEW PARABRE IDENTIFIER PARCIERRA					{ $$ =  new memoria(new identificador($3),true); }
+			| FREE PARABRE IDENTIFIER PARCIERRA					{ $$ =  new memoria(new identificador($3),false); }
+			| IDENTIFIER PARABRE List PARCIERRA 				{ $$ = new llamada(new identificador($1),$3); }
 			| RETURN Exp										{ $$ = new ret_brk(true); }
 			| BREAK												{ $$ = new ret_brk(false); }
 			| 													{ NULL; }
@@ -158,7 +157,7 @@ Exp	 		: Exp SUMA Exp										{ $$ = new exp_aritmetica($1,$3,1); }
 			| Exp MOD Exp										{ $$ = new exp_aritmetica($1,$3,5); }
 			| Exp POW Exp 										{ $$ = new exp_aritmetica($1,$3,6); }
 			| PARABRE Exp PARCIERRA								{ $$ = $2; }
-			| RESTA Exp	 										{ $$ = new exp_aritmetica($1,2); }
+			| RESTA Exp	 										{ $$ = new exp_aritmetica($2,2); }
 			
 			| Exp IGUALA Exp									{ $$ = new exp_booleana($1,$3,1); }
 			| Exp DISTINTOA Exp									{ $$ = new exp_booleana($1,$3,2); }
@@ -168,12 +167,12 @@ Exp	 		: Exp SUMA Exp										{ $$ = new exp_aritmetica($1,$3,1); }
 			| Exp MAYORIGUAL Exp								{ $$ = new exp_booleana($1,$3,6); }
 			| Exp DISYUNCION Exp								{ $$ = new exp_booleana($1,$3,7); }
 			| Exp CONJUNCION Exp								{ $$ = new exp_booleana($1,$3,8); }
-			| NEGACION Exp										{ $$ = new exp_booleana($1,9); }
+			| NEGACION Exp										{ $$ = new exp_booleana($2,9); }
 
-			| IDENTIFIER PARABRE List PARCIERRA 				{ $$ = new llamada($1,$3); }
-			| IDENTIFIER CORCHETEABRE Exp CORCHETECIERRA 		{ $$ = new exp_index($1,$3); }
+			| IDENTIFIER PARABRE List PARCIERRA 				{ $$ = new llamada(new identificador($1),$3); }
+			| IDENTIFIER CORCHETEABRE Exp CORCHETECIERRA 		{ $$ = new exp_index(new identificador($1),$3); }
 
-			| OPTR IDENTIFIER	 								{ $$ = new exp_point($2); }
+			| OPTR IDENTIFIER	 								{ $$ = new exp_point(new identificador($2)); }
 			| Literals											{ $$ = $1; }
 			;
 			
@@ -190,8 +189,8 @@ Literals	: Ids												{$$ = $1;}
 			| FALSE 											{ $$ = new booleano(false); }
 			;
 
-Ids 		: IDENTIFIER PUNTO Ids 								{ $$ = $1; }
-			| IDENTIFIER 										{ $$ = $1; }
+Ids 		: IDENTIFIER PUNTO Ids 								{ cout << "ids" << endl; $$ = new identificador($1); }
+			| IDENTIFIER 										{ cout << "ids" << endl; $$ = new identificador($1); }
 			;
 
 List		: Exp COMA List 									{ $$ = new elementos($3,$1); }
