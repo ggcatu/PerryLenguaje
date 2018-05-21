@@ -44,7 +44,6 @@ void execute_lexer(){
 	cout << "Executing lexer" << endl;
     // Inicialización para nuestro ciclo de lectura
 	int ntoken = yylex();
-	cout << "EPA " << endl;
 	int posicion = 1;
 	int altura = yylineno;
 	while (ntoken) {
@@ -103,7 +102,7 @@ void execute_lexer(){
 }
 
 void execute_parser(){
-	//cout << "Executing parser" << endl;
+	cout << "Executing parser" << endl;
     
     try {
 		yyparse();
@@ -131,7 +130,6 @@ void execute_parser(){
 
 int main(int argc, char** argv) {	
 	init_strings();
-    cout << "EPALE" << endl;
 	// Cambio del input stream al archivo en argv[1]
     yyin = fopen(argv[1],"r");
     if (yyin == false){
@@ -145,9 +143,7 @@ int main(int argc, char** argv) {
 				execute_lexer();
 			}
 			else if (arg == "-p"){
-				cout << "ahhaha" << endl;
 				execute_parser();
-				cout << "sdf" << endl;
 			}
 		}
 	} else {

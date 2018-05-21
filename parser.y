@@ -145,8 +145,8 @@ Inst		: Scope					 							{ $$ = $1; }
 			| NEW PARABRE IDENTIFIER PARCIERRA					{ $$ =  new memoria(new identificador($3),true); }
 			| FREE PARABRE IDENTIFIER PARCIERRA					{ $$ =  new memoria(new identificador($3),false); }
 			| IDENTIFIER PARABRE List PARCIERRA 				{ $$ = new llamada(new identificador($1),$3); }
-			| RETURN Exp										{ $$ = new ret_brk(true); }
-			| BREAK												{ $$ = new ret_brk(false); }
+			| RETURN Exp										{ $$ = new ret_brk(true, $2); }
+			| BREAK												{ $$ = new ret_brk(false, (ArbolSintactico*)(NULL)); }
 			| 													{ NULL; }
 			;
 
@@ -189,8 +189,8 @@ Literals	: Ids												{$$ = $1;}
 			| FALSE 											{ $$ = new booleano(false); }
 			;
 
-Ids 		: IDENTIFIER PUNTO Ids 								{ cout << "ids" << endl; $$ = new identificador($1); }
-			| IDENTIFIER 										{ cout << "ids" << endl; $$ = new identificador($1); }
+Ids 		: IDENTIFIER PUNTO Ids 								{$$ = new identificador($1); }
+			| IDENTIFIER 										{$$ = new identificador($1); }
 			;
 
 List		: Exp COMA List 									{ $$ = new elementos($3,$1); }

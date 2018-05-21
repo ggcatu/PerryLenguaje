@@ -198,7 +198,7 @@ class bloque : public ArbolSintactico {
 		bloque(ArbolSintactico * i) : instrucciones(i) {}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << "	";
-			cout << "CREATE-EXECUTE:" << endl;
+			cout << "BLOQUE:" << endl;
 			if (declaraciones != NULL){
 				for (int j = 0; j < tab+1; j++) cout << "	";
 				cout << "DECLARACIONES:" << endl;
@@ -317,11 +317,13 @@ class instruccion : public ArbolSintactico {
 		instruccion(ArbolSintactico * is, ArbolSintactico * i) : instrucciones(is), inst(i) {}
 		instruccion(ArbolSintactico * i) : inst(i) {}
 		virtual void imprimir(int tab){
-			if (instrucciones != NULL){
-				instrucciones -> imprimir(tab);
-			}
 			if (inst != NULL){
 				inst -> imprimir(tab);
+			}
+			for (int j = 0; j < tab+1; j++) cout << "	";
+			cout << "------------------------------------"<< endl; 
+			if (instrucciones != NULL){
+				instrucciones -> imprimir(tab);
 			}
 		}
 };
@@ -485,11 +487,13 @@ class inst_guardia : public ArbolSintactico {
 class ret_brk : public ArbolSintactico {
 	public:
 		bool ret;
-		ret_brk(bool r) : ret(r) {}
+		ArbolSintactico * valor;
+		ret_brk(bool r, ArbolSintactico * v) : ret(r), valor(v) {}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab+1; j++) cout << "	";
 			if (ret){
-				cout << "RETURN" << endl;
+				cout << "RETURN: " << endl;
+				valor -> imprimir(tab + 2);
 			}else{
 				cout << "BREAK" << endl;
 			}
@@ -502,6 +506,12 @@ class asignacion : public ArbolSintactico {
 		ArbolSintactico * valor;
 		asignacion(ArbolSintactico * v, ArbolSintactico * b) : variable(v), valor(b) {}
 		virtual void imprimir(int tab){
+			for (int j = 0; j < tab+1; j++) cout << "	";
+			cout << "VARIABLE: " << endl;
+			variable->imprimir(tab+2);
+			for (int j = 0; j < tab+1; j++) cout << "	";
+			cout << "VALOR: " << endl;
+			valor->imprimir(tab+2);
 		}
 };
 

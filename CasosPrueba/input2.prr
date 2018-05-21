@@ -2,6 +2,7 @@ module
 
 int suma(int a, int b){
 	execute{ 
+		c = a + c;
 		return a+b;
 	}
-};
+}
