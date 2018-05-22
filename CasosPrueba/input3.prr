@@ -1,10 +1,7 @@
 include "input1.prr" 
 
 main{
-	create{
-		ptr int id;
-  	}
  	execute{
- 		>> ^îd;
+ 		Y = id.jjjjjjj;
  	};
 }

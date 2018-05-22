@@ -686,16 +686,18 @@ class exp_index : public ArbolSintactico {
 };
 
 
-/* Definicion de la clase para los id.id*/
+/* Definicion de la clase para los accesos a campos e identificadores en expresiones */
 class ids : public ArbolSintactico {
 	public:
 		ArbolSintactico * id;
 		ArbolSintactico * idr;
 		ids(ArbolSintactico * i) : id(i) {}
-		ids(ArbolSintactico * i, ArbolSintactico * is) : id(i), idr(i) {}
+		ids(ArbolSintactico * i, ArbolSintactico * is) : id(i), idr(is) {}
 		virtual void imprimir(int tab){
-			for (int j = 0; j < tab; j++) cout << " ";
-			cout << "ACCESO: " << endl;
+			if (idr != NULL){
+				for (int j = 0; j < tab; j++) cout << " ";
+				cout << "ACCESO: " << endl;
+			}
 			for (int j = 0; j < tab+1; j++) cout << " ";
 			cout << "IDENTIFICADOR: " << endl;
 			id -> imprimir(tab+2);
