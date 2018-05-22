@@ -1,11 +1,11 @@
 module
 
-int suma(int a, int b){
+int suma(int @ a, int b){
 	create{
 		int c = 5;
 	}
 	execute{ 
 		c = a + c;
 		return a+b;
-	}
+	};
 }

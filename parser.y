@@ -14,7 +14,7 @@ extern int yycolumn;
 extern int yylineno;
 extern char * yytext;
 ArbolSintactico * root_ast;
-bool error_sintactico = 0; 
+bool error_sintactico = 0;
 
 void yyerror (char const *s) {
 	error_sintactico = 1;
@@ -41,7 +41,8 @@ void yyerror (char const *s) {
 %left IGUALA DISTINTOA MENOR MAYOR MAYORIGUAL MENORIGUAL
 %left SUMA RESTA
 %left POW MULT DIV MOD
-%right NEGACION ELSE
+%right NEGACION
+%right ELSE
 
 %token LLAVEABRE 1 LLAVECIERRA 2 CORCHETEABRE 3 CORCHETECIERRA 4 PARABRE 5 PARCIERRA 6
 %token MAIN 7
@@ -87,7 +88,7 @@ Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }
 			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA Start		{ $$ = new funcion($1,new identificador($2),$4,$7,$9); }
 			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA			{ $$ = new funcion($1,new identificador($2),$4,$7); }
 
-			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA Start 	{  $$ = new estructura(new identificador($3),$5,$7,true); }
+			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA Start 	{ $$ = new estructura(new identificador($3),$5,$7,true); }
 			| TYPE STRUCT IDENTIFIER LLAVEABRE Declist LLAVECIERRA			{ $$ = new estructura(new identificador($3),$5,true); }
 			
 			| TYPE UNION IDENTIFIER LLAVEABRE Declist LLAVECIERRA Start  	{ $$ = new estructura(new identificador($3),$5,$7,false); }
@@ -132,7 +133,7 @@ Sec 		: Inst PUNTOCOMA Sec  								{ $$ = new instruccion($3,$1); }
 			;
 
 Inst		: Scope					 							{ $$ = $1; }
-			| Ids IGUAL Exp										{ $$ = new asignacion($1,$3);}
+			| Ids IGUAL Exp										{ $$ = new asignacion($1,$3); }
 			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  									{ $$ = new inst_guardia($3,$6,0); }
 			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA		{ $$ = new inst_guardia($3,$6,$10,1); }
 			| WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  		{ $$ = new inst_guardia($3,$6,2); }
@@ -174,7 +175,7 @@ Exp	 		: Exp SUMA Exp										{ $$ = new exp_aritmetica($1,$3,0); }
 			;
 			
 
-Literals	: Ids												{ $$ = $1;}
+Literals	: Ids												{ $$ = $1; }
 			| CHAR 												{ $$ = new character($1); }
 			| FLOAT 											{ $$ = new flotante($1); }
 			| INT 												{ $$ = new entero($1); }
