@@ -110,6 +110,8 @@ tipo_retorno nombre( int @a, boolean b, float @b) {
 
 Donde las variables a y b son pasadas por referencia y b por valor.
 
+Para definir un procedimiento se especifica como `tipo_retorno` el tipo `unit`.
+
 ### Entrada/Salida
 
 La entrada y salida del programa se maneja con los símbolos `>>` y `<<`, usando el primero para la salida y el segundo para la entrada. Con la sintaxis: `<< id` para la entrada, donde `id` es el identificador de la variable donde se almacenarán los datos que entrena. Mientras que la salida se expresa con la sintaxis: `>> id`.  
