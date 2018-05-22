@@ -24,10 +24,8 @@ using namespace std;
 #define FLOTANTES 3
 #define BOOLEANOS 4
 #define CHARACTERES 5
-#define CONDICION 6
-#define STR 7
-#define PTR 8
-#define UNITS 9
+#define STR 6
+#define UNITS 7
 
 /* Definiciones externas (parser.y) que permiten compartir el codigo. */
 extern int yylineno;
@@ -727,7 +725,7 @@ class entero : public ArbolSintactico {
 	public:
 		int valor;
 		entero(): ArbolSintactico(ENTEROS) {is_type = 1;}
-		entero(int v) : valor(v), ArbolSintactico(ENTEROS){}
+		entero(int v) : valor(v), ArbolSintactico(ENTEROS) {}
 		virtual void imprimir(int tab) {
 			if (!is_type){
 				for (int j = 0; j < tab; j++) cout << " ";
@@ -742,7 +740,7 @@ class flotante : public ArbolSintactico {
 	public:
 		float valor;
 		flotante(): ArbolSintactico(FLOTANTES) {is_type = 1;}
-		flotante(float v) : valor(v), ArbolSintactico(FLOTANTES){}
+		flotante(float v) : valor(v), ArbolSintactico(FLOTANTES) {}
 		virtual void imprimir(int tab) {
 			if (!is_type){
 				for (int j = 0; j < tab; j++) cout << " ";
@@ -762,12 +760,10 @@ class booleano : public ArbolSintactico {
 			if (!is_type){
 				for (int j = 0; j < tab; j++) cout << " ";
 				if (valor){
-					cout << "bool: true" << endl;	
-				} else {
+					cout << "bool: true" << endl;
+				} else{
 					cout << "bool: false" << endl;
 				}
-
-				
 			}
 		}
 };
@@ -804,7 +800,7 @@ class str : public ArbolSintactico {
 	public:
 		string valor;
 		str() : ArbolSintactico(STR) {is_type = 1;}
-		str(string v) : valor(v) {}
+		str(string v) : valor(v), ArbolSintactico(STR) {}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "string: " << valor << endl;

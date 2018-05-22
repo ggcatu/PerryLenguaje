@@ -57,8 +57,8 @@ int yycolumn = 1;
 "ptr"							return POINTER;
 "unit"							return UNIT;
 
-"true"							return TRUE;
-"false"							return FALSE;
+"true"							{ yylval.boolean = true; return TRUE;}
+"false"							{ yylval.boolean = false; return FALSE;}
 
 ==								return IGUALA;
 !=								return DISTINTOA;
@@ -91,10 +91,10 @@ mod								return MOD;
 
 
 [a-zA-Z][a-zA-Z0-9_]*			return IDENTIFIER;
-'(.|\\n|\\t)' 					return CHAR;
-[0-9]+\.[0-9]+					return FLOAT;
+'(.|\\n|\\t)' 					{ yylval.ch = yytext[1]; return CHAR;}
+[0-9]+\.[0-9]+					{ yylval.flot = atof(yytext); return FLOAT;}
 \.								return PUNTO;
-[0-9]+|0+						return INT;
+[0-9]+|0+						{yylval.num = atoi(yytext); return INT;}
 \"([^"])*\"						return STRING;
 
 .								return ERROR;

@@ -41,7 +41,7 @@ void yyerror (char const *s) {
 %left IGUALA DISTINTOA MENOR MAYOR MAYORIGUAL MENORIGUAL
 %left SUMA RESTA
 %left POW MULT DIV MOD
-%right NEGACION
+%right NEGACION ELSE
 
 %token LLAVEABRE 1 LLAVECIERRA 2 CORCHETEABRE 3 CORCHETECIERRA 4 PARABRE 5 PARCIERRA 6
 %token MAIN 7
@@ -81,7 +81,7 @@ Includelist : INCLUDE Exp Includelist							{ $$ = new include($3,$2); }
 			| INCLUDE Exp 										{ $$ = new include($2); }
 			;
 
-Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 			{ $$ = new programa($3,$5); }		
+Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }		
 	 		| MAIN LLAVEABRE Sec LLAVECIERRA					{ $$ = new programa($3); }
 			
 			| Typedef IDENTIFIER PARABRE Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA Start		{ $$ = new funcion($1,new identificador($2),$4,$7,$9); }
@@ -133,17 +133,14 @@ Sec 		: Inst PUNTOCOMA Sec  								{ $$ = new instruccion($3,$1); }
 
 Inst		: Scope					 							{ $$ = $1; }
 			| Ids IGUAL Exp										{ $$ = new asignacion($1,$3);}
+			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  									{ $$ = new inst_guardia($3,$6,0); }
+			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA		{ $$ = new inst_guardia($3,$6,$10,1); }
+			| WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  		{ $$ = new inst_guardia($3,$6,2); }
+			| FOR PARABRE Typedef IDENTIFIER COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA 	{ $$ = new it_determinada(new declaracion($3,new identificador($4)),$7,$9,$12,$15); }
+			| NEW PARABRE IDENTIFIER PARCIERRA					{ $$ = new memoria(new identificador($3),true); }
+			| FREE PARABRE IDENTIFIER PARCIERRA					{ $$ = new memoria(new identificador($3),false); }
 			| SALIDA Exp 										{ cout << "salida" << endl; $$ = new entrada_salida($2,false); }
 			| ENTRADA Exp  										{ $$ = new entrada_salida($2,true); }
-
-			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA		{ $$ = new inst_guardia($3,$6,$10,1); }
-			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  									{ $$ = new inst_guardia($3,$6,0); }
-
-			| FOR PARABRE Typedef IDENTIFIER COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA 	{ $$ = new it_determinada(new declaracion($3,new identificador($4)),$7,$9,$12,$15); }
-
-			| WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  		{ $$ = new inst_guardia($3,$6,2); }
-			| NEW PARABRE IDENTIFIER PARCIERRA					{ $$ =  new memoria(new identificador($3),true); }
-			| FREE PARABRE IDENTIFIER PARCIERRA					{ $$ =  new memoria(new identificador($3),false); }
 			| IDENTIFIER PARABRE List PARCIERRA 				{ $$ = new llamada(new identificador($1),$3); }
 			| RETURN Exp										{ $$ = new ret_brk(true, $2); }
 			| BREAK												{ $$ = new ret_brk(false, (ArbolSintactico*)(NULL)); }
@@ -172,7 +169,7 @@ Exp	 		: Exp SUMA Exp										{ $$ = new exp_aritmetica($1,$3,0); }
 			| IDENTIFIER PARABRE List PARCIERRA 				{ $$ = new llamada(new identificador($1),$3); }
 			| IDENTIFIER CORCHETEABRE Exp CORCHETECIERRA 		{ $$ = new exp_index(new identificador($1),$3); }
 
-			| OPTR Ids	 								{ $$ = new exp_point(new ids($2)); }
+			| OPTR Ids	 										{ $$ = new exp_point(new ids($2)); }
 			| Literals											{ $$ = $1; }
 			;
 			
@@ -185,8 +182,8 @@ Literals	: Ids												{ $$ = $1;}
 			| LLAVEABRE List LLAVECIERRA 						{ $$ = new lista($2); }
 			| CORCHETEABRE List CORCHETECIERRA 					{ $$ = new arreglo($2); }
 			| PARABRE Exp COMA Exp PARCIERRA 					{ $$ = new tupla($2,$4); }
-			| TRUE 												{ $$ = new booleano(true); }
-			| FALSE 											{ $$ = new booleano(false); }
+			| TRUE 												{ $$ = new booleano($1); }
+			| FALSE 											{ $$ = new booleano($1); }
 			;
 
 Ids 		: IDENTIFIER PUNTO Ids 								{$$ = new ids(new identificador($1),$3); }

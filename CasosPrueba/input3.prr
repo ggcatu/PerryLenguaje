@@ -2,6 +2,10 @@ include "input1.prr"
 
 main{
  	execute{
- 		Y = id.jjjjjjj;
+ 		y = true;
+ 		y = false;
+ 		y = "jfijg";
+ 		y = 'o';
+ 		//ID = ^îd;
  	};
 }
