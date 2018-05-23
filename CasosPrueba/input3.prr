@@ -2,10 +2,13 @@ include "input1.prr"
 
 main{
  	execute{
- 		y = true;
- 		y = false;
- 		y = "jfijg";
- 		y = 'o';
- 		ID = ^id;
+ 		if (true){
+ 			y = 2;
+ 		};
+ 		if (3+2){
+ 			y=2;
+ 		} else {
+ 			y = 1;
+ 		};
  	};
 }

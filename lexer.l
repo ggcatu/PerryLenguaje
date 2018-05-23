@@ -60,8 +60,8 @@ int yycolumn = 1;
 
 "unit"							return UNIT;
 
-"true"							{ yylval.boolean = true; return TRUE;}
-"false"							{ yylval.boolean = false; return FALSE;}
+"true"							{ yylval.boolean = true; return TRUE; }
+"false"							{ yylval.boolean = false; return FALSE; }
 
 ==								return IGUALA;
 !=								return DISTINTOA;
@@ -78,7 +78,7 @@ mod								return MOD;
 >=								return MAYORIGUAL;
 >								return MAYOR;
 \@								return REFERENCE;
-\^								return OPTR;
+\&								return OPTR;
 
 "not"							return NEGACION;
 "and"							return CONJUNCION;
@@ -94,10 +94,10 @@ mod								return MOD;
 
 
 [a-zA-Z][a-zA-Z0-9_]*			return IDENTIFIER;
-'(.|\\n|\\t)' 					{ yylval.ch = yytext[1]; return CHAR;}
-[0-9]+\.[0-9]+					{ yylval.flot = atof(yytext); return FLOAT;}
+'(.|\\n|\\t)' 					{ yylval.ch = yytext[1]; return CHAR; }
+[0-9]+\.[0-9]+					{ yylval.flot = atof(yytext); return FLOAT; }
 \.								return PUNTO;
-[0-9]+|0+						{yylval.num = atoi(yytext); return INT;}
+[0-9]+|0+						{yylval.num = atoi(yytext); return INT; }
 \"([^"])*\"						return STRING;
 
 .								return ERROR;
