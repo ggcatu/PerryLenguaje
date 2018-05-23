@@ -508,22 +508,36 @@ class ret_brk : public ArbolSintactico {
 		}
 };
 
+class skip : public ArbolSintactico {
+	ArbolSintactico * siguiente;
+	skip(ArbolSintactico * s ) : siguiente(s) {}
+	virtual void imprimir(int tab){
+		if (siguiente != NULL)
+		siguiente->imprimir(tab);
+	}
+};
 
 /* Definicion de la asignacion */
 class asignacion : public ArbolSintactico {
 	public:
 		ArbolSintactico * variable;
 		ArbolSintactico * valor;
-		asignacion(ArbolSintactico * v, ArbolSintactico * b) : variable(v), valor(b) {}
+		ArbolSintactico * siguiente;
+		asignacion(ArbolSintactico * v, ArbolSintactico * b, ArbolSintactico * s) : variable(v), valor(b), siguiente(s) {}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
-			cout << "ASIGNACION: " << endl;
+				cout << "ASIGNACION: " << endl;
+
 			for (int j = 0; j < tab+1; j++) cout << " ";
-			cout << "VARIABLE: " << endl;
+				cout << "VARIABLE: " << endl;
 			variable->imprimir(tab+2);
+
 			for (int j = 0; j < tab+1; j++) cout << " ";
-			cout << "VALOR: " << endl;
+				cout << "VALOR: " << endl;
 			valor->imprimir(tab+2);
+
+			if (siguiente != NULL) 
+			siguiente->imprimir(tab+2);
 		}
 };
 
@@ -715,6 +729,10 @@ class ids : public ArbolSintactico {
 			if (indx != NULL){
 				indx -> imprimir(tab+2);
 			}
+		}
+		virtual string str(){
+			if (idr != NULL)  
+				return id << "." << idr.str(); 
 		}
 };
 

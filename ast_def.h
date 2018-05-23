@@ -14,6 +14,7 @@ class ArbolSintactico {
 		ArbolSintactico(int i): ident(i),is_type(0) {};
 		ArbolSintactico(ArbolSintactico * l): first(l),is_type(0) {};
 		virtual void imprimir(int i){ if(first != NULL) first->imprimir(i); }; 
+		virtual string str(){;}; 
 		virtual int get_ident(){ return ident; }
 		virtual void check(){;}
 		virtual int * get_value(){;}

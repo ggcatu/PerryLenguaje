@@ -172,13 +172,23 @@ string TokenFloat::to_string() {
 }
 
 // Implementación de clase TokenError
-TokenError::TokenError (int x, int y, int z, string v) : Token(x,y,z) {
+TokenError::TokenError (int x, int y, int z, string v, ErrorEnum t) : Token(x,y,z) {
+	tipo = t;
 	valor = v;
 }
 
 // Implementación de to_string para la clase TokenError
 string TokenError::to_string() {
-	return "Error: Expresión inesperada \"" + valor + "\" en la fila " + IntToString(fila) + ", columna " + IntToString(columna); 
+	switch(tipo){
+		case LEXER:
+			return "Error: Expresión inesperada \"" + valor + "\" en la fila " + IntToString(fila) + ", columna " + IntToString(columna); 
+		case NODEFINICION:
+			return "Error: Variable no definida \"" + valor + "\" en la fila " + IntToString(fila) + ", columna " + IntToString(columna); 
+		case REDEFINICION:
+			return "Error: Redefinicion de variable \"" + valor + "\" en la fila " + IntToString(fila) + ", columna " + IntToString(columna); 
+		case PARSER:
+			return "Error: Parseo \"" + valor + "\" en la fila " + IntToString(fila) + ", columna " + IntToString(columna); 
+	}
 }
 
 // Función encontrar el índice de la última ocurrencia de un caracter en un arreglo de caracteres.

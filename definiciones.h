@@ -19,6 +19,8 @@ de las clases y funciones implementadas en definiciones.cpp
 
 using namespace std;
 
+enum ErrorEnum {LEXER, REDEFINICION, NODEFINICION, PARSER};
+
 extern string nToWord[];
 string IntToString ( int number );
 string FloatToString (float number);
@@ -55,7 +57,8 @@ struct TokenCharacter:Token {
 
 struct TokenError:Token{
 	string valor;
-	TokenError(int x, int y, int z, string v);
+	ErrorEnum tipo;
+	TokenError(int x, int y, int z, string v, ErrorEnum t);
 	string to_string();
 };
 

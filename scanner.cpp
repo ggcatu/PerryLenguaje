@@ -42,6 +42,29 @@ extern sym_table table;
 vector<Token *> tokens;
 vector<Token *> errors;
 
+
+void imprimir_errores(){
+	if (!errors.empty()){
+		print_errors(errors);
+	}
+}
+
+void imprimir_tabla(){
+	table.print();
+}
+
+void imprimir_arbol(){
+	if (!error_sintactico){
+	   try {
+		root_ast->imprimir(0);	
+		}
+		catch(...){
+			cout << "error";
+			return;
+		}
+	}	
+}
+
 void execute_lexer(){
 	cout << "Executing lexer" << endl;
     // Inicialización para nuestro ciclo de lectura
@@ -82,7 +105,7 @@ void execute_lexer(){
 				tokens.push_back(new Token(ntoken,yylineno,yylloc.first_column));
 			} else {
 				// Crea un token error y lo coloca en el vector de errores.
-				errors.push_back(new TokenError(ntoken, yylineno, yylloc.first_column, yytext));
+				errors.push_back(new TokenError(ntoken, yylineno, yylloc.first_column, yytext, LEXER));
 			}
 		}
 		if (ntoken == COMENTARIO && yytext[1] == '*') {
@@ -115,22 +138,12 @@ void execute_parser(){
 	}
 
 	// Si hay errores del lexer, imprimirlos
-	if (!errors.empty()){
-		print_errors(errors);
-	}
+	imprimir_arbol();
 
-	// Imprimir AST
-	if (!error_sintactico){
-	   try {
-		root_ast->imprimir(0);	
-		}
-		catch(...){
-			cout << "error";
-			return;
-		}
-	}
-	
-	table.print();
+	imprimir_errores();
+
+	imprimir_tabla();
+
 }
 
 int main(int argc, char** argv) {	

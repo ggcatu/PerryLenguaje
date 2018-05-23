@@ -22,7 +22,7 @@ class table_element {
 		bool operator==(const table_element & rhs) const { return (this->scope == rhs.scope && this->id == rhs.id);}
 
 		void print(){
-			std::cout << "ID: " << id << " , SCOPE: " << scope << " , TYPE: " << type << std::endl; 
+			std::cout << "SCOPE: " << scope ; 
 		}
 };
 
@@ -67,20 +67,24 @@ class sym_table {
 				tabla[identifier];
 			}
 			if (lookup(identifier, stack.back()) != -1){
-				std::cout << "La variable " << identifier << " ya esta declarada en el scope: " << stack.back() << std::endl;
+				// std::cout << "La variable " << identifier << " ya esta declarada en el scope: " << stack.back() << std::endl;
 				return false;	
 			}  
 
-			tabla[identifier].push_back(table_element(identifier, stack.back(), VARIABLE));
+			tabla[identifier].push_front(table_element(identifier, stack.back(), VARIABLE));
 			return true;
 		}
 
 		void print(){		
 			std::cout << "Imprimiendo tabla de simbolos." << std::endl << std::endl; 
 		    for(std::map<std::string, std::deque<table_element> >::iterator it = tabla.begin(); it != tabla.end(); ++it) {
-		    	std::cout << "Variable " << it->first << std::endl;
-		    	for (std::deque<table_element>::iterator vit = it->second.begin() ; vit != it->second.end(); ++vit)
+		    	std::cout << "Variable: " << it->first << " [";
+		    	for (std::deque<table_element>::iterator vit = it->second.begin() ; vit != it->second.end(); ++vit) {
 					vit->print();
+					if (vit+1 != it->second.end())
+						cout << ", ";
+		    	}
+			    std::cout << "]" << std::endl;
 		    }
 		}
 };

@@ -1,0 +1,33 @@
+include "input1.prr" 
+include "input2.prr" 
+include "input3.prr" 
+include "p2.prr" 
+
+unit test(int @param, bool param2){
+	create{
+		int unot_int;
+		float unit_float;
+		bool unit_boole;
+		bool unit_boole;
+	}
+	execute{
+		boole = false;
+		return point;
+	};
+}
+
+main{
+	create {
+		int x;
+		int main_int;
+	}
+ 	execute{
+ 		create {
+ 			int x;
+ 			int inner_int;
+ 		} execute {
+ 			papera = 3;
+ 			inner_int = 3;
+ 		};
+ 	};
+}

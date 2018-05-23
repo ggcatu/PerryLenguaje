@@ -13,7 +13,7 @@ type struct box{
 	bool cosa2;
 }
 
-type numeritos = int
+type numeritos = int;
 
 unit test(int @param, bool param2){
 	create{
@@ -26,8 +26,11 @@ unit test(int @param, bool param2){
 		list int thelist;
 		tuple (bool,float) twoforone;
 		ptr int point;
+		box casa;
 	}
 	execute{
+		casa.cosa1 = 3;
+		cosa1 = 3;
 		inte = 1;
 		floatp = 1.2;
 		boole = false;
