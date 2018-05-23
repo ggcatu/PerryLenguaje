@@ -1,0 +1,18 @@
+unit test(int @param, bool param2){
+	create{
+
+		array int [5] harray;
+	}
+	execute{
+		for (int i, [0,4], i+1){
+			i = i+3-4*7;
+		};
+	};
+}
+
+main{
+ 	execute{
+ 		test();
+ 		<< "hahaha";
+ 	};
+}

@@ -22,7 +22,7 @@ int yycolumn = 1;
 \(								return PARABRE;
 \)								return PARCIERRA;
 
-"main"							return MAIN;
+"main"							 return MAIN;
 
 \/\/.*							;
 \/\*(\*[^\/]|[^\*])*\*\/		;
@@ -100,7 +100,7 @@ mod								return MOD;
 [0-9]+|0+						{yylval.num = atoi(yytext); return INT; }
 \"([^"])*\"						return STRING;
 
-.								return ERROR;
+.								{cout << "Caracter inesperado " << yytext[0] << " en la fila " << endl;  return ERROR;}
 
 %%
 
