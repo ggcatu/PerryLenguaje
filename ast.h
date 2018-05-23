@@ -446,6 +446,9 @@ class it_determinada : public ArbolSintactico {
 			for (int j = 0; j < tab+1; j++) cout << " ";
 			cout << "PASO:" << endl;
 			paso -> imprimir(tab+2);
+			for (int j = 0; j < tab+1; j++) cout << " ";
+			cout << "CUERPO:" << endl;
+			inst -> imprimir(tab+2);
 		}
 };
 
@@ -670,18 +673,19 @@ class exp_point : public ArbolSintactico {
 /* Definicion de la clase para las expresiones para indexaciones*/
 class exp_index : public ArbolSintactico {
 	public:
-		ArbolSintactico * var;
 		ArbolSintactico * ind;
-		exp_index(ArbolSintactico * v,ArbolSintactico * i) : var(v), ind(i) {}
+		ArbolSintactico * indexaciones;
+		exp_index(ArbolSintactico * i,ArbolSintactico * ids) : indexaciones(ids), ind(i) {}
+		exp_index(ArbolSintactico * i) : ind(i) {}
 		virtual void imprimir(int tab) {
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "INDEXACION: " << endl;
 			for (int j = 0; j < tab+1; j++) cout << " ";
-			cout << "DE: " << endl;
-			var -> imprimir(tab+2);
-			for (int j = 0; j < tab+1; j++) cout << " ";
-			cout << "EN: " << endl;
+			cout << "ELEMENTO: " << endl;
 			ind -> imprimir(tab+2);
+			if (indexaciones != NULL){
+				indexaciones -> imprimir(tab+2);
+			}
 		}
 };
 
@@ -691,8 +695,10 @@ class ids : public ArbolSintactico {
 	public:
 		ArbolSintactico * id;
 		ArbolSintactico * idr;
+		ArbolSintactico * indx;
 		ids(ArbolSintactico * i) : id(i) {}
 		ids(ArbolSintactico * i, ArbolSintactico * is) : id(i), idr(is) {}
+		ids(ArbolSintactico * i, ArbolSintactico * is, ArbolSintactico * ix) :indx(ix), id(i), idr(is) {}
 		virtual void imprimir(int tab){
 			if (idr != NULL){
 				for (int j = 0; j < tab; j++) cout << " ";
@@ -705,6 +711,9 @@ class ids : public ArbolSintactico {
 				for (int j = 0; j < tab+1; j++) cout << " ";
 				cout << "CAMPO: " << endl;
 				idr -> imprimir(tab+2);
+			}
+			if (indx != NULL){
+				indx -> imprimir(tab+2);
 			}
 		}
 };

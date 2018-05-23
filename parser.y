@@ -68,7 +68,7 @@ void yyerror (char const *s) {
 %token <ch> CHAR
 %token <str> STRING 
 %token <boolean> TRUE FALSE
-%type <arb> S Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals
+%type <arb> S Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals Corchetes
 
 %%
 
@@ -131,6 +131,7 @@ Declist 	: Typedef IDENTIFIER PUNTOCOMA Declist				{ $$ = new declaracion($4,$1,
 
 Sec 		: Inst PUNTOCOMA Sec  								{ $$ = new instruccion($3,$1); }
 			| Inst PUNTOCOMA									{ $$ = new instruccion($1); }
+			| 													{ $$ = new instruccion(); }
 			;
 
 Inst		: Scope					 							{ $$ = $1; }
@@ -141,12 +142,11 @@ Inst		: Scope					 							{ $$ = $1; }
 			| FOR PARABRE Typedef IDENTIFIER COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA 	{ $$ = new it_determinada(new declaracion($3,new identificador($4)),$7,$9,$12,$15); }
 			| NEW PARABRE IDENTIFIER PARCIERRA					{ $$ = new memoria(new identificador($3),true); }
 			| FREE PARABRE IDENTIFIER PARCIERRA					{ $$ = new memoria(new identificador($3),false); }
-			| SALIDA Exp 										{ cout << "salida" << endl; $$ = new entrada_salida($2,false); }
+			| SALIDA Exp 										{ $$ = new entrada_salida($2,false); }
 			| ENTRADA Exp  										{ $$ = new entrada_salida($2,true); }
 			| IDENTIFIER PARABRE List PARCIERRA 				{ $$ = new llamada(new identificador($1),$3); }
 			| RETURN Exp										{ $$ = new ret_brk(true, $2); }
 			| BREAK												{ $$ = new ret_brk(false, (ArbolSintactico*)(NULL)); }
-			| 													{ $$ = new instruccion(); }
 			;
 
 Exp	 		: Exp SUMA Exp										{ $$ = new exp_aritmetica($1,$3,0); }
@@ -169,7 +169,6 @@ Exp	 		: Exp SUMA Exp										{ $$ = new exp_aritmetica($1,$3,0); }
 			| NEGACION Exp										{ $$ = new exp_booleana($2,8); }
 
 			| IDENTIFIER PARABRE List PARCIERRA 				{ $$ = new llamada(new identificador($1),$3); }
-			| IDENTIFIER CORCHETEABRE Exp CORCHETECIERRA 		{ $$ = new exp_index(new identificador($1),$3); }
 
 			| OPTR Ids	 										{ $$ = new exp_point(new ids($2)); }
 			| Literals											{ $$ = $1; }
@@ -189,7 +188,12 @@ Literals	: Ids												{ $$ = $1; }
 			;
 
 Ids 		: IDENTIFIER PUNTO Ids 								{$$ = new ids(new identificador($1),$3); }
+			| IDENTIFIER Corchetes 								{$$ = new ids(new identificador($1),(ArbolSintactico*)(NULL),$2); }
 			| IDENTIFIER 										{$$ = new ids(new identificador($1)); }
+			;
+
+Corchetes	: CORCHETEABRE Exp CORCHETECIERRA Corchetes 		{ $$ = new exp_index($2,$4); }
+			| CORCHETEABRE Exp CORCHETECIERRA 					{ $$ = new exp_index($2); }
 			;
 
 List		: Exp COMA List 									{ $$ = new elementos($3,$1); }
