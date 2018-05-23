@@ -131,7 +131,6 @@ Declist 	: Typedef IDENTIFIER PUNTOCOMA Declist				{ $$ = new declaracion($4,$1,
 
 Sec 		: Inst PUNTOCOMA Sec  								{ $$ = new instruccion($3,$1); }
 			| Inst PUNTOCOMA									{ $$ = new instruccion($1); }
-			| 													{ $$ = new instruccion(); }
 			;
 
 Inst		: Scope					 							{ $$ = $1; }
