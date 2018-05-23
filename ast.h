@@ -77,9 +77,11 @@ class funcion : public ArbolSintactico {
 			for (int j = 0; j < tab+1; j++) cout << " ";
 			cout << "IDENTIFICADOR:" << endl;
 			id -> imprimir(tab+2);
-			for (int j = 0; j < tab+1; j++) cout << " ";
-			cout << "PARAMETROS:" << endl;
-			parametros -> imprimir(tab+2);
+			if (parametros != NULL){
+				for (int j = 0; j < tab+1; j++) cout << " ";
+				cout << "PARAMETROS:" << endl;
+				parametros -> imprimir(tab+2);
+			}
 			for (int j = 0; j < tab+1; j++) cout << " ";
 			cout << "INSTRUCCIONES:" << endl;
 			instrucciones -> imprimir(tab+2);

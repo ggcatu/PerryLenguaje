@@ -6,6 +6,6 @@ main{
  		y = false;
  		y = "jfijg";
  		y = 'o';
- 		//ID = ^îd;
+ 		ID = ^id;
  	};
 }

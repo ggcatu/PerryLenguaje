@@ -1,0 +1,74 @@
+include "input1.prr" 
+include "input2.prr" 
+include "input3.prr" 
+include "p2.prr" 
+
+type union onion{
+	string cebolla;
+	char cebollaM;
+}
+
+type struct box{
+	int cosa1;
+	bool cosa2;
+}
+
+type numeritos = int
+
+unit test(int @param, bool param2){
+	create{
+		int inte;
+		float floatp;
+		bool boole;
+		char co;
+		string str;
+		array int [5] harray;
+		list int thelist;
+		tuple (bool,float) twoforone;
+		ptr int point;
+	}
+	execute{
+		inte = 1;
+		floatp = 1.2;
+		boole = false;
+		co = 'j';
+		str = "jajajajaja";
+		harray = [1,2,3,4,5];
+		thelist = {1,2,4,5,32,324,345123,4123,41234,123,42314,234};
+		twoforone = (true,7.7);
+		while(boole and ((inte == harray[3]) or not(twoforone[1] != floatp))){
+			inte = inte + floatp;
+			inte = inte - floatp;
+			inte = inte / floatp;
+			inte = inte * floatp;
+			inte = inte mod floatp;
+			inte = inte ** floatp;
+
+			boole = inte > floatp;
+			boole = inte < floatp;
+			boole = inte >= floatp;
+			boole = inte <= floatp;
+			break;
+		};
+		for (int i, [0,4], i+1){
+			inte = i+3-4*7;
+		};
+		if(twoforone[0]){
+			<< "falala";
+			>> str;  
+		}else{
+			<< "no falala";
+			>> str;
+			test(param,param2);
+		};
+		new (thelist);
+		free(point);
+		return point;
+	};
+}
+
+main{
+ 	execute{
+ 		<< "hahaha";
+ 	};
+}

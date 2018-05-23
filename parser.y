@@ -119,6 +119,7 @@ Varlist 	: Typedef IDENTIFIER COMA Varlist 					{ $$ = new parametros($4,$1,new 
 			| Typedef REFERENCE IDENTIFIER COMA Varlist			{ $$ = new parametros($5,$1,new identificador($3),true); }
 			| Typedef IDENTIFIER 								{ $$ = new parametros($1,new identificador($2),false); }
 			| Typedef REFERENCE IDENTIFIER						{ $$ = new parametros($1,new identificador($3),true);}
+			|													{ $$ = (ArbolSintactico*)(NULL);}
 			;
 
 Declist 	: Typedef IDENTIFIER PUNTOCOMA Declist				{ $$ = new declaracion($4,$1, new identificador($2),(ArbolSintactico*)(NULL)); }

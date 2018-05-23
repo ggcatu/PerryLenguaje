@@ -44,8 +44,10 @@ int yycolumn = 1;
 "new"							return NEW;
 "free"							return FREE;
 "type"							return TYPE;
+
 "struct"						return STRUCT;
 "union"							return UNION;
+
 "array"							return ARRAY;
 "list"							return LIST;
 "tuple"							return TUPLE;
@@ -55,6 +57,7 @@ int yycolumn = 1;
 "bool"							return BOOL;
 "int"							return LINT;
 "ptr"							return POINTER;
+
 "unit"							return UNIT;
 
 "true"							{ yylval.boolean = true; return TRUE;}
