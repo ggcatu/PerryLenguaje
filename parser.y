@@ -4,6 +4,7 @@
 #include <map>
 #include "definiciones.h"
 #include "ast.h"
+#include "table.h"
 
 using namespace std;
 
@@ -14,6 +15,7 @@ extern int yycolumn;
 extern int yylineno;
 extern char * yytext;
 ArbolSintactico * root_ast;
+sym_table table; 
 bool error_sintactico = 0;
 
 void yyerror (char const *s) {
@@ -68,7 +70,8 @@ void yyerror (char const *s) {
 %token <ch> CHAR
 %token <str> STRING 
 %token <boolean> TRUE FALSE
-%type <arb> S Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals Corchetes
+%type <arb> S Create Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals Corchetes
+
 
 %%
 
@@ -98,9 +101,12 @@ Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }
 			| TYPE IDENTIFIER IGUAL Typedef	PUNTOCOMA						{ $$ = new tipo(new identificador($2),$4); }
 			; 
 
-Scope 		: CREATE LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA 	{ $$ = new bloque($3,$7); }
-			| CREATE LLAVEABRE LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  			{ $$ = new bloque($6); }
+Scope 		: Create LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA 	{ $$ = new bloque($3,$7); }
+			| Create LLAVEABRE LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  			{ $$ = new bloque($6); }
 			| EXECUTE LLAVEABRE Sec LLAVECIERRA  										{ $$ = new bloque($3); }
+			;
+
+Create:  	CREATE { table.new_scope(); } 
 			;
 
 Typedef		: BOOL  											{ $$ = new tipedec(0); }
@@ -123,15 +129,14 @@ Varlist 	: Typedef IDENTIFIER COMA Varlist 					{ $$ = new parametros($4,$1,new 
 			|													{ $$ = (ArbolSintactico*)(NULL);}
 			;
 
-Declist 	: Typedef IDENTIFIER PUNTOCOMA Declist				{ $$ = new declaracion($4,$1, new identificador($2),(ArbolSintactico*)(NULL)); }
-			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist	{ $$ = new declaracion($6,$1,new identificador($2),$4); }
-			| Typedef IDENTIFIER PUNTOCOMA 						{ $$ = new declaracion($1,new identificador($2)); }
-			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA 			{ $$ = new declaracion($1,new identificador($2),$4);}
+Declist 	: Typedef IDENTIFIER PUNTOCOMA Declist				{ table.insert($2); $$ = new declaracion($4,$1, new identificador($2),(ArbolSintactico*)(NULL)); }
+			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist	{ table.insert($2); $$ = new declaracion($6,$1,new identificador($2),$4); }
+			| Typedef IDENTIFIER PUNTOCOMA 						{ table.insert($2); $$ = new declaracion($1,new identificador($2)); }
+			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA 			{ table.insert($2); $$ = new declaracion($1,new identificador($2),$4);}
 			;
 
 Sec 		: Inst PUNTOCOMA Sec  								{ $$ = new instruccion($3,$1); }
 			| Inst PUNTOCOMA									{ $$ = new instruccion($1); }
-			| 													{ $$ = new instruccion(); }
 			;
 
 Inst		: Scope					 							{ $$ = $1; }

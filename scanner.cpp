@@ -14,6 +14,7 @@ de las clases y funciones implementadas en definiciones.cpp
 #include <stdlib.h>
 #include "definiciones.h"
 #include "ast.h"
+#include "table.h"
 #include "parser.tab.h"
 
 using namespace std;
@@ -35,6 +36,7 @@ extern char* yytext;
 extern FILE* yyin;
 extern ArbolSintactico * root_ast;
 extern bool error_sintactico;
+extern sym_table table;
 
 // Vectores donde se guardarán nuestros resultados de la tokenización
 vector<Token *> tokens;
@@ -111,6 +113,7 @@ void execute_parser(){
 		cout << "Error: " << endl;
 			cout << errorMessage << endl;
 	}
+
 	// Si hay errores del lexer, imprimirlos
 	if (!errors.empty()){
 		print_errors(errors);
@@ -126,6 +129,8 @@ void execute_parser(){
 			return;
 		}
 	}
+	
+	table.print();
 }
 
 int main(int argc, char** argv) {	
