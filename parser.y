@@ -39,8 +39,15 @@ void usar_variable(string identificador, int columna){
 	}
 }
 
+void asignar_tipo(ArbolSintactico * tipo, string variable){
+	if (tipo->is_type){
+		table_element * elemento = table.lookup(((identificador *)tipo)->valor, -1);
+		table_element * instancia = table.lookup(variable, -1);
+		instancia->child_scope = elemento->child_scope;
+	}
+}
+
 void usar_variable_top(string identificador, int columna){
-	cout << "########" << identificador << endl;
 	if (table.lookup_top(identificador) == NULL ){
 		errors.push_back(new TokenError(1,yylineno, columna,identificador, NODEFINICION));
 		error_sintactico = 1;
@@ -123,10 +130,10 @@ Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }
 			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA Start		{ table.exit_scope(); $$ = new funcion($1,$2,$4,$7,$9); }
 			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA			{ table.exit_scope(); $$ = new funcion($1,$2,$4,$7); }
 
-			| TYPE STRUCT Llaveabre Declist Llavecierra Start 	{ $$ = new estructura($3,$5,$6,true); }
+			| TYPE STRUCT Llaveabre Declist Llavecierra Start 	{ $$ = new estructura($3,$4,$6,true); }
 			| TYPE STRUCT Llaveabre Declist Llavecierra			{ $$ = new estructura($3,$4,true); }
 			
-			| TYPE UNION Llaveabre Declist Llavecierra Start  	{ $$ = new estructura($3,$5,$6,false); }
+			| TYPE UNION Llaveabre Declist Llavecierra Start  	{ $$ = new estructura($3,$4,$6,false); }
 			| TYPE UNION Llaveabre Declist Llavecierra 			{ $$ = new estructura($3,$4,false); }
 			
 			| TYPE Identifier IGUAL Typedef PUNTOCOMA Start					{ $$ = new tipo($2,$4,$6); }
@@ -158,22 +165,25 @@ Typedef		: BOOL  											{ $$ = new tipedec(0); }
 			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{ $$ = new tipedec(5,$2,NULL,$4); }
 			| LIST Typedef 										{ $$ = new tipedec(6,$2); }
 			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{ $$ = new tipedec(7,$3,$5); }
-			| IDENTIFIER										{ $$ = new identificador($1); }
+			| IDENTIFIER										{ ArbolSintactico * j = new identificador($1); 
+																  j->is_type = true;
+																  $$ = j; }
 			| POINTER Typedef  									{ $$ = new tipedec(9,$2); }
 			| UNIT 												{ $$ = new tipedec(10); }
 			;
 
-Varlist 	: Typedef IDENTIFIER COMA Varlist 					{ declarar_variable($2, yylloc.first_column); }
-			| Typedef IDENTIFIER 								{ declarar_variable($2, yylloc.first_column); }
-			| Typedef REFERENCE IDENTIFIER COMA Varlist			{ declarar_variable($3, yylloc.first_column); }
-			| Typedef REFERENCE IDENTIFIER						{ declarar_variable($3, yylloc.first_column); }
+Varlist 	: Typedef IDENTIFIER COMA Varlist 					{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2 );}
+			| Typedef IDENTIFIER 								{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2 );}
+			| Typedef REFERENCE IDENTIFIER COMA Varlist			{ declarar_variable($3, yylloc.first_column); asignar_tipo($1, $3 );}
+			| Typedef REFERENCE IDENTIFIER						{ declarar_variable($3, yylloc.first_column); asignar_tipo($1, $3 );}
 			|													{ $$ = (ArbolSintactico*)(NULL);}
 			;
 
-Declist 	: Typedef IDENTIFIER PUNTOCOMA Declist				{ declarar_variable($2, yylloc.first_column); $$ = new declaracion($4,$1, new identificador($2),(ArbolSintactico*)(NULL)); }
-			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist	{ declarar_variable($2, yylloc.first_column); $$ = new asignacion(new identificador($2), $4, $6); }
-			| Typedef IDENTIFIER PUNTOCOMA 						{ declarar_variable($2, yylloc.first_column); $$ = new declaracion($1,new identificador($2)); }
-			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA 			{ declarar_variable($2, yylloc.first_column); $$ = new asignacion(new identificador($2), $4, NULL);}
+Declist 	: Typedef IDENTIFIER PUNTOCOMA Declist				{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2 ); 
+																  $$ = new declaracion($4,$1, new identificador($2),(ArbolSintactico*)(NULL)); }
+			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist	{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2 ); $$ = new asignacion(new identificador($2), $4, $6); }
+			| Typedef IDENTIFIER PUNTOCOMA 						{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2 ); $$ = new declaracion($1,new identificador($2)); }
+			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA 			{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2 ); $$ = new asignacion(new identificador($2), $4, NULL);}
 			;
 
 Sec 		: Inst PUNTOCOMA Sec  								{ $$ = new instruccion($3,$1); }

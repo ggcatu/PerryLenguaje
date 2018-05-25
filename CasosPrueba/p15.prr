@@ -10,12 +10,10 @@ type union onion{
 
 main{
 	create{
-		string cebolla;
 		string tomate;
 		onion caraota;
 	} execute{
-		cebolla = cebolla + tomate;
-		cebolla = caraota.cebolla + tomate;
+		caraota = caraota.cebolla + tomate;
  		<< "hahaha";
  	};
 }
