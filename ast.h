@@ -731,8 +731,9 @@ class ids : public ArbolSintactico {
 			}
 		}
 		virtual string str(){
-			if (idr != NULL)  
-				return id << "." << idr.str(); 
+			// if (idr != NULL)  
+				// return id << "." << idr.str();
+			 
 		}
 };
 

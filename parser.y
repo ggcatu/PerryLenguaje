@@ -25,8 +25,23 @@ void yyerror (char const *s) {
 	cout << "Parse error:" << s << "\nFila: " << yylineno << "\n" << "Columna: " << yycolumn-1-strlen(yytext) << "\n" ; 
 }
 
+void open_scope(ArbolSintactico * arb) {
+	identificador * b = (identificador *)arb;
+	table_element * elemento = table.lookup(b->valor, -1);
+	elemento->child_scope = table.new_scope();
+	cout << "Asignando " << elemento->child_scope << " a " << elemento->id << endl;
+}
+
 void usar_variable(string identificador, int columna){
-	if (table.lookup(identificador, -1) == -1 ){
+	if (table.lookup(identificador, -1) == NULL ){
+		errors.push_back(new TokenError(1,yylineno, columna,identificador, NODEFINICION));
+		error_sintactico = 1;
+	}
+}
+
+void usar_variable_top(string identificador, int columna){
+	cout << "########" << identificador << endl;
+	if (table.lookup_top(identificador) == NULL ){
 		errors.push_back(new TokenError(1,yylineno, columna,identificador, NODEFINICION));
 		error_sintactico = 1;
 	}
@@ -87,7 +102,7 @@ void declarar_variable(string identificador, int columna){
 %token <ch> CHAR
 %token <str> STRING 
 %token <boolean> TRUE FALSE
-%type <arb> S Create Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals Corchetes Parabre Identifier
+%type <arb> S Create Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals Corchetes Parabre Identifier Ids_sup Ids_plox Llaveabre Llavecierra
 
 
 %%
@@ -108,15 +123,21 @@ Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }
 			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA Start		{ table.exit_scope(); $$ = new funcion($1,$2,$4,$7,$9); }
 			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA			{ table.exit_scope(); $$ = new funcion($1,$2,$4,$7); }
 
-			| TYPE STRUCT Identifier LLAVEABRE Declist LLAVECIERRA Start 	{ $$ = new estructura($3,$5,$7,true); }
-			| TYPE STRUCT Identifier LLAVEABRE Declist LLAVECIERRA			{ $$ = new estructura($3,$5,true); }
+			| TYPE STRUCT Llaveabre Declist Llavecierra Start 	{ $$ = new estructura($3,$5,$6,true); }
+			| TYPE STRUCT Llaveabre Declist Llavecierra			{ $$ = new estructura($3,$4,true); }
 			
-			| TYPE UNION Identifier LLAVEABRE Declist LLAVECIERRA Start  	{ $$ = new estructura($3,$5,$7,false); }
-			| TYPE UNION Identifier LLAVEABRE Declist LLAVECIERRA 			{ $$ = new estructura($3,$5,false); }
+			| TYPE UNION Llaveabre Declist Llavecierra Start  	{ $$ = new estructura($3,$5,$6,false); }
+			| TYPE UNION Llaveabre Declist Llavecierra 			{ $$ = new estructura($3,$4,false); }
 			
 			| TYPE Identifier IGUAL Typedef PUNTOCOMA Start					{ $$ = new tipo($2,$4,$6); }
 			| TYPE Identifier IGUAL Typedef	PUNTOCOMA						{ $$ = new tipo($2,$4); }
 			; 
+
+Llaveabre 	: Identifier LLAVEABRE {$$ = $1 ; open_scope($1);}
+			; 
+
+Llavecierra : LLAVECIERRA { table.exit_scope(); }
+			;
 
 Parabre 	: PARABRE { table.new_scope(); }
 			;
@@ -142,10 +163,10 @@ Typedef		: BOOL  											{ $$ = new tipedec(0); }
 			| UNIT 												{ $$ = new tipedec(10); }
 			;
 
-Varlist 	: Typedef IDENTIFIER COMA Varlist 					{ declarar_variable($2, yylloc.first_column); $$ = new parametros($4,$1,new identificador($2),false); }
-			| Typedef IDENTIFIER 								{ declarar_variable($2, yylloc.first_column); $$ = new parametros($1,new identificador($2),false); }
-			| Typedef REFERENCE IDENTIFIER COMA Varlist			{ declarar_variable($3, yylloc.first_column); $$ = new parametros($5,$1,new identificador($3),true); }
-			| Typedef REFERENCE IDENTIFIER						{ declarar_variable($3, yylloc.first_column); $$ = new parametros($1,new identificador($3),true);}
+Varlist 	: Typedef IDENTIFIER COMA Varlist 					{ declarar_variable($2, yylloc.first_column); }
+			| Typedef IDENTIFIER 								{ declarar_variable($2, yylloc.first_column); }
+			| Typedef REFERENCE IDENTIFIER COMA Varlist			{ declarar_variable($3, yylloc.first_column); }
+			| Typedef REFERENCE IDENTIFIER						{ declarar_variable($3, yylloc.first_column); }
 			|													{ $$ = (ArbolSintactico*)(NULL);}
 			;
 
@@ -218,9 +239,17 @@ Literals	: Ids												{ $$ = $1; }
 			| FALSE 											{ $$ = new booleano($1); }
 			;
 
-Ids 		: IDENTIFIER PUNTO Ids 								{ usar_variable($1, yylloc.first_column); $$ = new ids(new identificador($1),$3); }
+Ids 		: Ids_plox Ids										{ $$ = new ids($1,$2); table.exit_scope();}
 			| IDENTIFIER Corchetes 								{ usar_variable($1, yylloc.first_column); $$ = new ids(new identificador($1),(ArbolSintactico*)(NULL),$2); }
 			| IDENTIFIER 										{ usar_variable($1, yylloc.first_column); $$ = new ids(new identificador($1)); }
+			;
+
+Ids_plox 	: IDENTIFIER PUNTO 									{  usar_variable($1, yylloc.first_column); table.open_scope($1); $$ = new identificador($1); }
+			;
+
+Ids_sup 	: IDENTIFIER 										{ usar_variable_top($1, yylloc.first_column); $$ = new ids(new identificador($1));}
+			| Ids_plox Ids_sup		 							{ $$ = new ids($1,$2); table.exit_scope(); }
+			| IDENTIFIER Corchetes 								{ usar_variable_top($1, yylloc.first_column); $$ = new ids(new identificador($1),(ArbolSintactico*)(NULL),$2);}
 			;
 
 Corchetes	: CORCHETEABRE Exp CORCHETECIERRA Corchetes 		{ $$ = new exp_index($2,$4); }

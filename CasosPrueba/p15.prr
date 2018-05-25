@@ -1,0 +1,21 @@
+include "input1.prr" 
+include "input2.prr" 
+include "input3.prr" 
+include "p2.prr" 
+
+type union onion{
+	string cebolla;
+	char cebollaM;
+}
+
+main{
+	create{
+		string cebolla;
+		string tomate;
+		onion caraota;
+	} execute{
+		cebolla = cebolla + tomate;
+		cebolla = caraota.cebolla + tomate;
+ 		<< "hahaha";
+ 	};
+}

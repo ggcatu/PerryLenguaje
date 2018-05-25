@@ -15,6 +15,7 @@ class table_element {
 	public:
 		std::string id;
 		int scope;
+		int child_scope;
 		elem_tipes type;
 
 		table_element(std::string i, int s, elem_tipes e): id(i), scope(s), type(e){};
@@ -36,37 +37,59 @@ class sym_table {
 	public:
 		sym_table() : last_scope(0) {stack.push_back(last_scope);}
 
-		void new_scope(){
+		int new_scope(){
 			last_scope++;
 			stack.push_back(last_scope);
+			return last_scope;
+		}
+
+		void open_scope(std::string x){
+			std::cout << " Abriendo scope de " << x << std::endl;
+			table_element * scope = lookup(x, -1);
+			std::cout << " Valor:  " << scope->child_scope << std::endl; 
+			stack.push_back(scope->child_scope);
 		}
 
 		void exit_scope(){
 			stack.pop_back();
 		}
 
-		int lookup(std::string x, int scope){
+		table_element * lookup(std::string x, int scope){
 
 			if ( tabla.find(x) == tabla.end() ) {
-				return -1;
+				return NULL;
 			} 
 
 			for (std::deque<table_element>::iterator vit = tabla[x].begin() ; vit != tabla[x].end(); vit++){
 				if ( scope == -1  && (std::find(stack.begin(), stack.end(), vit->scope) != stack.end() ) ){
-					return vit->scope;
+					return &(*vit);
 				} 
 				if ( scope != -1 && vit->scope == scope ){
-					return scope;
+					return &(*vit);
 				}
 			}
-			return -1;
+			return NULL;
+		}
+
+		table_element * lookup_top(std::string x){
+
+			if ( tabla.find(x) == tabla.end() ) {
+				return NULL;
+			} 
+
+			for (std::deque<table_element>::iterator vit = tabla[x].begin() ; vit != tabla[x].end(); vit++){
+				if (vit->scope == stack.back()){
+					return &(*vit);
+				}
+			}
+			return NULL;
 		}
 
 		bool insert(std::string identifier){
 			if(tabla.find(identifier) == tabla.end()){
 				tabla[identifier];
 			}
-			if (lookup(identifier, stack.back()) != -1){
+			if (lookup(identifier, stack.back()) != NULL){
 				// std::cout << "La variable " << identifier << " ya esta declarada en el scope: " << stack.back() << std::endl;
 				return false;	
 			}  
