@@ -138,7 +138,6 @@ void execute_parser(){
 		cout << "Error: " << endl;
 			cout << errorMessage << endl;
 	}
-
 	// Si hay errores del lexer, imprimirlos
 	imprimir_arbol();
 

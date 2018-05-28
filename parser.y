@@ -42,7 +42,13 @@ void asignar_tipo(ArbolSintactico * tipo, string variable){
 	if (tipo->is_type){
 		table_element * elemento = table.lookup(((identificador *)tipo)->valor, -1);
 		table_element * instancia = table.lookup(variable, -1);
-		instancia->child_scope = elemento->child_scope;
+		if (elemento != NULL){
+			instancia->child_scope = elemento->child_scope;
+		} else {
+			cout << "Error: " << ((identificador *)tipo)->valor << " no es un tipo fila: " << yylineno << " columna: " <<  yycolumn-1-strlen(yytext) << endl;
+
+			error_sintactico = 1;
+		}
 	}
 }
 
@@ -149,10 +155,10 @@ Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }
 			| TYPE Identifier IGUAL Typedef	PUNTOCOMA			{ $$ = new tipo($2,$4); }
 			; 
 
-Llaveabre 	: Identifier LLAVEABRE {$$ = $1 ; open_scope($1);}
+Llaveabre 	: Identifier LLAVEABRE { $$ = $1 ; open_scope($1); }
 			; 
 
-Llavecierra : LLAVECIERRA { table.exit_scope(); }
+Llavecierra : LLAVECIERRA {  table.exit_scope();  }
 			;
 
 Parabre 	: PARABRE { table.new_scope(); }

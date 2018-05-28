@@ -1,15 +1,6 @@
-//Prueba de error recovery
-include "input1.prr" 
-include "input2.prr" 
-include "p2.prr" 
-
 type struct nonion{
 	char cebollaM;
-	string cebolla +
-}
-
-int errores(int gg;){
-	<< gg;
+	string cebolla;
 }
 
 main{
@@ -17,8 +8,6 @@ main{
 		string tomate;
 		onion caraota;
 	} execute{
-		caraota  caraota.cebolla + tomate;
- 		<< "hahaha";
+		tomate = tomate;
  	};
 }
-44
