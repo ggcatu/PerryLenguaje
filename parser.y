@@ -22,7 +22,7 @@ bool error_sintactico = 0;
 
 void yyerror (char const *s) {
 	error_sintactico = 1;
-	cout << "Parse error:" << s << "\nFila: " << yylineno << "\n" << "Columna: " << yycolumn-1-strlen(yytext) << "\n" ; 
+	cout << "\nError de Parseo:\nCaracter Inesperado: " << yytext << "\nFila: " << yylineno << "\n" << "Columna: " << yycolumn-1-strlen(yytext) << "\n" ; 
 }
 
 void open_scope(ArbolSintactico * arb) {
@@ -126,18 +126,28 @@ Includelist : INCLUDE Exp Includelist							{ $$ = new include($3,$2); }
 
 Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }		
 	 		| MAIN LLAVEABRE Sec LLAVECIERRA					{ $$ = new programa($3); }
+	 		| MAIN LLAVEABRE error LLAVECIERRA					{ $$ = (ArbolSintactico*)(NULL); }
+	 		| MAIN LLAVEABRE error LLAVECIERRA Start			{ $$ = (ArbolSintactico*)(NULL); }
 			
 			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA Start		{ table.exit_scope(); $$ = new funcion($1,$2,$4,$7,$9); }
 			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA			{ table.exit_scope(); $$ = new funcion($1,$2,$4,$7); }
+			| Typedef Identifier Parabre error PARCIERRA	LLAVEABRE Sec LLAVECIERRA			{ $$ = (ArbolSintactico*)(NULL); }
+			| Typedef Identifier Parabre error PARCIERRA	LLAVEABRE Sec LLAVECIERRA Start		{ $$ = (ArbolSintactico*)(NULL); }
+			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE error LLAVECIERRA			{ $$ = (ArbolSintactico*)(NULL); }
+			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE error LLAVECIERRA	Start	{ $$ = (ArbolSintactico*)(NULL); }
 
 			| TYPE STRUCT Llaveabre Declist Llavecierra Start 	{ $$ = new estructura($3,$4,$6,true); }
 			| TYPE STRUCT Llaveabre Declist Llavecierra			{ $$ = new estructura($3,$4,true); }
+			| TYPE STRUCT Llaveabre error Llavecierra Start 	{ $$ = (ArbolSintactico*)(NULL); }
+			| TYPE STRUCT Llaveabre error Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
 			
 			| TYPE UNION Llaveabre Declist Llavecierra Start  	{ $$ = new estructura($3,$4,$6,false); }
 			| TYPE UNION Llaveabre Declist Llavecierra 			{ $$ = new estructura($3,$4,false); }
+			| TYPE UNION Llaveabre error Llavecierra Start  	{ $$ = (ArbolSintactico*)(NULL); }
+			| TYPE UNION Llaveabre error Llavecierra 			{ $$ = (ArbolSintactico*)(NULL); }
 			
-			| TYPE Identifier IGUAL Typedef PUNTOCOMA Start					{ $$ = new tipo($2,$4,$6); }
-			| TYPE Identifier IGUAL Typedef	PUNTOCOMA						{ $$ = new tipo($2,$4); }
+			| TYPE Identifier IGUAL Typedef PUNTOCOMA Start		{ $$ = new tipo($2,$4,$6); }
+			| TYPE Identifier IGUAL Typedef	PUNTOCOMA			{ $$ = new tipo($2,$4); }
 			; 
 
 Llaveabre 	: Identifier LLAVEABRE {$$ = $1 ; open_scope($1);}

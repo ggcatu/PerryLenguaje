@@ -60,7 +60,7 @@ unit test(int @param, bool param2){
 			<< "no falala";
 			>> str;
 			test(param,param2);
-			estoParcea();
+			estoParcea(param);
 		};
 		new (thelist);
 		free(point);
