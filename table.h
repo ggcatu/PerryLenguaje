@@ -18,12 +18,15 @@ class table_element {
 		int child_scope;
 		elem_tipes type;
 
-		table_element(std::string i, int s, elem_tipes e): id(i), scope(s), type(e){};
+		table_element(std::string i, int s, elem_tipes e): id(i), scope(s), type(e), child_scope(-1){};
 
 		bool operator==(const table_element & rhs) const { return (this->scope == rhs.scope && this->id == rhs.id);}
 
 		void print(){
 			std::cout << "SCOPE: " << scope ; 
+			if (child_scope != -1)
+				std::cout << ", CHILD SCOPE: " << child_scope ; 
+
 		}
 };
 
@@ -44,9 +47,9 @@ class sym_table {
 		}
 
 		void open_scope(std::string x){
-			std::cout << " Abriendo scope de " << x << std::endl;
+			// std::cout << " Abriendo scope de " << x << std::endl;
 			table_element * scope = lookup(x, -1);
-			std::cout << " Valor:  " << scope->child_scope << std::endl; 
+			// std::cout << " Valor:  " << scope->child_scope << std::endl; 
 			stack.push_back(scope->child_scope);
 		}
 

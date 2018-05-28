@@ -26,10 +26,11 @@ unit test(int @param, bool param2){
 		list int thelist;
 		tuple (bool,float) twoforone;
 		ptr int point;
+		onion ar;
 	}
 	execute{
-		inte = 1;
 		floatp = 1.2;
+		inte = 1;
 		boole = false;
 		co = 'j';
 		str = "jajajajaja";
@@ -54,13 +55,11 @@ unit test(int @param, bool param2){
 			inte = i+3-4*7;
 		};
 		if(twoforone[0]){
-			<< malaDeLaTsimb;
 			>> str;  
 		}else{
 			<< "no falala";
 			>> str;
 			test(param,param2);
-			estoParcea(param);
 		};
 		new (thelist);
 		free(point);

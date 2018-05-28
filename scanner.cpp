@@ -50,7 +50,9 @@ void imprimir_errores(){
 }
 
 void imprimir_tabla(){
-	table.print();
+	if (!error_sintactico){
+		table.print();
+	}
 }
 
 void imprimir_arbol(){
@@ -166,7 +168,7 @@ int main(int argc, char** argv) {
 		}
 	} else {
 		// por ahora por defecto ejecuta el lexer
-		execute_lexer();
+		execute_parser();
 	}
 
 	return 0;

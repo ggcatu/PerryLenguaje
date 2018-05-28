@@ -84,7 +84,8 @@ class funcion : public ArbolSintactico {
 			}
 			for (int j = 0; j < tab+1; j++) cout << " ";
 			cout << "INSTRUCCIONES:" << endl;
-			instrucciones -> imprimir(tab+2);
+			if (instrucciones != NULL)
+				instrucciones -> imprimir(tab+2);
 			if (funciones != NULL){
 				funciones -> imprimir(tab);
 			}
@@ -163,7 +164,8 @@ class tipo : public ArbolSintactico {
 			id -> imprimir(tab+2);
 			for (int j = 0; j < tab+1; j++) cout << " ";
 			cout << "TIPO:" << endl;
-			ti -> imprimir(tab+2);
+			if (ti != NULL)
+				ti -> imprimir(tab+2);
 			if (tis != NULL){
 				tis -> imprimir(tab);
 			}
@@ -528,14 +530,18 @@ class asignacion : public ArbolSintactico {
 			for (int j = 0; j < tab; j++) cout << " ";
 				cout << "ASIGNACION: " << endl;
 
-			for (int j = 0; j < tab+1; j++) cout << " ";
+			if (variable != NULL){
+				for (int j = 0; j < tab+1; j++) cout << " ";
 				cout << "VARIABLE: " << endl;
-			variable->imprimir(tab+2);
+				variable->imprimir(tab+2);
+			}
 
-			for (int j = 0; j < tab+1; j++) cout << " ";
+			if (valor != NULL){
+				for (int j = 0; j < tab+1; j++) cout << " ";
 				cout << "VALOR: " << endl;
-			valor->imprimir(tab+2);
-
+				valor->imprimir(tab+2);
+			}
+			
 			if (siguiente != NULL) 
 			siguiente->imprimir(tab+2);
 		}

@@ -29,7 +29,6 @@ void open_scope(ArbolSintactico * arb) {
 	identificador * b = (identificador *)arb;
 	table_element * elemento = table.lookup(b->valor, -1);
 	elemento->child_scope = table.new_scope();
-	cout << "Asignando " << elemento->child_scope << " a " << elemento->id << endl;
 }
 
 void usar_variable(string identificador, int columna){
