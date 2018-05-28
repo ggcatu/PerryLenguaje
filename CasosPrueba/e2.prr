@@ -8,8 +8,6 @@ type union onion{
 	char cebollaM;
 }
 
-
-
 main{
 	create{
 		string tomate;
