@@ -1,0 +1,24 @@
+//Prueba de error recovery
+include "input1.prr" 
+include "input2.prr" 
+include "p2.prr" 
+
+type union onion{
+	string cebolla;+
+	char cebollaM;
+}
+
+int errores(int gg;){
+	<< gg;
+}
+
+main{
+	create{
+		string tomate;
+		onion caraota;
+	} execute{
+		caraota  caraota.cebolla + tomate;
+ 		<< "hahaha";
+ 	};
+}
+44
