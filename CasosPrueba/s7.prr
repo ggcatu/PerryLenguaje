@@ -1,0 +1,17 @@
+//Preuba pointer 
+
+unit test(int @param, bool param2){
+	create{
+		ptr int point;
+	}
+	execute{
+		free(point);
+		return point;
+	};
+}
+
+main{
+ 	execute{
+ 		<< "hahaha";
+ 	};
+}

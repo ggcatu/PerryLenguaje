@@ -1,0 +1,17 @@
+//Preuba funcion
+
+unit test(int @param, bool param2){
+	create{
+		int inte;
+	}
+	execute{
+		inte = 1;
+		return inte;
+	};
+}
+
+main{
+ 	execute{
+ 		<< "hahaha";
+ 	};
+}

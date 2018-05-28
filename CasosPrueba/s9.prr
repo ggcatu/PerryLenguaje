@@ -1,0 +1,10 @@
+//Prueba type
+type numeritos = int;
+
+main{
+	create{
+		numeritos bbnum;
+	} execute{
+ 		<< "hahaha1" + 1 ;
+ 	};
+}

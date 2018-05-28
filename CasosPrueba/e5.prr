@@ -1,0 +1,13 @@
+//Error de lexer
+$ # & °° ¬ |||¬
+type numeritos = int;
+
+numeritos sumas(int uno){
+	<< "uno";
+}
+
+main{
+	 execute{
+ 		<< uno;
+ 	};
+}

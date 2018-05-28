@@ -1,0 +1,9 @@
+//Error generico
+main{
+	create{
+		string tomate;
+	} execute{
+		caraota  caraota.cebolla + tomate;
+ 		<< "hahaha1" + 1 ;
+ 	};
+}

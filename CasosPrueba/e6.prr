@@ -1,4 +1,4 @@
-//Prueba de error recovery
+//Error no llamando al union padre
 include "input1.prr" 
 include "input2.prr" 
 include "p2.prr" 
@@ -15,7 +15,6 @@ main{
 		string tomate;
 		onion caraota;
 	} execute{
-		cebolla = caraota.cebolla + tomate;
- 		<<;
+		cebolla.caraota = caraota.cebolla + tomate;
  	};
 }

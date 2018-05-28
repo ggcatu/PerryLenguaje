@@ -1,3 +1,5 @@
+//Preuba completa
+
 include "input1.prr" 
 include "input2.prr" 
 include "input3.prr" 
@@ -39,7 +41,7 @@ unit test(int @param, bool param2){
 			break;
 		};
 		for (int i, [0,4], i+1){
-			harray[i] = i+3-4*7;
+			inte = i+3-4*7;
 		};
 		if(twoforone[0]){
 			<< "falala";

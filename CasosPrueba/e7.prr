@@ -1,0 +1,12 @@
+//Error de argumento de funciones
+type numeritos = int;
+
+numeritos sumas(int uno){
+	<< "uno";
+}
+
+main{
+	 execute{
+ 		<< uno;
+ 	};
+}

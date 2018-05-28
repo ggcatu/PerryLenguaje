@@ -1,0 +1,17 @@
+//Preuba for
+unit test(int @param, bool param2){
+	create{
+		int inte;
+	}
+	execute{
+		for (int i, [0,4], i+1){
+			inte = param+3-4*7;
+		};
+	};
+}
+
+main{
+ 	execute{
+ 		<< "hahaha";
+ 	};
+}
