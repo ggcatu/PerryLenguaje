@@ -134,12 +134,12 @@ Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }
 	 		| MAIN LLAVEABRE error LLAVECIERRA					{ $$ = (ArbolSintactico*)(NULL); }
 	 		| MAIN LLAVEABRE error LLAVECIERRA Start			{ $$ = (ArbolSintactico*)(NULL); }
 			
-			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA Start		{ table.exit_scope(); $$ = new funcion($1,$2,$4,$7,$9); }
-			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE Sec LLAVECIERRA			{ table.exit_scope(); $$ = new funcion($1,$2,$4,$7); }
-			| Typedef Identifier Parabre error PARCIERRA	LLAVEABRE Sec LLAVECIERRA			{ $$ = (ArbolSintactico*)(NULL); }
-			| Typedef Identifier Parabre error PARCIERRA	LLAVEABRE Sec LLAVECIERRA Start		{ $$ = (ArbolSintactico*)(NULL); }
-			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE error LLAVECIERRA			{ $$ = (ArbolSintactico*)(NULL); }
-			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE error LLAVECIERRA	Start	{ $$ = (ArbolSintactico*)(NULL); }
+			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE Sec Llavecierra Start		{ $$ = new funcion($1,$2,$4,$7,$9); }
+			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE Sec Llavecierra			{ $$ = new funcion($1,$2,$4,$7); }
+			| Typedef Identifier Parabre error PARCIERRA	LLAVEABRE Sec Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
+			| Typedef Identifier Parabre error PARCIERRA	LLAVEABRE Sec Llavecierra Start		{ $$ = (ArbolSintactico*)(NULL); }
+			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE error Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
+			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE error Llavecierra	Start	{ $$ = (ArbolSintactico*)(NULL); }
 
 			| TYPE STRUCT Llaveabre Declist Llavecierra Start 	{ $$ = new estructura($3,$4,$6,true); }
 			| TYPE STRUCT Llaveabre Declist Llavecierra			{ $$ = new estructura($3,$4,true); }
