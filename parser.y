@@ -22,7 +22,11 @@ bool error_sintactico = 0;
 
 void yyerror (char const *s) {
 	error_sintactico = 1;
-	cout << "\nError de Parseo:\nCaracter Inesperado: " << yytext << "\nFila: " << yylineno << "\n" << "Columna: " << yycolumn-1-strlen(yytext) << "\n" ; 
+	if (errors.empty()){
+		cout << "\nError de Parseo:\nCaracter Inesperado: " << yytext << "\nFila: " << yylineno << "\n" << "Columna: " << yycolumn-1-strlen(yytext) << "\n" ; 
+	} else {
+		print_errors(errors);
+	}
 }
 
 void open_scope(ArbolSintactico * arb) {
