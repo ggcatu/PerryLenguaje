@@ -9,6 +9,7 @@
 #include <algorithm>
 
 enum elem_tipes {VARIABLE, FUNCTION};
+extern bool error_sintactico;
 
 /* Elementos de la tabla de simbolos, despues se expandira */
 class table_element {
@@ -47,13 +48,17 @@ class sym_table {
 		}
 
 		void open_scope(std::string x){
-			// std::cout << " Abriendo scope de " << x << std::endl;
 			table_element * scope = lookup(x, -1);
-			// std::cout << " Valor:  " << scope->child_scope << std::endl; 
+			if (scope == NULL || scope->child_scope == -1){
+				std::cout << x << " no es de un tipo complejo." << std::endl;
+				error_sintactico = 1;
+			} 
 			stack.push_back(scope->child_scope);
+
 		}
 
 		void exit_scope(){
+			if (!stack.empty())
 			stack.pop_back();
 		}
 
