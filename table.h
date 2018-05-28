@@ -49,12 +49,15 @@ class sym_table {
 
 		void open_scope(std::string x){
 			table_element * scope = lookup(x, -1);
-			if (scope == NULL || scope->child_scope == -1){
+			if (scope == NULL){
+				std::cout << x << " esta variable no esta definida" << std::endl;
+				stack.push_back(-1);
+			}
+			else if (scope->child_scope == -1){
 				std::cout << x << " no es de un tipo complejo." << std::endl;
 				error_sintactico = 1;
-			} else {
 				stack.push_back(scope->child_scope);
-			}
+			} 
 
 		}
 
