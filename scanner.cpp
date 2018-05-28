@@ -141,7 +141,7 @@ void execute_parser(){
 	// Si hay errores del lexer, imprimirlos
 	imprimir_arbol();
 
-	imprimir_errores();
+	// imprimir_errores();
 
 	imprimir_tabla();
 

@@ -3,6 +3,9 @@
 #include "parser.tab.h"
 
 using namespace std;
+
+extern vector<Token *> errors;
+
 int yycolumn = 1;
 
 #define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno; \
@@ -99,8 +102,9 @@ mod								return MOD;
 \.								return PUNTO;
 [0-9]+|0+						{yylval.num = atoi(yytext); return INT; }
 \"([^"])*\"						return STRING;
-
-.								{cout << "Caracter inesperado " << yytext[0] << " en la fila " << endl;  return ERROR;}
+								
+		
+.								{errors.push_back(new TokenError(0, yylineno, yylloc.first_column, yytext, LEXER)); return ERROR;}
 
 %%
 

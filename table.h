@@ -52,8 +52,9 @@ class sym_table {
 			if (scope == NULL || scope->child_scope == -1){
 				std::cout << x << " no es de un tipo complejo." << std::endl;
 				error_sintactico = 1;
-			} 
-			stack.push_back(scope->child_scope);
+			} else {
+				stack.push_back(scope->child_scope);
+			}
 
 		}
 

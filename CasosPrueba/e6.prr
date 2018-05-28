@@ -15,6 +15,6 @@ main{
 		string tomate;
 		onion caraota;
 	} execute{
-		cebolla.caraota = caraota.cebolla + tomate;
+		ter.cebolla = tomate;
  	};
 }
