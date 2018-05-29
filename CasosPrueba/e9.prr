@@ -1,0 +1,12 @@
+//Error de redefinicion de parametros
+type numeritos = int;
+
+numeritos sumas(int uno, char uno){
+	<< "uno";
+}
+
+main{
+	 execute{
+ 		<< "s";
+ 	};
+}

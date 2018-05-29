@@ -2,7 +2,7 @@
 
 main{
 	create{
-		int inte;
+		int inte = 1;
 		float floatp;
 		bool boole;
 		array int [5] harray;

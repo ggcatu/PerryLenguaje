@@ -506,12 +506,14 @@ class ret_brk : public ArbolSintactico {
 };
 
 class skip : public ArbolSintactico {
-	ArbolSintactico * siguiente;
-	skip(ArbolSintactico * s ) : siguiente(s) {}
-	virtual void imprimir(int tab){
-		if (siguiente != NULL)
-		siguiente->imprimir(tab);
-	}
+	public:
+		ArbolSintactico * siguiente;
+		skip(ArbolSintactico * s ) : siguiente(s) {}
+		skip(){}
+		virtual void imprimir(int tab){
+			if (siguiente != NULL)
+				siguiente->imprimir(tab);
+		}
 };
 
 /* Definicion de la asignacion */

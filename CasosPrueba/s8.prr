@@ -12,8 +12,9 @@ main{
 	create{
 		string tomate;
 		onion caraota;
+		int cebolla;
 	} execute{
-		caraota = caraota.cebolla + tomate;
+		caraota = caraota.cebolla + cebolla;
  		<< "hahaha1" + 1 ;
  	};
 }

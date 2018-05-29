@@ -1,0 +1,17 @@
+//Error no definiendo union y funcion con el mismo nombre
+
+type struct onion{
+	string cebolla;
+	char cebollaM;
+	int cebollaM;
+}
+
+
+main{
+	create{
+		string tomate = "slasa";
+		onion caraota;
+	} execute{
+		caraota.cebolla = tomate;
+ 	};
+}

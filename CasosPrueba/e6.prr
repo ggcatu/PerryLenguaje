@@ -7,6 +7,10 @@ type union onion{
 	string cebolla;
 	char cebollaM;
 }
+type union nonion{
+	string a;
+	char cebollaM;
+}
 
 
 
@@ -14,7 +18,9 @@ main{
 	create{
 		string tomate;
 		onion caraota;
+		nonion carraota;
 	} execute{
-		ter.cebolla = tomate;
+		tomate.cebolla = tomate;
+		carraota.cebolla = tomate;
  	};
 }

@@ -5,6 +5,16 @@ include "input2.prr"
 include "input3.prr" 
 include "p2.prr" 
 
+type struct nonion{
+	string acebolla;
+	char acebollaM;
+}
+type union onion{
+	string acebolla;
+	char acebollaM;
+}
+
+
 unit test(int @param, bool param2){
 	create{
 		int inte;

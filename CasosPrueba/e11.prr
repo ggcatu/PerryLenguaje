@@ -1,0 +1,17 @@
+//Error no definiendo union y funcion con el mismo nombre
+
+type union onion{
+	string cebolla;
+	char cebollaM;
+	<< hahahaha;
+}
+
+
+main{
+	create{
+		string tomate = "slasa";
+		onion caraota;
+	} execute{
+		caraota.cebolla = tomate;
+ 	};
+}

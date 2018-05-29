@@ -118,7 +118,7 @@ void declarar_variable(string identificador, int columna){
 %token <ch> CHAR
 %token <str> STRING 
 %token <boolean> TRUE FALSE
-%type <arb> S Create Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals Corchetes Parabre Identifier Ids_sup Ids_plox Llaveabre Llavecierra
+%type <arb> S Create Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals Corchetes Parabre Identifier  Ids_plox Llaveabre Llavecierra
 
 
 %%
@@ -168,7 +168,7 @@ Llavecierra : LLAVECIERRA {  table.exit_scope();  }
 Parabre 	: PARABRE { table.new_scope(); }
 			;
 
-Scope 		: Create LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA 	{ $$ = new bloque($7); table.exit_scope(); }
+Scope 		: Create LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA 	{ $$ = new bloque($3,$7); table.exit_scope(); }
 			| Create LLAVEABRE LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  			{ $$ = new bloque($6); table.exit_scope(); }
 			| EXECUTE LLAVEABRE Sec LLAVECIERRA  										{ $$ = new bloque($3); }
 			;
@@ -199,9 +199,9 @@ Varlist 	: Typedef IDENTIFIER COMA Varlist 					{ declarar_variable($2, yylloc.f
 			;
 
 Declist 	: Typedef IDENTIFIER PUNTOCOMA Declist				{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2 ); 
-																  $$ = new declaracion($4,$1, new identificador($2),(ArbolSintactico*)(NULL)); }
+																  $$ = new skip($4); }
 			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA Declist	{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2 ); $$ = new asignacion(new identificador($2), $4, $6); }
-			| Typedef IDENTIFIER PUNTOCOMA 						{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2 ); $$ = new declaracion($1,new identificador($2)); }
+			| Typedef IDENTIFIER PUNTOCOMA 						{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2 ); $$ = new skip(); }
 			| Typedef IDENTIFIER IGUAL Exp PUNTOCOMA 			{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2 ); $$ = new asignacion(new identificador($2), $4, NULL);}
 			;
 
@@ -274,11 +274,6 @@ Ids 		: Ids_plox Ids										{ $$ = new ids($1,$2); table.exit_scope();}
 			;
 
 Ids_plox 	: IDENTIFIER PUNTO 									{  usar_variable($1, yylloc.first_column); table.open_scope($1); $$ = new identificador($1); }
-			;
-
-Ids_sup 	: IDENTIFIER 										{ usar_variable_top($1, yylloc.first_column); $$ = new ids(new identificador($1));}
-			| Ids_plox Ids_sup		 							{ $$ = new ids($1,$2); table.exit_scope(); }
-			| IDENTIFIER Corchetes 								{ usar_variable_top($1, yylloc.first_column); $$ = new ids(new identificador($1),(ArbolSintactico*)(NULL),$2);}
 			;
 
 Corchetes	: CORCHETEABRE Exp CORCHETECIERRA Corchetes 		{ $$ = new exp_index($2,$4); }
