@@ -50,7 +50,7 @@ class sym_table {
 		void open_scope(std::string x){
 			table_element * scope = lookup(x, -1);
 			if (scope == NULL){
-				std::cout << x << " esta variable no esta definida" << std::endl;
+				std::cout << x << " esta variable no esta definida." << std::endl;
 				stack.push_back(-1);
 			}
 			else if (scope->child_scope == -1){
@@ -112,7 +112,7 @@ class sym_table {
 		}
 
 		void print(){		
-			std::cout << "Imprimiendo tabla de simbolos." << std::endl << std::endl; 
+			std::cout << std::endl << "Imprimiendo tabla de simbolos:" << std::endl; 
 		    for(std::map<std::string, std::deque<table_element> >::iterator it = tabla.begin(); it != tabla.end(); ++it) {
 		    	std::cout << "Variable: " << it->first << " [";
 		    	for (std::deque<table_element>::iterator vit = it->second.begin() ; vit != it->second.end(); ++vit) {

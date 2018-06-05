@@ -61,14 +61,14 @@ void imprimir_arbol(){
 		root_ast->imprimir(0);	
 		}
 		catch(...){
-			cout << "error";
+			cout << "Error en el AST" << endl;
 			return;
 		}
 	}	
 }
 
 void execute_lexer(){
-	cout << "Executing lexer" << endl;
+	cout << "Ejecutando lexer" << endl;
     // Inicialización para nuestro ciclo de lectura
 	int ntoken = yylex();
 	int posicion = 1;
@@ -129,7 +129,7 @@ void execute_lexer(){
 }
 
 void execute_parser(){
-	cout << "Executing parser" << endl;
+	cout << "Ejecutando parser" << endl;
     
     try {
 		yyparse();

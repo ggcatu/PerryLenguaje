@@ -23,7 +23,7 @@ bool error_sintactico = 0;
 void yyerror (char const *s) {
 	error_sintactico = 1;
 	if (errors.empty()){
-		cout << "\nError de Parseo:\nCaracter Inesperado: " << yytext << "\nFila: " << yylineno << "\n" << "Columna: " << yycolumn-1-strlen(yytext) << "\n" ; 
+		cout << "\nError de Parseo:\nCaracter Inesperado: " << yytext << "en la fila " << yylineno << ", columna " << yycolumn-1-strlen(yytext) << "\n" ; 
 	} else {
 		print_errors(errors);
 	}
@@ -49,7 +49,7 @@ void asignar_tipo(ArbolSintactico * tipo, string variable){
 		if (elemento != NULL){
 			instancia->child_scope = elemento->child_scope;
 		} else {
-			cout << "Error: " << ((identificador *)tipo)->valor << " no es un tipo fila: " << yylineno << " columna: " <<  yycolumn-1-strlen(yytext) << endl;
+			cout << "Error: " << ((identificador *)tipo)->valor << " no es un tipo, en la fila " << yylineno << ", columna " <<  yycolumn-1-strlen(yytext) << endl;
 
 			error_sintactico = 1;
 		}
@@ -145,27 +145,27 @@ Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }
 			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE error Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
 			| Typedef Identifier Parabre Varlist PARCIERRA	LLAVEABRE error Llavecierra	Start	{ $$ = (ArbolSintactico*)(NULL); }
 
-			| TYPE STRUCT Llaveabre Declist Llavecierra Start 	{ $$ = new estructura($3,$4,$6,true); }
-			| TYPE STRUCT Llaveabre Declist Llavecierra			{ $$ = new estructura($3,$4,true); }
+			| TYPE STRUCT Llaveabre Declist Llavecierra Start 	{ $$ = new skip($6); }
+			| TYPE STRUCT Llaveabre Declist Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
 			| TYPE STRUCT Llaveabre error Llavecierra Start 	{ $$ = (ArbolSintactico*)(NULL); }
 			| TYPE STRUCT Llaveabre error Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
 			
-			| TYPE UNION Llaveabre Declist Llavecierra Start  	{ $$ = new estructura($3,$4,$6,false); }
-			| TYPE UNION Llaveabre Declist Llavecierra 			{ $$ = new estructura($3,$4,false); }
+			| TYPE UNION Llaveabre Declist Llavecierra Start  	{ $$ = new skip($6); }
+			| TYPE UNION Llaveabre Declist Llavecierra 			{ $$ = (ArbolSintactico*)(NULL); }
 			| TYPE UNION Llaveabre error Llavecierra Start  	{ $$ = (ArbolSintactico*)(NULL); }
 			| TYPE UNION Llaveabre error Llavecierra 			{ $$ = (ArbolSintactico*)(NULL); }
 			
-			| TYPE Identifier IGUAL Typedef PUNTOCOMA Start		{ $$ = new tipo($2,$4,$6); }
-			| TYPE Identifier IGUAL Typedef	PUNTOCOMA			{ $$ = new tipo($2,$4); }
+			| TYPE Identifier IGUAL Typedef PUNTOCOMA Start		{ $$ = new skip($6); }
+			| TYPE Identifier IGUAL Typedef	PUNTOCOMA			{ $$ = (ArbolSintactico*)(NULL); }
 			; 
 
-Llaveabre 	: Identifier LLAVEABRE { $$ = $1 ; open_scope($1); }
+Llaveabre 	: Identifier LLAVEABRE 								{ $$ = $1 ; open_scope($1); }
 			; 
 
-Llavecierra : LLAVECIERRA {  table.exit_scope();  }
+Llavecierra : LLAVECIERRA 										{ table.exit_scope(); }
 			;
 
-Parabre 	: PARABRE { table.new_scope(); }
+Parabre 	: PARABRE 											{ table.new_scope(); }
 			;
 
 Scope 		: Create LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA 	{ $$ = new bloque($3,$7); table.exit_scope(); }
@@ -213,7 +213,7 @@ Inst		: Scope					 							{ $$ = $1; }
 			| Ids IGUAL Exp										{ $$ = new asignacion($1,$3, NULL); }
 			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  									{ $$ = new inst_guardia($3,$6,0); }
 			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA		{ $$ = new inst_guardia($3,$6,$10,1); }
-			| WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  		{ $$ = new inst_guardia($3,$6,2); }
+			| WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  								{ $$ = new inst_guardia($3,$6,2); }
 			| For Typedef Identifier COMA CORCHETEABRE Exp COMA Exp CORCHETECIERRA COMA Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA 	{ table.exit_scope(); $$ = new it_determinada(new declaracion($2, $3),$6,$8,$11,$14); }
 			| NEW PARABRE IDENTIFIER PARCIERRA					{ usar_variable($3, yylloc.first_column); $$ = new memoria(new identificador($3),true); }
 			| FREE PARABRE IDENTIFIER PARCIERRA					{ usar_variable($3, yylloc.first_column); $$ = new memoria(new identificador($3),false); }
@@ -224,7 +224,7 @@ Inst		: Scope					 							{ $$ = $1; }
 			| BREAK												{ $$ = new ret_brk(false, (ArbolSintactico*)(NULL)); }
 			;
 
-Identifier 	: IDENTIFIER {declarar_variable($1, yylloc.first_column); $$ = new identificador($1); }
+Identifier 	: IDENTIFIER 										{declarar_variable($1, yylloc.first_column); $$ = new identificador($1); }
 			;
 
 For  		: FOR PARABRE { table.new_scope(); }
