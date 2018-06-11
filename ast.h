@@ -19,6 +19,8 @@ en el proyecto
 #include <iterator>
 #include "definiciones.h"
 #include "ast_def.h"
+#include "table.h"
+
 using namespace std;
 #define ENTEROS 1
 #define FLOTANTES 3
@@ -240,35 +242,66 @@ class declaracion : public ArbolSintactico {
 		}
 };
 
+/* Definicion de la clase para los identificadores */
+class identificador : public ArbolSintactico {
+	public:
+		string valor;
+		identificador(string v) : valor(v) {}
+		virtual void imprimir(int tab) {
+			for (int j = 0; j < tab; j++) cout << " ";
+			cout << "id: " << valor << endl;
+		}
+};
 
 /* Definicion de la clase para la lista de declaraciones */
 class tipedec : public ArbolSintactico {
-	enum tipes {BOOL,CHAR,STRING,INT,FLOAT,ARRAY,LIST,TUPLE,ID,POINTER,UNIT};
+	// enum tipes {BOOL,CHAR,STRING,INT,FLOAT,ARRAY,LIST,TUPLE,ID,POINTER,UNIT};
 	public:
-		tipes names;
+		yytokentype names;
 		ArbolSintactico * subtipo1;
 		ArbolSintactico * subtipo2;
 		ArbolSintactico * tam;
-		tipedec( int n, ArbolSintactico * s1, ArbolSintactico * s2, ArbolSintactico * t) : names(static_cast<tipes>(n)), subtipo1(s1), tam(t) {}
-		tipedec( int n, ArbolSintactico * s1, ArbolSintactico * s2) : names(static_cast<tipes>(n)), subtipo1(s1), subtipo2(s2) {}
-		tipedec( int n, ArbolSintactico * s1) : names(static_cast<tipes>(n)), subtipo1(s1) {}
-		tipedec( int n) : names(static_cast<tipes>(n)) {}
+		tipedec( int n, ArbolSintactico * s1, ArbolSintactico * s2, ArbolSintactico * t) : names(static_cast<yytokentype>(n)), subtipo1(s1), tam(t) {is_type = 1;}
+		tipedec( int n, ArbolSintactico * s1, ArbolSintactico * s2) : names(static_cast<yytokentype>(n)), subtipo1(s1), subtipo2(s2) {is_type = 1;}
+		tipedec( int n, ArbolSintactico * s1) : names(static_cast<yytokentype>(n)), subtipo1(s1) {is_type = 1;}
+		tipedec( int n) : names(static_cast<yytokentype>(n)) {is_type = 1;}
+
+		bool asignar_tipo(string variable, sym_table * table ){
+			table_element * instancia = table->lookup(variable, -1);
+
+			switch(names){
+				case IDENTIFIER: {
+					table_element * elemento = table->lookup(((identificador *)subtipo1)->valor, -1);
+					if (elemento != NULL){
+						instancia->set_child_scope(elemento->child_scope);
+					} else {
+						cout << "Error: " << ((identificador *)subtipo1)->valor << " no es un tipo" << endl;
+						// , en la fila " << yylineno << ", columna " <<  yycolumn-1-strlen(yytext)
+						return false;
+					}
+				}
+				default:
+					instancia->type = names;
+			}
+			return true;
+		}
+
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			switch(names){
 				case BOOL:
 					cout << "BOOL:" << endl;
 					break;
-				case CHAR:
+				case LCHAR:
 					cout << "CHAR:" << endl;
 					break;
-				case STRING:
+				case LSTRING:
 					cout << "STRING:" << endl;
 					break;
-				case INT:
+				case LINT:
 					cout << "ENTERO:" << endl;
 					break;
-				case FLOAT:
+				case LFLOAT:
 					cout << "FLOTANTE:" << endl;
 					break;
 				case ARRAY:
@@ -280,7 +313,7 @@ class tipedec : public ArbolSintactico {
 				case TUPLE:
 					cout << "TUPLA:" << endl;
 					break;
-				case ID:
+				case IDENTIFIER:
 					cout << "IDENTIFICADOR:" << endl;
 					break;
 				case POINTER:
@@ -547,13 +580,27 @@ class asignacion : public ArbolSintactico {
 
 /* Definicion de la clase para las expresiones que retornan int o float */
 class exp_aritmetica : public ArbolSintactico {
-	enum inst {SUMA, RESTA, MULT, DIV, MOD, POW, PARENTESIS, CORCHETE, LLAVE, INDEX, FUNCION, CONSTANTE};
+	enum inst {SUMA, RESTA, MULT, DIV, MOD, POW};
 	public:
 		ArbolSintactico * der;
 		ArbolSintactico * izq;
 		inst instruccion;
-		exp_aritmetica(ArbolSintactico * d, ArbolSintactico * i, int is) : der(d), izq(i), instruccion(static_cast<inst>(is)) {}
-		exp_aritmetica(ArbolSintactico * d, int is) : der(d), instruccion(static_cast<inst>(is)) {}
+		exp_aritmetica(ArbolSintactico * d, ArbolSintactico * i, int is) : der(d), izq(i), instruccion(static_cast<inst>(is)) {verificar();}
+		exp_aritmetica(ArbolSintactico * d, int is) : der(d), instruccion(static_cast<inst>(is)) {verificar();}
+
+		void verificar(){
+			switch(instruccion){
+				case SUMA:
+				case RESTA:
+				case MULT:
+				case DIV:
+
+				case MOD:
+				case POW:
+
+			}
+		}
+
 		virtual void imprimir(int tab){
 			
 			for (int j = 0; j < tab; j++) cout << " ";
@@ -612,13 +659,18 @@ class exp_aritmetica : public ArbolSintactico {
 
 /* Definicion de la clase para las expresiones que retornan booleandos */
 class exp_booleana : public ArbolSintactico {
-	enum inst {IGUALA, DISTINTO, MENOR, MAYOR, MENORIGUAL, MAYORIGUAL, DISYUNCION, CONJUNCION, NEGACION, PARENTESIS, CORCHETE, LLAVE, CONSTANTE};
+	enum inst {IGUALA, DISTINTO, MENOR, MAYOR, MENORIGUAL, MAYORIGUAL, DISYUNCION, CONJUNCION, NEGACION};
 	public:
 		ArbolSintactico * der;
 		ArbolSintactico * izq;
 		inst instruccion;
-		exp_booleana(ArbolSintactico * d, ArbolSintactico * i, int is) : der(d), izq(i), instruccion(static_cast<inst>(is)) {}
-		exp_booleana(ArbolSintactico * d, int is) : der(d), instruccion(static_cast<inst>(is)) {}
+		exp_booleana(ArbolSintactico * d, ArbolSintactico * i, int is) : der(d), izq(i), instruccion(static_cast<inst>(is)) {verificar();}
+		exp_booleana(ArbolSintactico * d, int is) : der(d), instruccion(static_cast<inst>(is)) {verificar();}
+
+		void verificar(){
+
+		}
+		
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			switch(instruccion){
@@ -737,18 +789,6 @@ class ids : public ArbolSintactico {
 			// if (idr != NULL)  
 				// return id << "." << idr.str();
 			 
-		}
-};
-
-
-/* Definicion de la clase para los identificadores */
-class identificador : public ArbolSintactico {
-	public:
-		string valor;
-		identificador(string v) : valor(v) {}
-		virtual void imprimir(int tab) {
-			for (int j = 0; j < tab; j++) cout << " ";
-			cout << "id: " << valor << endl;
 		}
 };
 

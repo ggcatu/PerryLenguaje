@@ -1,0 +1,31 @@
+TABLA
+
+ID: Identificador 
+SCOPE: Scope en el que vive
+ELEM_TYPE: Es el tipo que retorna, en el caso de funciones, en el caso de variables, el tipo de la variable, en caso de struct, es el nombre del tipo
+CHILD_SCOPE: Scope en el que viven sus hijos en caso de tener, debe ser valido para funciones y para objetos
+EXTRA: Apuntador a un nodo de extra, en el que las funciones guardan el tipo de la firma, es decir [bool, bool, int] Hay que guardar algo mas?
+
+OPERADORES
++  Verificar que los dos sean enteros, o entero y float
+-
+*
+/
+pow
+% SOLO ENTERO >>
+== mismo tipo
+
+
+// Creo que por ahora no aceptamos string con los operadores
+// Creo que por ahora no aceptamos operaciones con las listas
+
+ASIGNACION
+
+Verificar que los dos tipos sean iguales
+
+LLAMADAS
+
+De variables, se resuelven con operadores y asignaciones,
+De funciones, hay que verificar los parametros con el tipo de la funcion
+
+

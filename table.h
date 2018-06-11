@@ -7,8 +7,8 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include "parser.tab.h"
 
-enum elem_tipes {VARIABLE, FUNCTION};
 extern bool error_sintactico;
 
 /* Elementos de la tabla de simbolos, despues se expandira */
@@ -16,18 +16,30 @@ class table_element {
 	public:
 		std::string id;
 		int scope;
+		yytokentype type;
 		int child_scope;
-		elem_tipes type;
 
-		table_element(std::string i, int s, elem_tipes e): id(i), scope(s), type(e), child_scope(-1){};
+		table_element(std::string i, int s): id(i), scope(s), child_scope(-1){};
 
 		bool operator==(const table_element & rhs) const { return (this->scope == rhs.scope && this->id == rhs.id);}
 
+		void set_type(yytokentype t){
+			type = t;
+		}
+
+		void set_scope(int s){
+			scope = s;
+		}
+
+		void set_child_scope(int s){
+			child_scope = s;
+		}
+
 		void print(){
 			std::cout << "SCOPE: " << scope ; 
+			std::cout << " TYPE: " << type ; 
 			if (child_scope != -1)
 				std::cout << ", CHILD SCOPE: " << child_scope ; 
-
 		}
 };
 
@@ -107,7 +119,7 @@ class sym_table {
 				return false;	
 			}  
 
-			tabla[identifier].push_front(table_element(identifier, stack.back(), VARIABLE));
+			tabla[identifier].push_front(table_element(identifier, stack.back()));
 			return true;
 		}
 

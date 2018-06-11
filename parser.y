@@ -8,8 +8,6 @@
 
 using namespace std;
 
-#define YYDEBUG 1
-
 extern int yylex(void);
 extern int yycolumn;
 extern int yylineno;
@@ -32,7 +30,7 @@ void yyerror (char const *s) {
 void open_scope(ArbolSintactico * arb) {
 	identificador * b = (identificador *)arb;
 	table_element * elemento = table.lookup(b->valor, -1);
-	elemento->child_scope = table.new_scope();
+	elemento->set_child_scope(table.new_scope());
 }
 
 void usar_variable(string identificador, int columna){
@@ -44,14 +42,10 @@ void usar_variable(string identificador, int columna){
 
 void asignar_tipo(ArbolSintactico * tipo, string variable){
 	if (tipo->is_type){
-		table_element * elemento = table.lookup(((identificador *)tipo)->valor, -1);
-		table_element * instancia = table.lookup(variable, -1);
-		if (elemento != NULL){
-			instancia->child_scope = elemento->child_scope;
-		} else {
+		bool value = ((tipedec *)tipo)->asignar_tipo(variable, &table);
+		if (!value){
 			cout << "Error: " << ((identificador *)tipo)->valor << " no es un tipo, en la fila " << yylineno << ", columna " <<  yycolumn-1-strlen(yytext) << endl;
-
-			error_sintactico = 1;
+			error_sintactico = 1;			
 		}
 	}
 }
@@ -111,6 +105,7 @@ void declarar_variable(string identificador, int columna){
 %token COMENTARIO 56
 %token TYPE 57 NEW 58 FREE 59
 %token REFERENCE 60 OPTR 61 UNIT 62
+%token TYPE_ERROR 
 
 %token <num> INT
 %token <flot> FLOAT
@@ -176,19 +171,19 @@ Scope 		: Create LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA
 Create:  	CREATE { table.new_scope(); } 
 			;
 
-Typedef		: BOOL  											{ $$ = new tipedec(0); }
-			| LCHAR 											{ $$ = new tipedec(1); }
-			| LSTRING  											{ $$ = new tipedec(2); }
-			| LINT  											{ $$ = new tipedec(3); }
-			| LFLOAT  											{ $$ = new tipedec(4); }
-			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{ $$ = new tipedec(5,$2,NULL,$4); }
-			| LIST Typedef 										{ $$ = new tipedec(6,$2); }
-			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{ $$ = new tipedec(7,$3,$5); }
-			| IDENTIFIER										{ ArbolSintactico * j = new identificador($1); 
+Typedef		: BOOL  											{ $$ = new tipedec(BOOL); }
+			| LCHAR 											{ $$ = new tipedec(LCHAR); }
+			| LSTRING  											{ $$ = new tipedec(LSTRING); }
+			| LINT  											{ $$ = new tipedec(LINT); }
+			| LFLOAT  											{ $$ = new tipedec(LFLOAT); }
+			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{ $$ = new tipedec(ARRAY,$2,NULL,$4); }
+			| LIST Typedef 										{ $$ = new tipedec(LIST,$2); }
+			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{ $$ = new tipedec(TUPLE,$3,$5); }
+			| IDENTIFIER										{ ArbolSintactico * j = new tipedec(IDENTIFIER, new identificador($1)); 
 																  j->is_type = true;
 																  $$ = j; }
-			| POINTER Typedef  									{ $$ = new tipedec(9,$2); }
-			| UNIT 												{ $$ = new tipedec(10); }
+			| POINTER Typedef  									{ $$ = new tipedec(POINTER,$2); }
+			| UNIT 												{ $$ = new tipedec(UNIT); }
 			;
 
 Varlist 	: Typedef IDENTIFIER COMA Varlist 					{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2 );}
