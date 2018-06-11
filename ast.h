@@ -41,8 +41,8 @@ class raiz : public ArbolSintactico {
 		ArbolSintactico * includes;
 		ArbolSintactico * programa;
 		raiz() {}
-		raiz(ArbolSintactico * p, bool m) : programa(p), module(m) {}
-		raiz(ArbolSintactico * i, ArbolSintactico * p, bool m) : includes(i), programa(p), module(m) {}
+		raiz(ArbolSintactico * p, bool m) : programa(p), module(m) {verificar();}
+		raiz(ArbolSintactico * i, ArbolSintactico * p, bool m) : includes(i), programa(p), module(m) {verificar();}
 		virtual void imprimir(int tab){
 			if (module){
 				cout << "MODULE:" << endl;
@@ -58,6 +58,14 @@ class raiz : public ArbolSintactico {
 				}
 			}
 		}
+		virtual void verificar(){
+			if (programa != NULL){
+				programa -> verificar();
+			}
+			if (includes != NULL){
+				programa -> verificar();
+			}
+		}
 };
 
 
@@ -69,8 +77,8 @@ class funcion : public ArbolSintactico {
 		ArbolSintactico * id;
 		ArbolSintactico * instrucciones;
 		ArbolSintactico * funciones;
-		funcion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * p, ArbolSintactico * is) : tipo(t), id(i), parametros(p), instrucciones(is) {}
-		funcion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * p, ArbolSintactico * is, ArbolSintactico * fs) : tipo(t), id(i), parametros(p), instrucciones(is), funciones(fs) {}
+		funcion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * p, ArbolSintactico * is) : tipo(t), id(i), parametros(p), instrucciones(is) {verificar();}
+		funcion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * p, ArbolSintactico * is, ArbolSintactico * fs) : tipo(t), id(i), parametros(p), instrucciones(is), funciones(fs) {verificar();}
 		virtual void imprimir(int tab){
 			cout << "FUNCION:" << endl;
 			for (int j = 0; j < tab+1; j++) cout << " ";
@@ -87,6 +95,15 @@ class funcion : public ArbolSintactico {
 				funciones -> imprimir(tab);
 			}
 		}
+		virtual void verificar(){
+			if (instrucciones != NULL){
+				instrucciones -> verificar();
+			}
+			if (funciones != NULL){
+				funciones -> verificar();
+			}
+
+		}
 };
 
 
@@ -95,7 +112,7 @@ class include : public ArbolSintactico {
 	public:
 		ArbolSintactico * archivo;
 		ArbolSintactico * includes;
-		include(ArbolSintactico * i, ArbolSintactico * a) : includes(i), archivo(a) {}
+		include(ArbolSintactico * i, ArbolSintactico * a) : includes(i), archivo(a) {verificar();}
 		include(ArbolSintactico * a) : archivo(a) {}
 		virtual void imprimir(int tab) {
 			cout << "INCLUDE:" << endl;
@@ -105,6 +122,10 @@ class include : public ArbolSintactico {
 			if (includes != NULL){
 				includes -> imprimir(tab);
 			}
+		}
+		virtual void verificar(){
+			// verificar que archivo es de tipo string
+			// aun no
 		}
 };
 
@@ -116,8 +137,8 @@ class estructura : public ArbolSintactico {
 		ArbolSintactico * campos;
 		ArbolSintactico * estructuras;
 		bool st;
-		estructura(ArbolSintactico * i, ArbolSintactico * c, bool t) : id(i), campos(c), st(t) {}
-		estructura(ArbolSintactico * i, ArbolSintactico * c, ArbolSintactico * es, bool t) : id(i), campos(c), estructuras(es), st(t) {}
+		estructura(ArbolSintactico * i, ArbolSintactico * c, bool t) : id(i), campos(c), st(t) {verificar();}
+		estructura(ArbolSintactico * i, ArbolSintactico * c, ArbolSintactico * es, bool t) : id(i), campos(c), estructuras(es), st(t) {verificar();}
 		virtual void imprimir(int tab){
 			//if (estructuras != NULL){
 			//		estructuras -> imprimir(tab);
@@ -140,6 +161,9 @@ class estructura : public ArbolSintactico {
 				estructuras -> imprimir(tab);
 			}
 		}
+		virtual void verificar(){
+			// verificar?
+		}
 };
 
 
@@ -149,8 +173,8 @@ class tipo : public ArbolSintactico {
 		ArbolSintactico * ti;
 		ArbolSintactico * id;
 		ArbolSintactico * tis;
-		tipo(ArbolSintactico * i, ArbolSintactico * t) : id(i), ti(t) {}
-		tipo(ArbolSintactico * i, ArbolSintactico * t, ArbolSintactico * ts) : id(i), ti(t), tis(ts) {}
+		tipo(ArbolSintactico * i, ArbolSintactico * t) : id(i), ti(t) {verificar();}
+		tipo(ArbolSintactico * i, ArbolSintactico * t, ArbolSintactico * ts) : id(i), ti(t), tis(ts) {verificar();}
 		virtual void imprimir(int tab){
 			//if (tis != NULL){
 			//	tis -> imprimir(tab);
@@ -167,6 +191,9 @@ class tipo : public ArbolSintactico {
 				tis -> imprimir(tab);
 			}
 		}
+		virtual void verificar(){
+			// verificar?
+		}
 };
 
 
@@ -175,8 +202,8 @@ class programa : public ArbolSintactico {
 	public:
 		ArbolSintactico * program;
 		ArbolSintactico * sec;
-		programa(ArbolSintactico * s, ArbolSintactico * p) : program(p), sec(s) {}
-		programa(ArbolSintactico * s) : sec(s) {}
+		programa(ArbolSintactico * s, ArbolSintactico * p) : program(p), sec(s) {verificar();}
+		programa(ArbolSintactico * s) : sec(s) {verificar();}
 		virtual void imprimir(int tab){
 			if (program != NULL){
 				program -> imprimir(tab);
@@ -184,6 +211,14 @@ class programa : public ArbolSintactico {
 			if (sec != NULL){
 				cout << "MAIN:" << endl;
 				sec -> imprimir(tab+1);
+			}
+		}
+		virtual void verificar(){
+			if (program != NULL){
+				program -> verificar();
+			} 
+			if (sec != NULL){
+				sec -> verificar();
 			}
 		}
 };
@@ -194,8 +229,8 @@ class bloque : public ArbolSintactico {
 	public:
 		ArbolSintactico * declaraciones;
 		ArbolSintactico * instrucciones;
-		bloque(ArbolSintactico * d, ArbolSintactico * i) : declaraciones(d), instrucciones(i) {}
-		bloque(ArbolSintactico * i) : instrucciones(i) {}
+		bloque(ArbolSintactico * d, ArbolSintactico * i) : declaraciones(d), instrucciones(i) {verificar();}
+		bloque(ArbolSintactico * i) : instrucciones(i) {verificar();}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "BLOQUE:" << endl;
@@ -210,6 +245,14 @@ class bloque : public ArbolSintactico {
 				instrucciones -> imprimir(tab+2);
 			}
 		}
+		virtual void verificar(){
+			if (declaraciones != NULL){
+				declaraciones -> verificar();
+			}
+			if (instrucciones != NULL){
+				instrucciones -> verificar();
+			}
+		}
 };
 
 
@@ -220,10 +263,10 @@ class declaracion : public ArbolSintactico {
 		ArbolSintactico * id;
 		ArbolSintactico * exp;
 		ArbolSintactico * declaraciones;
-		declaracion(ArbolSintactico * d, ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * e) : declaraciones(d), tipo(t), id(i), exp(e) {}
-		declaracion(ArbolSintactico * d, ArbolSintactico * t, ArbolSintactico * i, bool aux) : declaraciones(d), tipo(t), id(i) {}
-		declaracion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * e) : tipo(t), id(i), exp(e) {}
-		declaracion(ArbolSintactico * t, ArbolSintactico * i) : tipo(t), id(i) {}
+		declaracion(ArbolSintactico * d, ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * e) : declaraciones(d), tipo(t), id(i), exp(e) {verificar();}
+		declaracion(ArbolSintactico * d, ArbolSintactico * t, ArbolSintactico * i, bool aux) : declaraciones(d), tipo(t), id(i) {verificar();}
+		declaracion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * e) : tipo(t), id(i), exp(e) {verificar();}
+		declaracion(ArbolSintactico * t, ArbolSintactico * i) : tipo(t), id(i) {verificar();}
 		virtual void imprimir(int tab){
 			if (declaraciones != NULL){
 				declaraciones -> imprimir(tab);
@@ -239,6 +282,9 @@ class declaracion : public ArbolSintactico {
 				cout << "VALOR:" << endl;
 				exp -> imprimir(tab+1); 
 			}
+		}
+		virtual void verificar(){
+			// verificar?
 		}
 };
 
@@ -348,8 +394,8 @@ class instruccion : public ArbolSintactico {
 		ArbolSintactico * instrucciones;
 		ArbolSintactico * inst;
 		instruccion() {}
-		instruccion(ArbolSintactico * is, ArbolSintactico * i) : instrucciones(is), inst(i) {}
-		instruccion(ArbolSintactico * i) : inst(i) {}
+		instruccion(ArbolSintactico * is, ArbolSintactico * i) : instrucciones(is), inst(i) {verificar();}
+		instruccion(ArbolSintactico * i) : inst(i) {verificar();}
 		virtual void imprimir(int tab){
 			if (inst != NULL){
 				inst -> imprimir(tab);
@@ -357,6 +403,14 @@ class instruccion : public ArbolSintactico {
 			if (instrucciones != NULL){
 				instrucciones -> imprimir(tab);
 			}
+		}
+		virtual void verificar(){
+			if (inst != NULL){
+				inst -> verificar();
+			}
+			if (instrucciones != NULL){
+				instrucciones -> verificar();
+			}	
 		}
 };
 
@@ -368,8 +422,8 @@ class parametros : public ArbolSintactico {
 		bool ref;
 		ArbolSintactico * id;
 		ArbolSintactico * tipo;
-		parametros(ArbolSintactico * t, ArbolSintactico * i, bool r) : tipo(t), id(i), ref(r) {}
-		parametros(ArbolSintactico * p, ArbolSintactico * t, ArbolSintactico * i, bool r) : params(p), tipo(t), id(i), ref(r) {}
+		parametros(ArbolSintactico * t, ArbolSintactico * i, bool r) : tipo(t), id(i), ref(r) {verificar();}
+		parametros(ArbolSintactico * p, ArbolSintactico * t, ArbolSintactico * i, bool r) : params(p), tipo(t), id(i), ref(r) {verificar();}
 		virtual void imprimir(int tab){
 			if (params != NULL){
 				params -> imprimir(tab);
@@ -387,6 +441,9 @@ class parametros : public ArbolSintactico {
 			cout << "IDENTIFICADOR:" << endl;
 			id -> imprimir(tab+2);
 		}
+		virtual void verificar(){
+			// verificar?
+		}
 };
 
 
@@ -395,7 +452,7 @@ class llamada : public ArbolSintactico {
 	public:
 		ArbolSintactico * parametros;
 		ArbolSintactico * id;
-		llamada(ArbolSintactico * i, ArbolSintactico * p) : id(i), parametros(p) {}
+		llamada(ArbolSintactico * i, ArbolSintactico * p) : id(i), parametros(p) {verificar();}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "LLAMADA A FUNCION:" << endl;
@@ -406,6 +463,10 @@ class llamada : public ArbolSintactico {
 			cout << "PARAMETROS:" << endl;
 			parametros -> imprimir(tab+2);
 		}
+		virtual void verificar(){
+			// verificar que cada tipo es igual a los parametros asociados a id, incluso el numero de parametros
+			// la tabla tiene los parametros?
+		}
 };
 
 
@@ -414,7 +475,7 @@ class memoria : public ArbolSintactico {
 	public:
 		ArbolSintactico * id;
 		bool is_new;
-		memoria(ArbolSintactico * i, bool in) : id(i), is_new(in) {}
+		memoria(ArbolSintactico * i, bool in) : id(i), is_new(in) {verificar();}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			if (is_new){
@@ -427,6 +488,9 @@ class memoria : public ArbolSintactico {
 			cout << "IDENTIFICADOR:" << endl;
 			id -> imprimir(tab+2);
 		}
+		virtual void verificar(){
+			// que se debe verificar aqui?
+		}
 };
 
 
@@ -435,7 +499,7 @@ class entrada_salida : public ArbolSintactico {
 	public:
 		ArbolSintactico * exp;
 		bool entrada;
-		entrada_salida(ArbolSintactico * s, bool e) : exp(s), entrada(e) {}
+		entrada_salida(ArbolSintactico * s, bool e) : exp(s), entrada(e) {verificar();}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			if (entrada){
@@ -447,6 +511,9 @@ class entrada_salida : public ArbolSintactico {
 			for (int j = 0; j < tab+1; j++) cout << " ";
 			cout << "EXPRESION:" << endl;
 			exp -> imprimir(tab+2);
+		}
+		virtual void verificar(){
+			// aqui que se debe verificar
 		}
 };
 
@@ -460,7 +527,7 @@ class it_determinada : public ArbolSintactico {
 		ArbolSintactico * fin;
 		ArbolSintactico * paso;
 		ArbolSintactico * inst;
-		it_determinada(ArbolSintactico * v, ArbolSintactico * i, ArbolSintactico * f, ArbolSintactico * p, ArbolSintactico * is) : variable(v), inicio(i), fin(f), paso(p), inst(is) {}
+		it_determinada(ArbolSintactico * v, ArbolSintactico * i, ArbolSintactico * f, ArbolSintactico * p, ArbolSintactico * is) : variable(v), inicio(i), fin(f), paso(p), inst(is) {verificar();}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "FOR:" << endl;
@@ -480,6 +547,27 @@ class it_determinada : public ArbolSintactico {
 			cout << "CUERPO:" << endl;
 			inst -> imprimir(tab+2);
 		}
+		virtual void verificar(){
+			// que verificar con la variable?
+			// verificar que inicio, fin, paso son numeros
+			table_element * tipo_variable = table->lookup(((identificador *)variable)->valor, -1);
+			if (tipo_variable != LINT && tipo_variable != LFLOAT){
+
+			}
+			table_element * tipo_inicio = table->lookup(((identificador *)inicio)->valor, -1);
+			if (tipo_inicio != LINT && tipo_inicio != LFLOAT){
+
+			}
+			table_element * tipo_fin = table->lookup(((identificador *)fin)->valor, -1);
+			if (tipo_fin != LINT && tipo_fin != LFLOAT){
+
+			}
+			table_element * tipo_paso = table->lookup(((identificador *)paso)->valor, -1);
+			if (tipo_paso != LINT && tipo_paso != LFLOAT){
+
+			}
+			inst -> verificar();
+		}
 };
 
 
@@ -491,8 +579,8 @@ class inst_guardia : public ArbolSintactico {
 		ArbolSintactico * cuerpo;
 		ArbolSintactico * cuerpo_else;
 		inst instruccion;
-		inst_guardia(ArbolSintactico * c, ArbolSintactico * is, int i) : condicion(c), cuerpo(is), instruccion(static_cast<inst>(i)) {}
-		inst_guardia(ArbolSintactico * c, ArbolSintactico * is, ArbolSintactico * ie, int i) : condicion(c), cuerpo(is), cuerpo_else(ie), instruccion(static_cast<inst>(i)) {}
+		inst_guardia(ArbolSintactico * c, ArbolSintactico * is, int i) : condicion(c), cuerpo(is), instruccion(static_cast<inst>(i)) {verificar();}
+		inst_guardia(ArbolSintactico * c, ArbolSintactico * is, ArbolSintactico * ie, int i) : condicion(c), cuerpo(is), cuerpo_else(ie), instruccion(static_cast<inst>(i)) {verificar();}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			switch(instruccion){
@@ -518,6 +606,17 @@ class inst_guardia : public ArbolSintactico {
 				cuerpo_else -> imprimir(tab+2);
 			}
 		}
+		virtual void verificar(){
+			// verificar que condicion es booleano
+			table_element * tipo_condicion = table->lookup(((identificador *)condicion)->valor, -1);
+			if (tipo_condicion != LBOOL){
+
+			}
+			cuerpo -> verificar();
+			if (cuerpo_else != NULL){ 
+				cuerpo_else -> verificar();
+			}
+		}
 };
 
 
@@ -526,7 +625,7 @@ class ret_brk : public ArbolSintactico {
 	public:
 		bool ret;
 		ArbolSintactico * valor;
-		ret_brk(bool r, ArbolSintactico * v) : ret(r), valor(v) {}
+		ret_brk(bool r, ArbolSintactico * v) : ret(r), valor(v) {verificar();}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab+1; j++) cout << " ";
 			if (ret){
@@ -536,16 +635,25 @@ class ret_brk : public ArbolSintactico {
 				cout << "BREAK" << endl;
 			}
 		}
+		virtual void verificar(){
+			// el libro dice que se debe verificar que pertenece a un alcance de for, while = break
+			// verificar que pertenece a una funcion y que el tipo corresponde con su tipo salida
+		}
 };
 
 class skip : public ArbolSintactico {
 	public:
 		ArbolSintactico * siguiente;
-		skip(ArbolSintactico * s ) : siguiente(s) {}
+		skip(ArbolSintactico * s ) : siguiente(s) {verificar();}
 		skip(){}
 		virtual void imprimir(int tab){
 			if (siguiente != NULL)
 				siguiente->imprimir(tab);
+		}
+		virtual void verificar(){
+			if (siguiente != NULL){
+				siguiente -> verificar();
+			} 
 		}
 };
 
@@ -555,7 +663,7 @@ class asignacion : public ArbolSintactico {
 		ArbolSintactico * variable;
 		ArbolSintactico * valor;
 		ArbolSintactico * siguiente;
-		asignacion(ArbolSintactico * v, ArbolSintactico * b, ArbolSintactico * s) : variable(v), valor(b), siguiente(s) {}
+		asignacion(ArbolSintactico * v, ArbolSintactico * b, ArbolSintactico * s) : variable(v), valor(b), siguiente(s) {verificar();}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 				cout << "ASIGNACION: " << endl;
@@ -573,7 +681,20 @@ class asignacion : public ArbolSintactico {
 			}
 			
 			if (siguiente != NULL) 
-			siguiente->imprimir(tab+2);
+				siguiente->imprimir(tab+2);
+		}
+		virtual void verificar(){
+			// verificar que variable y valor son del mismo tipo
+			table_element * tipo_var = table->lookup(((identificador *)variable)->valor, -1);
+			table_el-ement * tipo_val = table->lookup(((identificador *)valor)->valor, -1);
+			if (tipovar != tipo_val){
+				if (tipo_var != LINT && tipo_var == LFLOAT && tipo_val != LINT && tipo_val != LFLOAT){
+				
+				}
+			}
+			if (siguiente != NULL){
+				siguiente -> verificar();
+			} 
 		}
 };
 
@@ -588,15 +709,56 @@ class exp_aritmetica : public ArbolSintactico {
 		exp_aritmetica(ArbolSintactico * d, ArbolSintactico * i, int is) : der(d), izq(i), instruccion(static_cast<inst>(is)) {verificar();}
 		exp_aritmetica(ArbolSintactico * d, int is) : der(d), instruccion(static_cast<inst>(is)) {verificar();}
 
-		void verificar(){
+		virtual void verificar(){
+			table_element * tipo_der = table->lookup(((identificador *)der)->valor, -1);
+			table_element * tipo_izq = table->lookup(((identificador *)izq)->valor, -1);
+				
 			switch(instruccion){
 				case SUMA:
-				case RESTA:
-				case MULT:
-				case DIV:
+					if (tipo_izq != LINT && tipo_izq != LFLOAT){
 
+					}
+					if (tipo_der != LINT && tipo_der != LFLOAT){
+
+					}
+					break;
+				case RESTA:
+					if (tipo_der != LINT && tipo_der != LFLOAT){
+
+					}
+					break;
+				case MULT:
+					if (tipo_izq != LINT && tipo_izq != LFLOAT){
+
+					}
+					if (tipo_der != LINT && tipo_der != LFLOAT){
+
+					}
+					break;
+				case DIV:
+					if (tipo_izq != LINT && tipo_izq != LFLOAT){
+
+					}
+					if (tipo_der != LINT && tipo_der != LFLOAT){
+
+					}
+					break;
 				case MOD:
+					if (tipo_izq != LINT){
+
+					}
+					if (tipo_der != LINT){
+
+					}
+					break;
 				case POW:
+					if (tipo_izq != LINT && tipo_izq != LFLOAT){
+
+					}
+					if (tipo_der != LINT){
+
+					}
+					break;
 
 			}
 		}
@@ -622,24 +784,6 @@ class exp_aritmetica : public ArbolSintactico {
 					break;
 				case POW:
 					cout << "POW:" << endl;
-					break;
-				case PARENTESIS:
-					cout << "PARENTESIS:" << endl;
-					break;
-				case CORCHETE:
-					cout << "CORCHETE:" << endl;
-					break;
-				case LLAVE:
-					cout << "LLAVE:" << endl;
-					break;
-				case INDEX:
-					cout << "INDEXACION:" << endl;
-					break;
-				case FUNCION:
-					cout << "LLAMADA A FUNCION:" << endl;
-					break;
-				case CONSTANTE:
-					cout << "VALOR:" << endl;
 					break;
 			}
 			if (izq != NULL){
@@ -668,7 +812,80 @@ class exp_booleana : public ArbolSintactico {
 		exp_booleana(ArbolSintactico * d, int is) : der(d), instruccion(static_cast<inst>(is)) {verificar();}
 
 		void verificar(){
+			table_element * tipo_der = table->lookup(((identificador *)der)->valor, -1);
+			table_element * tipo_izq = table->lookup(((identificador *)izq)->valor, -1);
+				
+			switch(instruccion){
+				case IGUALA:
+					if (tipo_izq != LBOOL){
 
+					}
+					if (tipo_der != LBOOL){
+
+					}
+					break;
+				case DISTINTO:
+					if (tipo_izq != LBOOL){
+
+					}
+					if (tipo_der != LBOOL){
+
+					}
+					break;
+				case MENOR:
+					if (tipo_izq != LBOOL){
+
+					}
+					if (tipo_der != LBOOL){
+
+					}
+					break;
+				case MAYOR:
+					if (tipo_izq != LBOOL){
+
+					}
+					if (tipo_der != LBOOL){
+
+					}
+					break;
+				case MENORIGUAL:
+					if (tipo_izq != LBOOL){
+
+					}
+					if (tipo_der != LBOOL){
+
+					}
+					break;
+				case MAYORIGUAL:
+					if (tipo_izq != LBOOL){
+
+					}
+					if (tipo_der != LBOOL){
+
+					}
+					break;
+				case DISYUNCION:
+					if (tipo_izq != LBOOL){
+
+					}
+					if (tipo_der != LBOOL){
+
+					}
+					break;
+				case CONJUNCION:
+					if (tipo_izq != LBOOL){
+
+					}
+					if (tipo_der != LBOOL){
+
+					}
+					break;
+				case NEGACION:
+					if (tipo_der != LBOOL){
+
+					}
+					break;
+			}
 		}
 		
 		virtual void imprimir(int tab){
@@ -689,15 +906,6 @@ class exp_booleana : public ArbolSintactico {
 				case MAYORIGUAL:
 					cout << "MAYORIGUAL:" << endl;
 					break;
-				case PARENTESIS:
-					cout << "PARENTESIS:" << endl;
-					break;
-				case CORCHETE:
-					cout << "CORCHETE:" << endl;
-					break;
-				case LLAVE:
-					cout << "LLAVE:" << endl;
-					break;
 				case DISYUNCION:
 					cout << "DISYUNCION:" << endl;
 					break;
@@ -706,9 +914,6 @@ class exp_booleana : public ArbolSintactico {
 					break;
 				case NEGACION:
 					cout << "NEGACION:" << endl;
-					break;
-				case CONSTANTE:
-					cout << "CONSTANTE:" << endl;
 					break;
 			}
 			
@@ -730,11 +935,14 @@ class exp_booleana : public ArbolSintactico {
 class exp_point : public ArbolSintactico {
 	public:
 		ArbolSintactico * der;
-		exp_point(ArbolSintactico * d) : der(d) {}
+		exp_point(ArbolSintactico * d) : der(d) {verificar();}
 		virtual void imprimir(int tab) {
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "DESREFERENCIACION: " << endl;
 			der -> imprimir(tab+1);
+		}
+		virtual void verificar(){
+			// verificar?
 		}
 };
 
@@ -744,8 +952,8 @@ class exp_index : public ArbolSintactico {
 	public:
 		ArbolSintactico * ind;
 		ArbolSintactico * indexaciones;
-		exp_index(ArbolSintactico * i,ArbolSintactico * ids) : indexaciones(ids), ind(i) {}
-		exp_index(ArbolSintactico * i) : ind(i) {}
+		exp_index(ArbolSintactico * i,ArbolSintactico * ids) : indexaciones(ids), ind(i) {verificar();}
+		exp_index(ArbolSintactico * i) : ind(i) {verificar();}
 		virtual void imprimir(int tab) {
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "INDEXACION: " << endl;
@@ -755,6 +963,11 @@ class exp_index : public ArbolSintactico {
 			if (indexaciones != NULL){
 				indexaciones -> imprimir(tab+2);
 			}
+		}
+		virtual void verificar(){
+			if (indexaciones != NULL){
+				indexaciones -> verificar();
+			} 
 		}
 };
 
@@ -767,7 +980,7 @@ class ids : public ArbolSintactico {
 		ArbolSintactico * indx;
 		ids(ArbolSintactico * i) : id(i) {}
 		ids(ArbolSintactico * i, ArbolSintactico * is) : id(i), idr(is) {}
-		ids(ArbolSintactico * i, ArbolSintactico * is, ArbolSintactico * ix) :indx(ix), id(i), idr(is) {}
+		ids(ArbolSintactico * i, ArbolSintactico * is, ArbolSintactico * ix) :indx(ix), id(i), idr(is) {verificar();}
 		virtual void imprimir(int tab){
 			if (idr != NULL){
 				for (int j = 0; j < tab; j++) cout << " ";
@@ -788,7 +1001,9 @@ class ids : public ArbolSintactico {
 		virtual string str(){
 			// if (idr != NULL)  
 				// return id << "." << idr.str();
-			 
+		}
+		virtual void verificar(){
+			// verificar?
 		}
 };
 
@@ -888,7 +1103,7 @@ class ptr : public ArbolSintactico {
 		ArbolSintactico * id;
 		ArbolSintactico * elem; // atributo para lo que sea que apunta?
 		ptr() {}
-		ptr(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * e): tipo(t), id(i), elem(e) {}
+		ptr(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * e): tipo(t), id(i), elem(e) {verificar();}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "APUNTADOR: " << endl;
@@ -903,6 +1118,9 @@ class ptr : public ArbolSintactico {
 				cout << "TIPO: " << endl;
 				elem -> imprimir(tab+2);
 			}
+		}
+		virtual void verificar(){
+
 		}
 };
 
@@ -946,7 +1164,7 @@ class lista : public ArbolSintactico {
 class arreglo : public ArbolSintactico {
 	public:
 		ArbolSintactico * valor;
-		arreglo(ArbolSintactico * v) : valor(v) {}
+		arreglo(ArbolSintactico * v) : valor(v) {verificar();}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "ARREGLO:" << endl;	
@@ -956,6 +1174,9 @@ class arreglo : public ArbolSintactico {
 				valor -> imprimir(tab+2);
 			}
 		}
+		virtual void verificar(){
+
+		}
 };
 
 
@@ -964,7 +1185,7 @@ class tupla : public ArbolSintactico {
 	public:
 		ArbolSintactico * valor1;
 		ArbolSintactico * valor2;
-		tupla(ArbolSintactico * v1, ArbolSintactico * v2) : valor1(v1), valor2(v2) {}
+		tupla(ArbolSintactico * v1, ArbolSintactico * v2) : valor1(v1), valor2(v2) {verificar();}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "TUPLA:" << endl;	
@@ -976,5 +1197,8 @@ class tupla : public ArbolSintactico {
 				cout << "SEGUNDO VALOR:" << endl;	
 				valor2 -> imprimir(tab+2);
 			}
+		}
+		virtual void verificar(){
+
 		}
 };
