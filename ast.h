@@ -113,7 +113,7 @@ class include : public ArbolSintactico {
 		ArbolSintactico * archivo;
 		ArbolSintactico * includes;
 		include(ArbolSintactico * i, ArbolSintactico * a) : includes(i), archivo(a) {verificar();}
-		include(ArbolSintactico * a) : archivo(a) {}
+		include(ArbolSintactico * a) : archivo(a) {verificar();}
 		virtual void imprimir(int tab) {
 			cout << "INCLUDE:" << endl;
 			if (archivo != NULL){
@@ -140,9 +140,6 @@ class estructura : public ArbolSintactico {
 		estructura(ArbolSintactico * i, ArbolSintactico * c, bool t) : id(i), campos(c), st(t) {verificar();}
 		estructura(ArbolSintactico * i, ArbolSintactico * c, ArbolSintactico * es, bool t) : id(i), campos(c), estructuras(es), st(t) {verificar();}
 		virtual void imprimir(int tab){
-			//if (estructuras != NULL){
-			//		estructuras -> imprimir(tab);
-			//}
 			if (st){
 				cout << "STRUCT:" << endl;
 			}
@@ -176,9 +173,6 @@ class tipo : public ArbolSintactico {
 		tipo(ArbolSintactico * i, ArbolSintactico * t) : id(i), ti(t) {verificar();}
 		tipo(ArbolSintactico * i, ArbolSintactico * t, ArbolSintactico * ts) : id(i), ti(t), tis(ts) {verificar();}
 		virtual void imprimir(int tab){
-			//if (tis != NULL){
-			//	tis -> imprimir(tab);
-			//}
 			cout << "TYPE" << endl;
 			for (int j = 0; j < tab+1; j++) cout << " ";
 			cout << "IDENTIFICADOR:" << endl;
@@ -548,24 +542,26 @@ class it_determinada : public ArbolSintactico {
 			inst -> imprimir(tab+2);
 		}
 		virtual void verificar(){
+			/*
 			// que verificar con la variable?
 			// verificar que inicio, fin, paso son numeros
-			table_element * tipo_variable = table->lookup(((identificador *)variable)->valor, -1);
+			table_element * tipo_variable = table->lookup((variable)->valor, -1);
 			if (tipo_variable != LINT && tipo_variable != LFLOAT){
-
+				cout << "La variable " << variable. << " debe ser un entero o un flotante" endl;
 			}
-			table_element * tipo_inicio = table->lookup(((identificador *)inicio)->valor, -1);
+			table_element * tipo_inicio = table->lookup((inicio)->valor, -1);
 			if (tipo_inicio != LINT && tipo_inicio != LFLOAT){
-
+				cout << "El inicio del rango del for debe ser un entero o un flotante." << endl;
 			}
-			table_element * tipo_fin = table->lookup(((identificador *)fin)->valor, -1);
+			table_element * tipo_fin = table->lookup((fin)->valor, -1);
 			if (tipo_fin != LINT && tipo_fin != LFLOAT){
-
+				cout << "El fin del rango del for debe ser un entero o un flotante." << endl;
 			}
-			table_element * tipo_paso = table->lookup(((identificador *)paso)->valor, -1);
+			table_element * tipo_paso = table->lookup((paso)->valor, -1);
 			if (tipo_paso != LINT && tipo_paso != LFLOAT){
-
+				cout << "El paso  en el for debe ser un entero o flotante." << endl;
 			}
+			*/
 			inst -> verificar();
 		}
 };
@@ -608,10 +604,12 @@ class inst_guardia : public ArbolSintactico {
 		}
 		virtual void verificar(){
 			// verificar que condicion es booleano
-			table_element * tipo_condicion = table->lookup(((identificador *)condicion)->valor, -1);
+			/*
+			table_element * tipo_condicion = table->lookup((condicion)->valor, -1);
 			if (tipo_condicion != LBOOL){
-
+				cout << "La condicion debe ser de tipo booleano." << endl;
 			}
+			*/
 			cuerpo -> verificar();
 			if (cuerpo_else != NULL){ 
 				cuerpo_else -> verificar();
@@ -684,14 +682,13 @@ class asignacion : public ArbolSintactico {
 				siguiente->imprimir(tab+2);
 		}
 		virtual void verificar(){
+			/*
 			// verificar que variable y valor son del mismo tipo
-			table_element * tipo_var = table->lookup(((identificador *)variable)->valor, -1);
-			table_el-ement * tipo_val = table->lookup(((identificador *)valor)->valor, -1);
+			table_element * tipo_var = table->lookup(variable->valor, -1);
+			table_el-ement * tipo_val = table->lookup(valor->valor, -1);
 			if (tipovar != tipo_val){
-				if (tipo_var != LINT && tipo_var == LFLOAT && tipo_val != LINT && tipo_val != LFLOAT){
-				
-				}
-			}
+				cout << "Los tipos de la asignacion no son iguales." << endl;
+			}*/
 			if (siguiente != NULL){
 				siguiente -> verificar();
 			} 
@@ -710,57 +707,58 @@ class exp_aritmetica : public ArbolSintactico {
 		exp_aritmetica(ArbolSintactico * d, int is) : der(d), instruccion(static_cast<inst>(is)) {verificar();}
 
 		virtual void verificar(){
-			table_element * tipo_der = table->lookup(((identificador *)der)->valor, -1);
-			table_element * tipo_izq = table->lookup(((identificador *)izq)->valor, -1);
+			/*
+			table_element * tipo_der = table->lookup(der->valor, -1);
+			table_element * tipo_izq = table->lookup(izq->valor, -1);
 				
 			switch(instruccion){
 				case SUMA:
 					if (tipo_izq != LINT && tipo_izq != LFLOAT){
-
+						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
 					if (tipo_der != LINT && tipo_der != LFLOAT){
-
+						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
 					break;
 				case RESTA:
 					if (tipo_der != LINT && tipo_der != LFLOAT){
-
+						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
 					break;
 				case MULT:
 					if (tipo_izq != LINT && tipo_izq != LFLOAT){
-
+						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
 					if (tipo_der != LINT && tipo_der != LFLOAT){
-
+						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
 					break;
 				case DIV:
 					if (tipo_izq != LINT && tipo_izq != LFLOAT){
-
+						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
 					if (tipo_der != LINT && tipo_der != LFLOAT){
-
+						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
 					break;
 				case MOD:
 					if (tipo_izq != LINT){
-
+						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
 					if (tipo_der != LINT){
-
+						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
 					break;
 				case POW:
 					if (tipo_izq != LINT && tipo_izq != LFLOAT){
-
+						cout << "Las expresiones aritmeticas deben tener tipo entero." << endl;
 					}
 					if (tipo_der != LINT){
-
+						cout << "El exponente debe ser de tipo entero." << endl;
 					}
 					break;
-
 			}
+			*/
 		}
 
 		virtual void imprimir(int tab){
@@ -812,80 +810,82 @@ class exp_booleana : public ArbolSintactico {
 		exp_booleana(ArbolSintactico * d, int is) : der(d), instruccion(static_cast<inst>(is)) {verificar();}
 
 		void verificar(){
-			table_element * tipo_der = table->lookup(((identificador *)der)->valor, -1);
-			table_element * tipo_izq = table->lookup(((identificador *)izq)->valor, -1);
+			/*
+			table_element * tipo_der = table->lookup(der->valor, -1);
+			table_element * tipo_izq = table->lookup(izq->valor, -1);
 				
 			switch(instruccion){
 				case IGUALA:
-					if (tipo_izq != LBOOL){
-
+					if !(tipo_izq == LBOOL){
+						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
 					}
-					if (tipo_der != LBOOL){
-
+					if !(tipo_der == LBOOL){
+						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
 					}
 					break;
 				case DISTINTO:
-					if (tipo_izq != LBOOL){
-
+					if !(tipo_izq == LBOOL){
+						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
 					}
-					if (tipo_der != LBOOL){
-
+					if !(tipo_der == LBOOL){
+						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
 					}
 					break;
 				case MENOR:
-					if (tipo_izq != LBOOL){
-
+					if (tipo_izq != LINT && tipo_izq != LFLOAT){
+						cout << "Las expresiones aritmeticas debe ser de tipo entero o flotante." << endl;
 					}
-					if (tipo_der != LBOOL){
-
+					if (tipo_der != LINT && tipo_der != LFLOAT){
+						cout << "Las expresiones aritmeticas debe ser de tipo entero o flotante." << endl;
 					}
 					break;
 				case MAYOR:
-					if (tipo_izq != LBOOL){
-
+					if (tipo_izq != LINT && tipo_izq != LFLOAT){
+						cout << "Las expresiones aritmeticas debe ser de tipo entero o flotante." << endl;
 					}
-					if (tipo_der != LBOOL){
-
+					if (tipo_der != LINT && tipo_der != LFLOAT){
+						cout << "Las expresiones aritmeticas debe ser de tipo entero o flotante." << endl;
 					}
 					break;
 				case MENORIGUAL:
-					if (tipo_izq != LBOOL){
-
+					if (tipo_izq != LINT && tipo_izq != LFLOAT){
+						cout << "Las expresiones aritmeticas debe ser de tipo entero o flotante." << endl;
 					}
-					if (tipo_der != LBOOL){
-
+					if (tipo_der != LINT && tipo_der != LFLOAT){
+						cout << "Las expresiones aritmeticas debe ser de tipo entero o flotante." << endl;
 					}
 					break;
 				case MAYORIGUAL:
-					if (tipo_izq != LBOOL){
-
+					if (tipo_izq != LINT && tipo_izq != LFLOAT){
+						cout << "Las expresiones aritmeticas debe ser de tipo entero o flotante." << endl;
 					}
-					if (tipo_der != LBOOL){
-
+					if (tipo_der != LINT && tipo_der != LFLOAT){
+						cout << "Las expresiones aritmeticas debe ser de tipo entero o flotante." << endl;
 					}
 					break;
 				case DISYUNCION:
-					if (tipo_izq != LBOOL){
-
+					if (!(tipo_izq == LBOOL)){
+						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
 					}
-					if (tipo_der != LBOOL){
-
+					if (!(tipo_der == LBOOL)){
+						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
 					}
 					break;
 				case CONJUNCION:
-					if (tipo_izq != LBOOL){
-
+					if (!(tipo_izq == LBOOL)){
+						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
 					}
-					if (tipo_der != LBOOL){
-
+					if (!(tipo_der == LBOOL)){
+						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
 					}
 					break;
 				case NEGACION:
-					if (tipo_der != LBOOL){
-
+					if (!(tipo_der == LBOOL)){
+						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
 					}
 					break;
 			}
+			*/
 		}
 		
 		virtual void imprimir(int tab){
@@ -965,6 +965,12 @@ class exp_index : public ArbolSintactico {
 			}
 		}
 		virtual void verificar(){
+			/*
+			table_element * tipo_ind = table->lookup(ind->valor, -1);
+			if (tipo_ind != LINT) {
+				cout << "La indexacion es de tipo entero." << endl;
+			}
+			*/
 			if (indexaciones != NULL){
 				indexaciones -> verificar();
 			} 
@@ -1003,7 +1009,7 @@ class ids : public ArbolSintactico {
 				// return id << "." << idr.str();
 		}
 		virtual void verificar(){
-			// verificar?
+			// que se debe verificar?
 		}
 };
 
@@ -1020,6 +1026,9 @@ class entero : public ArbolSintactico {
 				cout << "int: " << valor << endl;
 			}
 		}
+		virtual void verificar(){
+			//
+		}
 };
 
 
@@ -1034,6 +1043,9 @@ class flotante : public ArbolSintactico {
 				for (int j = 0; j < tab; j++) cout << " ";
 				cout << "float: " << valor << endl;
 			}
+		}
+		virtual void verificar(){
+			//
 		}
 };
 
@@ -1054,6 +1066,9 @@ class booleano : public ArbolSintactico {
 				}
 			}
 		}
+		virtual void verificar(){
+			//
+		}
 };
 
 
@@ -1069,6 +1084,9 @@ class character : public ArbolSintactico {
 				cout << "char: " << valor << endl;
 			}
 		}
+		virtual void verificar(){
+			//
+		}
 };
 
 
@@ -1079,6 +1097,9 @@ class unit : public ArbolSintactico {
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "unit" << endl;
+		}
+		virtual void verificar(){
+			//
 		}
 };
 
@@ -1092,6 +1113,9 @@ class str : public ArbolSintactico {
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "string: " << valor << endl;
+		}
+		virtual void verificar(){
+			//
 		}
 };
 
@@ -1131,7 +1155,7 @@ class elementos : public ArbolSintactico {
 		ArbolSintactico * elems;
 		ArbolSintactico * val;
 		elementos( ArbolSintactico * v) : val(v) {}
-		elementos(ArbolSintactico * e, ArbolSintactico * v) : elems(e), val(v) {}
+		elementos(ArbolSintactico * e, ArbolSintactico * v) : elems(e), val(v) {verificar();}
 		virtual void imprimir(int tab){
 			if (elems != NULL){
 				elems -> imprimir(tab);
@@ -1140,6 +1164,9 @@ class elementos : public ArbolSintactico {
 			cout << "PARAMETRO:" << endl;
 			val -> imprimir(tab+1);
 		}
+		virtual void verificar(){
+			// que debemos verificar?
+		}
 };
 
 
@@ -1147,7 +1174,7 @@ class elementos : public ArbolSintactico {
 class lista : public ArbolSintactico {
 	public:
 		ArbolSintactico * valor;
-		lista( ArbolSintactico * v) :  valor(v) {}
+		lista( ArbolSintactico * v) :  valor(v) {verificar();}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "LISTA:" << endl;
@@ -1156,6 +1183,9 @@ class lista : public ArbolSintactico {
 				cout << "CON:" << endl;
 				valor -> imprimir(tab+2);
 			}
+		}
+		virtual void verificar(){
+			// que verificar aqui?
 		}
 };
 
@@ -1175,7 +1205,7 @@ class arreglo : public ArbolSintactico {
 			}
 		}
 		virtual void verificar(){
-
+			// verificamos que los elementos del arreglo son del tipo del arreglo
 		}
 };
 
@@ -1199,6 +1229,6 @@ class tupla : public ArbolSintactico {
 			}
 		}
 		virtual void verificar(){
-
+			// verificar que?
 		}
 };

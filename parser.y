@@ -15,7 +15,7 @@ extern char * yytext;
 extern vector<Token *> errors;
 
 ArbolSintactico * root_ast;
-sym_table table; 
+sym_table table;
 bool error_sintactico = 0;
 
 void yyerror (char const *s) {

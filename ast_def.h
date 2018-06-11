@@ -13,7 +13,8 @@ class ArbolSintactico {
 		ArbolSintactico(): is_type(0){};
 		ArbolSintactico(int i): ident(i),is_type(0) {};
 		ArbolSintactico(ArbolSintactico * l): first(l),is_type(0) {};
-		virtual void imprimir(int i){ if(first != NULL) first->imprimir(i); }; 
+		virtual void imprimir(int i){ if(first != NULL) first->imprimir(i); }
+		virtual void verificar() {}; 
 };
 
 #endif
