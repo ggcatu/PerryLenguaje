@@ -116,7 +116,7 @@ void declarar_variable(string identificador, int columna){
 %token <ch> CHAR
 %token <str> STRING 
 %token <boolean> TRUE FALSE
-%type <arb> S Create Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals Corchetes Parabre Identifier  Ids_plox Llaveabre Llavecierra
+%type <arb> S Create Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals Corchetes Parabre Identifier  Ids_plox Llaveabre LlaveabreSp Llavecierra
 
 
 %%
@@ -158,6 +158,9 @@ Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }
 			; 
 
 Llaveabre 	: Identifier LLAVEABRE 								{ $$ = $1 ; open_scope($1); }
+			;
+
+LlaveabreSp : LLAVEABRE 										{  $$ = new identificador("new skip()"); open_scope(new identificador("new skip()")); declarar_variable("new skip()", yylloc.first_column);}
 			; 
 
 Llavecierra : LLAVECIERRA 										{ table.exit_scope(); }
@@ -185,6 +188,12 @@ Typedef		: BOOL  											{ $$ = new tipedec(tipo_bool::instance()); }
 			| IDENTIFIER										{ ArbolSintactico * j = new tipedec(tipo_identifier::instance(), new identificador($1)); 
 																  j->is_type = true;
 																  $$ = j; }
+			| TYPE STRUCT LlaveabreSp Declist Llavecierra		{ $$ = (ArbolSintactico*)(NULL); }
+			| TYPE STRUCT LlaveabreSp error Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
+			
+			| TYPE UNION LlaveabreSp Declist Llavecierra 		{ $$ = (ArbolSintactico*)(NULL); }
+			| TYPE UNION LlaveabreSp error Llavecierra 			{ $$ = (ArbolSintactico*)(NULL); }
+
 			| POINTER Typedef  									{ $$ = new tipedec(tipo_pointer::instance(),$2); }
 			| UNIT 												{ $$ = new tipedec(tipo_unit::instance()); }
 			;
