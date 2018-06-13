@@ -5,6 +5,7 @@
 #include "definiciones.h"
 #include "ast.h"
 #include "table.h"
+#include "tipos.h"
 
 using namespace std;
 
@@ -42,11 +43,13 @@ void usar_variable(string identificador, int columna){
 
 void asignar_tipo(ArbolSintactico * tipo, string variable){
 	if (tipo->is_type){
+		cout << "###### ASIG TIPO A " << variable << endl;
 		bool value = ((tipedec *)tipo)->asignar_tipo(variable, &table);
 		if (!value){
 			cout << "Error: " << ((identificador *)tipo)->valor << " no es un tipo, en la fila " << yylineno << ", columna " <<  yycolumn-1-strlen(yytext) << endl;
 			error_sintactico = 1;			
 		}
+	} else {
 	}
 }
 
@@ -171,19 +174,19 @@ Scope 		: Create LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA
 Create:  	CREATE { table.new_scope(); } 
 			;
 
-Typedef		: BOOL  											{ $$ = new tipedec(BOOL); }
-			| LCHAR 											{ $$ = new tipedec(LCHAR); }
-			| LSTRING  											{ $$ = new tipedec(LSTRING); }
-			| LINT  											{ $$ = new tipedec(LINT); }
-			| LFLOAT  											{ $$ = new tipedec(LFLOAT); }
-			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{ $$ = new tipedec(ARRAY,$2,NULL,$4); }
-			| LIST Typedef 										{ $$ = new tipedec(LIST,$2); }
-			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{ $$ = new tipedec(TUPLE,$3,$5); }
-			| IDENTIFIER										{ ArbolSintactico * j = new tipedec(IDENTIFIER, new identificador($1)); 
+Typedef		: BOOL  											{ $$ = new tipedec(tipo_bool::instance()); }
+			| LCHAR 											{ $$ = new tipedec(tipo_char::instance()); }
+			| LSTRING  											{ $$ = new tipedec(tipo_string::instance()); }
+			| LINT  											{ $$ = new tipedec(tipo_int::instance()); }
+			| LFLOAT  											{ $$ = new tipedec(tipo_float::instance()); }
+			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{ $$ = new tipedec(tipo_array::instance(),$2,NULL,$4); }
+			| LIST Typedef 										{ $$ = new tipedec(tipo_list::instance(),$2); }
+			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{ $$ = new tipedec(tipo_tuple::instance(),$3,$5); }
+			| IDENTIFIER										{ ArbolSintactico * j = new tipedec(tipo_identifier::instance(), new identificador($1)); 
 																  j->is_type = true;
 																  $$ = j; }
-			| POINTER Typedef  									{ $$ = new tipedec(POINTER,$2); }
-			| UNIT 												{ $$ = new tipedec(UNIT); }
+			| POINTER Typedef  									{ $$ = new tipedec(tipo_pointer::instance(),$2); }
+			| UNIT 												{ $$ = new tipedec(tipo_unit::instance()); }
 			;
 
 Varlist 	: Typedef IDENTIFIER COMA Varlist 					{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2 );}

@@ -295,21 +295,20 @@ class identificador : public ArbolSintactico {
 
 /* Definicion de la clase para la lista de declaraciones */
 class tipedec : public ArbolSintactico {
-	// enum tipes {BOOL,CHAR,STRING,INT,FLOAT,ARRAY,LIST,TUPLE,ID,POINTER,UNIT};
+
 	public:
-		yytokentype names;
+		type& tipo;
 		ArbolSintactico * subtipo1;
 		ArbolSintactico * subtipo2;
 		ArbolSintactico * tam;
-		tipedec( int n, ArbolSintactico * s1, ArbolSintactico * s2, ArbolSintactico * t) : names(static_cast<yytokentype>(n)), subtipo1(s1), tam(t) {is_type = 1;}
-		tipedec( int n, ArbolSintactico * s1, ArbolSintactico * s2) : names(static_cast<yytokentype>(n)), subtipo1(s1), subtipo2(s2) {is_type = 1;}
-		tipedec( int n, ArbolSintactico * s1) : names(static_cast<yytokentype>(n)), subtipo1(s1) {is_type = 1;}
-		tipedec( int n) : names(static_cast<yytokentype>(n)) {is_type = 1;}
+		tipedec( type& n, ArbolSintactico * s1, ArbolSintactico * s2, ArbolSintactico * t) : tipo(n), subtipo1(s1), tam(t) {is_type = 1;}
+		tipedec( type& n, ArbolSintactico * s1, ArbolSintactico * s2) : tipo(n), subtipo1(s1), subtipo2(s2) {is_type = 1;}
+		tipedec( type& n, ArbolSintactico * s1) : tipo(n), subtipo1(s1) {is_type = 1;}
+		tipedec( type& n) : tipo(n) {is_type = 1;}
 
 		bool asignar_tipo(string variable, sym_table * table ){
 			table_element * instancia = table->lookup(variable, -1);
-
-			switch(names){
+			switch(tipo.tipo){
 				case IDENTIFIER: {
 					table_element * elemento = table->lookup(((identificador *)subtipo1)->valor, -1);
 					if (elemento != NULL){
@@ -321,14 +320,15 @@ class tipedec : public ArbolSintactico {
 					}
 				}
 				default:
-					instancia->type = names;
+					instancia->set_type(tipo);
+					instancia->print();
 			}
 			return true;
 		}
 
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
-			switch(names){
+			switch(tipo.tipo){
 				case BOOL:
 					cout << "BOOL:" << endl;
 					break;

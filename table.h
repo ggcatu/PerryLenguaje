@@ -8,6 +8,7 @@
 #include <iostream>
 #include <algorithm>
 #include "parser.tab.h"
+#include "tipos.h"
 
 extern bool error_sintactico;
 
@@ -16,15 +17,16 @@ class table_element {
 	public:
 		std::string id;
 		int scope;
-		yytokentype type;
+		type * tipo;
 		int child_scope;
 
 		table_element(std::string i, int s): id(i), scope(s), child_scope(-1){};
 
 		bool operator==(const table_element & rhs) const { return (this->scope == rhs.scope && this->id == rhs.id);}
 
-		void set_type(yytokentype t){
-			type = t;
+		void set_type(type& t){
+			cout << id << "Asignando tipo "<< t.tipo << endl;
+			tipo = &t;
 		}
 
 		void set_scope(int s){
@@ -36,8 +38,8 @@ class table_element {
 		}
 
 		void print(){
-			std::cout << "SCOPE: " << scope ; 
-			std::cout << " TYPE: " << type ; 
+			std::cout << "SCOPE: " << scope << std::endl; 
+			std::cout << " TYPE: " << tipo->tipo <<std::endl; 
 			if (child_scope != -1)
 				std::cout << ", CHILD SCOPE: " << child_scope ; 
 		}

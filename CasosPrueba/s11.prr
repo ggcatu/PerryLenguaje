@@ -1,0 +1,9 @@
+main{
+	create{
+		char i;
+		int b;
+		float c;
+	} execute{
+ 		<< "hahaha1" + 1 ;
+ 	};
+}
