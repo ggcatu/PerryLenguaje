@@ -25,7 +25,6 @@ class table_element {
 		bool operator==(const table_element & rhs) const { return (this->scope == rhs.scope && this->id == rhs.id);}
 
 		void set_type(type& t){
-			cout << id << "Asignando tipo "<< t.tipo << endl;
 			tipo = &t;
 		}
 
@@ -38,8 +37,10 @@ class table_element {
 		}
 
 		void print(){
-			std::cout << "SCOPE: " << scope << std::endl; 
-			std::cout << " TYPE: " << tipo->tipo <<std::endl; 
+			std::cout << "SCOPE: " << scope; 
+			if (tipo != NULL){
+				std::cout << " TYPE: " << tipo->tipo; 
+			}
 			if (child_scope != -1)
 				std::cout << ", CHILD SCOPE: " << child_scope ; 
 		}

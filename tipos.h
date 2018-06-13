@@ -74,6 +74,11 @@ class tipo_pointer: public CRTP_type<tipo_pointer>{
 	tipo_pointer() : CRTP_type(POINTER) {}; 
 };
 
+class tipo_tipo: public CRTP_type<tipo_tipo>{
+	friend class CRTP_type<tipo_tipo>;
+	tipo_tipo() : CRTP_type(POINTER) {}; 
+};
+
 class tipo_unit: public CRTP_type<tipo_unit>{
 	friend class CRTP_type<tipo_unit>;
 	tipo_unit() : CRTP_type(UNIT) {}; 
