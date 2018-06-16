@@ -40,6 +40,18 @@ class table_element {
 			std::cout << "SCOPE: " << scope; 
 			if (tipo != NULL){
 				std::cout << " TYPE: " << tipo->tipo; 
+
+				switch(tipo->tipo){
+					case TUPLE:
+						std::cout << "<" << (((tipo_tuple *)tipo)->p1).tipo <<", ";
+						std::cout << (((tipo_tuple *)tipo)->p2).tipo << ">";
+						break;
+					case LIST:
+					case POINTER:
+					case ARRAY:
+						std::cout << "<" << (((tipo_list *)tipo)->p1).tipo << ">";
+						break;
+				}
 			}
 			if (child_scope != -1)
 				std::cout << ", CHILD SCOPE: " << child_scope ; 

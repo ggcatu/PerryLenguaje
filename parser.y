@@ -181,9 +181,9 @@ Typedef		: BOOL  											{ $$ = new tipedec(tipo_bool::instance()); }
 			| LSTRING  											{ $$ = new tipedec(tipo_string::instance()); }
 			| LINT  											{ $$ = new tipedec(tipo_int::instance()); }
 			| LFLOAT  											{ $$ = new tipedec(tipo_float::instance()); }
-			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{ $$ = new tipedec(tipo_array::instance(),$2,NULL,$4); }
-			| LIST Typedef 										{ $$ = new tipedec(tipo_list::instance(),$2); }
-			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{ $$ = new tipedec(tipo_tuple::instance(),$3,$5); }
+			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{ $$ = new tipedec(*(new tipo_array(((tipedec *)$2)->tipo)),$2,NULL,$4); }
+			| LIST Typedef 										{ $$ = new tipedec(*new tipo_list(((tipedec *)$2)->tipo),$2); }
+			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{ $$ = new tipedec(*new tipo_tuple(((tipedec *)$3)->tipo, ((tipedec *)$5)->tipo),$3,$5);}
 			| IDENTIFIER										{ ArbolSintactico * j = new tipedec(tipo_identifier::instance(), new identificador($1)); 
 																  j->is_type = true;
 																  $$ = j; }
@@ -193,7 +193,7 @@ Typedef		: BOOL  											{ $$ = new tipedec(tipo_bool::instance()); }
 			| TYPE UNION LlaveabreSp Declist Llavecierra 		{ $$ = (ArbolSintactico*)(NULL); }
 			| TYPE UNION LlaveabreSp error Llavecierra 			{ $$ = (ArbolSintactico*)(NULL); }
 
-			| POINTER Typedef  									{ $$ = new tipedec(tipo_pointer::instance(),$2); }
+			| POINTER Typedef  									{ $$ = new tipedec(*new tipo_pointer(((tipedec *)$2)->tipo),$2); }
 			| UNIT 												{ $$ = new tipedec(tipo_unit::instance()); }
 			;
 

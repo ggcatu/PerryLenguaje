@@ -3,6 +3,11 @@ main{
 		char i;
 		int b;
 		float c;
+		tuple (bool,float) twoforone;
+		tuple (bool,char) twoforone2;
+		array int [5] harray;
+		list int thelist;
+		ptr int point;
 	} execute{
  		<< "hahaha1" + 1 ;
  	};

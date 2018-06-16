@@ -50,18 +50,22 @@ class tipo_float: public CRTP_type<tipo_float>{
 };
 
 class tipo_array: public CRTP_type<tipo_array>{
-	friend class CRTP_type<tipo_array>;
-	tipo_array() : CRTP_type(ARRAY) {}; 
+	public:
+		type &p1;
+		tipo_array(type &p) : CRTP_type(ARRAY), p1(p) {}; 
 };
 
 class tipo_list: public CRTP_type<tipo_list>{
-	friend class CRTP_type<tipo_list>;
-	tipo_list() : CRTP_type(LIST) {}; 
+	public:
+		type &p1;
+		tipo_list(type &p) : CRTP_type(LIST), p1(p) {}; 
 };
 
 class tipo_tuple: public CRTP_type<tipo_tuple>{
-	friend class CRTP_type<tipo_tuple>;
-	tipo_tuple() : CRTP_type(TUPLE) {}; 
+	public:
+		type &p1;
+		type &p2;
+		tipo_tuple(type &p, type &r) : CRTP_type(TUPLE), p1(p), p2(r) {}; 
 };
 
 class tipo_identifier: public CRTP_type<tipo_identifier>{
@@ -70,8 +74,9 @@ class tipo_identifier: public CRTP_type<tipo_identifier>{
 };
 
 class tipo_pointer: public CRTP_type<tipo_pointer>{
-	friend class CRTP_type<tipo_pointer>;
-	tipo_pointer() : CRTP_type(POINTER) {}; 
+	public:
+		type &p1;
+		tipo_pointer(type &p) : CRTP_type(POINTER), p1(p) {}; 
 };
 
 class tipo_tipo: public CRTP_type<tipo_tipo>{
