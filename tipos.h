@@ -91,8 +91,9 @@ class tipo_unit: public CRTP_type<tipo_unit>{
 };
 
 class tipo_funcion: public CRTP_type<tipo_funcion>{
-	friend class CRTP_type<tipo_funcion>;
-	tipo_funcion() : CRTP_type(UNIT) {}; 
+	public:
+		std::vector<type> parametros;
+		tipo_funcion() : CRTP_type(UNIT) {}; 
 };
 
 class tipo_error: public CRTP_type<tipo_error>{
