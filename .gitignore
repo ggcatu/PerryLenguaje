@@ -4,3 +4,6 @@ perry
 parser.output
 parser.tab.h
 parser.tab.c
+.idea*
+cmake*
+CMake*

@@ -26,6 +26,7 @@ unit test(int @param, bool param2){
 		list int thelist;
 		tuple (bool,float) twoforone;
 		ptr int point;
+		nonion gag;
 	}
 	execute{
 		inte = 1;

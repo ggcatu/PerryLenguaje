@@ -6,6 +6,7 @@
 #include "ast.h"
 #include "table.h"
 #include "tipos.h"
+#include <sstream>
 
 using namespace std;
 
@@ -18,6 +19,7 @@ extern vector<Token *> errors;
 ArbolSintactico * root_ast;
 sym_table table;
 bool error_sintactico = 0;
+int last_uuid = 1;
 
 void yyerror (char const *s) {
 	error_sintactico = 1;
@@ -31,7 +33,11 @@ void yyerror (char const *s) {
 void open_scope(ArbolSintactico * arb) {
 	identificador * b = (identificador *)arb;
 	table_element * elemento = table.lookup(b->valor, -1);
-	elemento->set_child_scope(table.new_scope());
+	if(elemento != NULL){
+		elemento->set_child_scope(table.new_scope());
+	} else {
+		cout << b->valor << " no encontrado";
+	}
 }
 
 void usar_variable(string identificador, int columna){
@@ -50,6 +56,13 @@ void asignar_tipo(ArbolSintactico * tipo, string variable){
 		}
 	} else {
 	}
+}
+
+string uuid(){
+	stringstream sstm;
+	sstm << "$anonim_" << last_uuid;
+	last_uuid++;
+	return sstm.str();
 }
 
 void usar_variable_top(string identificador, int columna){
@@ -156,10 +169,10 @@ Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }
 			| TYPE Identifier IGUAL Typedef	PUNTOCOMA			{ $$ = (ArbolSintactico*)(NULL); }
 			; 
 
-Llaveabre 	: IDENTIFIER LLAVEABRE 								{ declarar_variable($1, yylloc.first_column); asignar_tipo(new tipedec(tipo_tipo::instance()), $1); $$ = new identificador($1); open_scope($$); }
+Llaveabre 	: IDENTIFIER LLAVEABRE 	 							{ declarar_variable($1, yylloc.first_column); asignar_tipo(new tipedec(* new tipo_tipo()), $1); $$ = new identificador($1); open_scope($$); }
 			;
 
-LlaveabreSp : LLAVEABRE 										{  $$ = new identificador("new skip()"); open_scope(new identificador("new skip()")); declarar_variable("new skip()", yylloc.first_column);}
+LlaveabreSp : LLAVEABRE 										{  string u = uuid(); $$ = new identificador(u); declarar_variable(u, yylloc.first_column); open_scope(new identificador(u));}
 			; 
 
 Llavecierra : LLAVECIERRA 										{ table.exit_scope(); }
@@ -232,7 +245,7 @@ Inst		: Scope					 							{ $$ = $1; }
 Identifier 	: IDENTIFIER 										{declarar_variable($1, yylloc.first_column); $$ = new identificador($1); }
 			;
 
-IdentifierSp: Typedef IDENTIFIER 								{declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2); $$ = new identificador($2); }
+IdentifierSp: Typedef IDENTIFIER 								{declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2); $$ = new identificador($2) << endl;}
 			;
 
 For  		: FOR PARABRE { table.new_scope(); }

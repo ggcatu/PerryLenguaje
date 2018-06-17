@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "parser.tab.h"
+#include <string>
 
 using namespace std;
 
@@ -80,8 +81,8 @@ class tipo_pointer: public CRTP_type<tipo_pointer>{
 };
 
 class tipo_tipo: public CRTP_type<tipo_tipo>{
-	friend class CRTP_type<tipo_tipo>;
-	tipo_tipo() : CRTP_type(POINTER) {}; 
+	public:
+		tipo_tipo() : CRTP_type(TYPE) {}; 
 };
 
 class tipo_unit: public CRTP_type<tipo_unit>{
@@ -92,7 +93,11 @@ class tipo_unit: public CRTP_type<tipo_unit>{
 class tipo_funcion: public CRTP_type<tipo_funcion>{
 	friend class CRTP_type<tipo_funcion>;
 	tipo_funcion() : CRTP_type(UNIT) {}; 
-
 };
 
+class tipo_error: public CRTP_type<tipo_error>{
+	friend class CRTP_type<tipo_error>;
+	tipo_error() : CRTP_type(TYPE_ERROR) {}; 
+
+};
 #endif

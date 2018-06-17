@@ -47,9 +47,17 @@ class table_element {
 						std::cout << (((tipo_tuple *)tipo)->p2).tipo << ">";
 						break;
 					case LIST:
-					case POINTER:
-					case ARRAY:
 						std::cout << "<" << (((tipo_list *)tipo)->p1).tipo << ">";
+						break;
+					case ARRAY:
+						std::cout << "<" << (((tipo_array *)tipo)->p1).tipo << ">";
+						break;
+					case POINTER:
+						// std::cout << &((tipo_pointer *)tipo)->p1 << std::endl;
+						std::cout << "<" << (((tipo_pointer *)tipo)->p1).tipo << ">";
+						break;
+					case IDENTIFIER:
+					default:
 						break;
 				}
 			}

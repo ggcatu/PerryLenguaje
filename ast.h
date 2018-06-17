@@ -303,6 +303,9 @@ class tipedec : public ArbolSintactico {
 
 		bool asignar_tipo(string variable, sym_table * table ){
 			table_element * instancia = table->lookup(variable, -1);
+			// if (instancia == NULL || subtipo1 == NULL){
+				// return false;
+			// }
 			switch(tipo.tipo){
 				case IDENTIFIER: {
 					table_element * elemento = table->lookup(((identificador *)subtipo1)->valor, -1);

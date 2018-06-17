@@ -10,7 +10,7 @@ definiciones.o:
 lex.yy.c: lexer.l
 	flex lexer.l
 
-parser.tab.c: parser.y 
+parser.tab.c: parser.y
 	bison -d --report=state parser.y
 
 clean:
