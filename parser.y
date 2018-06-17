@@ -172,9 +172,6 @@ Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }
 Llaveabre 	: IDENTIFIER LLAVEABRE 	 							{ declarar_variable($1, yylloc.first_column); asignar_tipo(new tipedec(* new tipo_tipo()), $1); $$ = new identificador($1); open_scope($$); }
 			;
 
-LlaveabreSp : LLAVEABRE 										{  string u = uuid(); $$ = new identificador(u); declarar_variable(u, yylloc.first_column); open_scope(new identificador(u));}
-			; 
-
 Llavecierra : LLAVECIERRA 										{ table.exit_scope(); }
 			;
 
@@ -197,18 +194,21 @@ Typedef		: BOOL  											{ $$ = new tipedec(tipo_bool::instance()); }
 			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{ $$ = new tipedec(*(new tipo_array(((tipedec *)$2)->tipo)),$2,NULL,$4); }
 			| LIST Typedef 										{ $$ = new tipedec(*new tipo_list(((tipedec *)$2)->tipo),$2); }
 			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{ $$ = new tipedec(*new tipo_tuple(((tipedec *)$3)->tipo, ((tipedec *)$5)->tipo),$3,$5);}
-			| IDENTIFIER										{ ArbolSintactico * j = new tipedec(tipo_identifier::instance(), new identificador($1)); 
-																  j->is_type = true;
-																  $$ = j; }
-			| TYPE STRUCT LlaveabreSp Declist Llavecierra		{ $$ = (ArbolSintactico*)(NULL); }
+			| IDENTIFIER										{ $$ = new tipedec(tipo_identifier::instance(), new identificador($1)); }
+			| TYPE STRUCT LlaveabreSp Declist Llavecierra		{ $$ = new tipedec(tipo_identifier::instance(), $3); }
 			| TYPE STRUCT LlaveabreSp error Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
 			
-			| TYPE UNION LlaveabreSp Declist Llavecierra 		{ $$ = (ArbolSintactico*)(NULL); }
+			| TYPE UNION LlaveabreSp Declist Llavecierra 		{ $$ = new tipedec(tipo_identifier::instance(), $3); }
 			| TYPE UNION LlaveabreSp error Llavecierra 			{ $$ = (ArbolSintactico*)(NULL); }
 
 			| POINTER Typedef  									{ $$ = new tipedec(*new tipo_pointer(((tipedec *)$2)->tipo),$2); }
 			| UNIT 												{ $$ = new tipedec(tipo_unit::instance()); }
 			;
+
+LlaveabreSp : LLAVEABRE 										{  string u = uuid(); $$ = new identificador(u); 
+																   declarar_variable(u, yylloc.first_column); open_scope(new identificador(u));}
+			; 
+
 
 Varlist 	: IdentifierSp COMA Varlist 						{}
 			| IdentifierSp 										{}
@@ -245,7 +245,7 @@ Inst		: Scope					 							{ $$ = $1; }
 Identifier 	: IDENTIFIER 										{declarar_variable($1, yylloc.first_column); $$ = new identificador($1); }
 			;
 
-IdentifierSp: Typedef IDENTIFIER 								{declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2); $$ = new identificador($2) << endl;}
+IdentifierSp: Typedef IDENTIFIER 								{declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2); $$ = new identificador($2); }
 			;
 
 For  		: FOR PARABRE { table.new_scope(); }
