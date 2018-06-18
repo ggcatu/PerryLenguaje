@@ -57,8 +57,7 @@ void asignar_tipo(ArbolSintactico * tipo, string variable){
 			cout << "Error: " << ((identificador *)tipo)->valor << " no es un tipo, en la fila " << yylineno << ", columna " <<  yycolumn-1-strlen(yytext) << endl;
 			error_sintactico = 1;			
 		}
-	} else {
-	}
+	} 
 }
 
 string uuid(){

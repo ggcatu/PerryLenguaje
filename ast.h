@@ -23,24 +23,11 @@ en el proyecto
 #include "tipos.h"
 
 using namespace std;
-#define ENTEROS 1
-#define FLOTANTES 3
-#define BOOLEANOS 4
-#define CHARACTERES 5
-#define STR 6
-#define UNITS 7
 
 /* Definiciones externas (parser.y) que permiten compartir el codigo. */
 extern int yylineno;
 extern char error_strp[1000];
 extern int yyparse();
-extern sym_table table;
-extern tipo_bool tbool;
-extern tipo_char tchar;
-extern tipo_string tstring;
-extern tipo_int tint;
-extern tipo_float tfloat;
-extern tipo_unit tunit;
 
 /* Definicion de la clase raiz */
 class raiz : public ArbolSintactico {

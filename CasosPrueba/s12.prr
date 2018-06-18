@@ -5,6 +5,8 @@ include "input2.prr"
 include "input3.prr" 
 include "p2.prr" 
 
+
+
 main{
 	create{
 		type union{
@@ -13,6 +15,6 @@ main{
 		} inte;
 	}
 	execute{
-		inte = 1;
+		inte = inte.cebollar;
 	};
 }
