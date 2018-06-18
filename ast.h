@@ -20,6 +20,7 @@ en el proyecto
 #include "definiciones.h"
 #include "ast_def.h"
 #include "table.h"
+#include "tipos.h"
 
 using namespace std;
 #define ENTEROS 1
@@ -33,6 +34,13 @@ using namespace std;
 extern int yylineno;
 extern char error_strp[1000];
 extern int yyparse();
+extern sym_table table;
+extern tipo_bool tbool;
+extern tipo_char tchar;
+extern tipo_string tstring;
+extern tipo_int tint;
+extern tipo_float tfloat;
+extern tipo_unit tunit;
 
 /* Definicion de la clase raiz */
 class raiz : public ArbolSintactico {
@@ -977,8 +985,8 @@ class ids : public ArbolSintactico {
 		ArbolSintactico * id;
 		ArbolSintactico * idr;
 		ArbolSintactico * indx;
-		ids(ArbolSintactico * i) : id(i), idr(NULL), indx(NULL) {}
-		ids(ArbolSintactico * i, ArbolSintactico * is) : id(i), idr(is), indx(NULL) {}
+		ids(ArbolSintactico * i) : id(i), idr(NULL), indx(NULL) {verificar();}
+		ids(ArbolSintactico * i, ArbolSintactico * is) : id(i), idr(is), indx(NULL) {verificar();}
 		ids(ArbolSintactico * i, ArbolSintactico * is, ArbolSintactico * ix) : id(i), idr(is), indx(ix) {verificar();}
 		virtual void imprimir(int tab){
 			if (idr != NULL){
@@ -999,12 +1007,9 @@ class ids : public ArbolSintactico {
 				indx -> imprimir(tab+2);
 			}
 		}
-		virtual string str(){
-			// if (idr != NULL)  
-				// return id << "." << idr.str();
-		}
+
 		virtual void verificar(){
-			// que se debe verificar?
+
 		}
 };
 
@@ -1013,17 +1018,16 @@ class ids : public ArbolSintactico {
 class entero : public ArbolSintactico {
 	public:
 		int valor;
-		entero(): ArbolSintactico(ENTEROS) {is_type = 1;}
-		entero(int v) : valor(v), ArbolSintactico(ENTEROS) {}
+		type & tipo;
+		entero(): tipo(tipo_int::instance()), ArbolSintactico(LINT) {is_type = 1;}
+		entero(int v) : tipo(tipo_int::instance()), valor(v), ArbolSintactico(LINT) {}
 		virtual void imprimir(int tab) {
 			if (!is_type){
 				for (int j = 0; j < tab; j++) cout << " ";
 				cout << "int: " << valor << endl;
 			}
 		}
-		virtual void verificar(){
-			//
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1031,17 +1035,16 @@ class entero : public ArbolSintactico {
 class flotante : public ArbolSintactico {
 	public:
 		float valor;
-		flotante(): ArbolSintactico(FLOTANTES) {is_type = 1;}
-		flotante(float v) : valor(v), ArbolSintactico(FLOTANTES) {}
+		type & tipo;
+		flotante(): tipo(tipo_float::instance()), ArbolSintactico(LFLOAT) {is_type = 1;}
+		flotante(float v) : valor(v), tipo(tipo_float::instance()), ArbolSintactico(LFLOAT) {}
 		virtual void imprimir(int tab) {
 			if (!is_type){
 				for (int j = 0; j < tab; j++) cout << " ";
 				cout << "float: " << valor << endl;
 			}
 		}
-		virtual void verificar(){
-			//
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1049,8 +1052,9 @@ class flotante : public ArbolSintactico {
 class booleano : public ArbolSintactico {
 	public:
 		bool valor;
-		booleano(): ArbolSintactico(BOOLEANOS) {is_type = 1;}
-		booleano(bool v) : valor(v), ArbolSintactico(BOOLEANOS) {}
+		type & tipo;
+		booleano(): tipo(tipo_bool::instance()), ArbolSintactico(BOOL) {is_type = 1;}
+		booleano(bool v) : valor(v), tipo(tipo_bool::instance()), ArbolSintactico(BOOL) {}
 		virtual void imprimir(int tab) {
 			if (!is_type){
 				for (int j = 0; j < tab; j++) cout << " ";
@@ -1061,9 +1065,7 @@ class booleano : public ArbolSintactico {
 				}
 			}
 		}
-		virtual void verificar(){
-			//
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1071,30 +1073,27 @@ class booleano : public ArbolSintactico {
 class character : public ArbolSintactico {
 	public:
 		char valor;
-		character() : ArbolSintactico(CHARACTERES) {is_type = 1;}
-		character(char v) : valor(v), ArbolSintactico(CHARACTERES) {}
+		type & tipo;
+		character() : tipo(tipo_char::instance()), ArbolSintactico(LCHAR) {is_type = 1;}
+		character(char v) : valor(v), tipo(tipo_char::instance()), ArbolSintactico(LCHAR) {}
 		virtual void imprimir(int tab) {
 			if (!is_type){
 				for (int j = 0; j < tab; j++) cout << " ";
 				cout << "char: " << valor << endl;
 			}
 		}
-		virtual void verificar(){
-			//
-		}
+		virtual void verificar(){}
 };
 
 
 /* Definicion de la clase para unit (tipo que no retorna nada) */
 class unit : public ArbolSintactico {
 	public:
-		unit() : ArbolSintactico(UNITS) {}
+		type & tipo;
+		unit() : tipo(tipo_unit::instance()), ArbolSintactico(UNIT) {is_type = 1;}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "unit" << endl;
-		}
-		virtual void verificar(){
-			//
 		}
 };
 
@@ -1103,15 +1102,14 @@ class unit : public ArbolSintactico {
 class str : public ArbolSintactico {
 	public:
 		string valor;
-		str() : ArbolSintactico(STR) {is_type = 1;}
-		str(string v) : valor(v), ArbolSintactico(STR) {}
+		type & tipo;
+		str() : tipo(tipo_string::instance()), ArbolSintactico(LSTRING) {is_type = 1;}
+		str(string v) : tipo(tipo_string::instance()), valor(v), ArbolSintactico(LSTRING) {}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "string: " << valor << endl;
 		}
-		virtual void verificar(){
-			//
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1137,9 +1135,7 @@ class ptr : public ArbolSintactico {
 				elem -> imprimir(tab+2);
 			}
 		}
-		virtual void verificar(){
-
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1148,7 +1144,7 @@ class elementos : public ArbolSintactico {
 	public:
 		ArbolSintactico * elems;
 		ArbolSintactico * val;
-		elementos( ArbolSintactico * v) : val(v), elems(NULL) {}
+		elementos(ArbolSintactico * v) : val(v), elems(NULL) {verificar();}
 		elementos(ArbolSintactico * e, ArbolSintactico * v) : elems(e), val(v) {verificar();}
 		virtual void imprimir(int tab){
 			if (elems != NULL){
@@ -1158,9 +1154,7 @@ class elementos : public ArbolSintactico {
 			cout << "PARAMETRO:" << endl;
 			val -> imprimir(tab+1);
 		}
-		virtual void verificar(){
-			// que debemos verificar?
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1178,9 +1172,7 @@ class lista : public ArbolSintactico {
 				valor -> imprimir(tab+2);
 			}
 		}
-		virtual void verificar(){
-			// que verificar aqui?
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1198,9 +1190,7 @@ class arreglo : public ArbolSintactico {
 				valor -> imprimir(tab+2);
 			}
 		}
-		virtual void verificar(){
-			// verificamos que los elementos del arreglo son del tipo del arreglo
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1218,11 +1208,9 @@ class tupla : public ArbolSintactico {
 				cout << "PRIMER VALOR:" << endl;	
 				valor1 ->	imprimir(tab+2);
 				for (int j = 0; j < tab+1; j++) cout << " ";
-				cout << "SEGUNDO VALOR:" << endl;	
+				cout << "SEGUNDO VALOR:" << endl;
 				valor2 -> imprimir(tab+2);
 			}
 		}
-		virtual void verificar(){
-			// verificar que?
-		}
+		virtual void verificar(){}
 };
