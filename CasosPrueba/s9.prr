@@ -1,6 +1,5 @@
 //Prueba type
 type numeritos = int;
-
 main{
 	create{
 		numeritos bbnum;
