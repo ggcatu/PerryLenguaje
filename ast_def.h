@@ -2,6 +2,7 @@
 #define ARB_H
 #include <stdio.h>
 #include <iostream>
+#include "tipos.h"
 
 /* Definicion de la clase base ArbolSintactico */
 class ArbolSintactico {
@@ -10,6 +11,7 @@ class ArbolSintactico {
 		int ident;
 		int linea;
 		bool is_type;
+		type * tipo;
 		ArbolSintactico(): is_type(0){};
 		ArbolSintactico(int i): ident(i),is_type(0) {};
 		ArbolSintactico(ArbolSintactico * l): first(l),is_type(0) {};

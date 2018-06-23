@@ -2,7 +2,7 @@
 #define TIPOS_H
 
 #include <iostream>
-#include "parser.tab.h"
+#include "tokentype.h"
 #include <string>
 
 using namespace std;

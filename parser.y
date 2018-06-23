@@ -1,4 +1,5 @@
 %error-verbose
+
 %{
 #include <iostream>
 #include <map>
@@ -198,7 +199,7 @@ Typedef		: BOOL  											{ $$ = new tipedec(tipo_bool::instance()); }
 			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{ $$ = new tipedec(*(new tipo_array(((tipedec *)$2)->tipo)),$2,NULL,$4); }
 			| LIST Typedef 										{ $$ = new tipedec(*new tipo_list(((tipedec *)$2)->tipo),$2); }
 			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{ $$ = new tipedec(*new tipo_tuple(((tipedec *)$3)->tipo, ((tipedec *)$5)->tipo),$3,$5);}
-			| IDENTIFIER										{ $$ = alias[$1]; }
+			| IDENTIFIER										{ $$ = new tipedec(tipo_identifier::instance(), new identificador($1)); }
 			| TYPE STRUCT LlaveabreSp Declist Llavecierra		{ $$ = new tipedec(tipo_identifier::instance(), $3); }
 			| TYPE STRUCT LlaveabreSp error Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
 			
