@@ -8,15 +8,16 @@
 class ArbolSintactico {
 	ArbolSintactico * first;
 	public:
-		int ident;
+		// int ident;
 		int linea;
 		bool is_type;
 		type * tipo;
-		ArbolSintactico(): is_type(0){};
-		ArbolSintactico(int i): ident(i),is_type(0) {};
-		ArbolSintactico(ArbolSintactico * l): first(l),is_type(0) {};
+		ArbolSintactico(): tipo(NULL), is_type(0){};
+		ArbolSintactico(type * t): tipo(t), is_type(0) {};
+		ArbolSintactico(ArbolSintactico * l): tipo(NULL), first(l), is_type(0) {};
 		virtual void imprimir(int i){ if(first != NULL) first->imprimir(i); }
 		virtual void verificar() {}; 
+		virtual type * get_tipo(){};
 };
 
 #endif

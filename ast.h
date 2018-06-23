@@ -22,14 +22,9 @@ en el proyecto
 #include "table.h"
 
 using namespace std;
-#define ENTEROS 1
-#define FLOTANTES 3
-#define BOOLEANOS 4
-#define CHARACTERES 5
-#define STR 6
-#define UNITS 7
 
 /* Definiciones externas (parser.y) que permiten compartir el codigo. */
+extern sym_table table;
 extern int yylineno;
 extern char error_strp[1000];
 extern int yyparse();
@@ -282,6 +277,15 @@ class identificador : public ArbolSintactico {
 	public:
 		string valor;
 		identificador(string v) : valor(v) {}
+
+		type * get_tipo(){
+			table_element * instancia = table.lookup(valor, -1);
+			if (instancia){
+				return instancia->tipo;
+			}
+			return NULL;
+		};
+
 		virtual void imprimir(int tab) {
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "id: " << valor << endl;
@@ -700,58 +704,58 @@ class exp_aritmetica : public ArbolSintactico {
 		exp_aritmetica(ArbolSintactico * d, int is) : der(d), izq(NULL), instruccion(static_cast<inst>(is)) {verificar();}
 
 		virtual void verificar(){
-			/*
-			table_element * tipo_der = table->lookup(der->valor, -1);
-			table_element * tipo_izq = table->lookup(izq->valor, -1);
+			
+			type * tipo_der = der->get_tipo();
+			type * tipo_izq = izq->get_tipo();
 				
 			switch(instruccion){
 				case SUMA:
-					if (tipo_izq != LINT && tipo_izq != LFLOAT){
+					if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance()){
 						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
-					if (tipo_der != LINT && tipo_der != LFLOAT){
+					if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
 						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
 					break;
 				case RESTA:
-					if (tipo_der != LINT && tipo_der != LFLOAT){
+					if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
 						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
 					break;
 				case MULT:
-					if (tipo_izq != LINT && tipo_izq != LFLOAT){
+					if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance()){
 						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
-					if (tipo_der != LINT && tipo_der != LFLOAT){
+					if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
 						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
 					break;
 				case DIV:
-					if (tipo_izq != LINT && tipo_izq != LFLOAT){
+					if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance()){
 						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
-					if (tipo_der != LINT && tipo_der != LFLOAT){
+					if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
 						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
 					break;
 				case MOD:
-					if (tipo_izq != LINT){
+					if (tipo_izq != &tipo_int::instance()){
 						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
-					if (tipo_der != LINT){
+					if (tipo_der != &tipo_int::instance()){
 						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
 					break;
 				case POW:
-					if (tipo_izq != LINT && tipo_izq != LFLOAT){
+					if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance()){
 						cout << "Las expresiones aritmeticas deben tener tipo entero." << endl;
 					}
-					if (tipo_der != LINT){
+					if (tipo_der != &tipo_int::instance()){
 						cout << "El exponente debe ser de tipo entero." << endl;
 					}
 					break;
 			}
-			*/
+			
 		}
 
 		virtual void imprimir(int tab){
@@ -999,6 +1003,7 @@ class ids : public ArbolSintactico {
 				indx -> imprimir(tab+2);
 			}
 		}
+
 		virtual string str(){
 			// if (idr != NULL)  
 				// return id << "." << idr.str();
@@ -1013,14 +1018,19 @@ class ids : public ArbolSintactico {
 class entero : public ArbolSintactico {
 	public:
 		int valor;
-		entero(): ArbolSintactico(ENTEROS) {is_type = 1;}
-		entero(int v) : valor(v), ArbolSintactico(ENTEROS) {}
+		entero(): ArbolSintactico(&tipo_int::instance()) {is_type = 1;}
+		entero(int v) : valor(v), ArbolSintactico(&tipo_int::instance()) {}
 		virtual void imprimir(int tab) {
 			if (!is_type){
 				for (int j = 0; j < tab; j++) cout << " ";
 				cout << "int: " << valor << endl;
 			}
 		}
+
+		type * get_tipo(){
+			return tipo;
+		};
+
 		virtual void verificar(){
 			//
 		}
@@ -1031,14 +1041,19 @@ class entero : public ArbolSintactico {
 class flotante : public ArbolSintactico {
 	public:
 		float valor;
-		flotante(): ArbolSintactico(FLOTANTES) {is_type = 1;}
-		flotante(float v) : valor(v), ArbolSintactico(FLOTANTES) {}
+		flotante(): ArbolSintactico(&tipo_float::instance()) {is_type = 1;}
+		flotante(float v) : valor(v), ArbolSintactico(&tipo_float::instance()) {}
 		virtual void imprimir(int tab) {
 			if (!is_type){
 				for (int j = 0; j < tab; j++) cout << " ";
 				cout << "float: " << valor << endl;
 			}
 		}
+
+		type * get_tipo(){
+			return tipo;
+		};
+
 		virtual void verificar(){
 			//
 		}
@@ -1049,8 +1064,8 @@ class flotante : public ArbolSintactico {
 class booleano : public ArbolSintactico {
 	public:
 		bool valor;
-		booleano(): ArbolSintactico(BOOLEANOS) {is_type = 1;}
-		booleano(bool v) : valor(v), ArbolSintactico(BOOLEANOS) {}
+		booleano(): ArbolSintactico(&tipo_bool::instance()) {is_type = 1;}
+		booleano(bool v) : valor(v), ArbolSintactico(&tipo_bool::instance()) {}
 		virtual void imprimir(int tab) {
 			if (!is_type){
 				for (int j = 0; j < tab; j++) cout << " ";
@@ -1061,6 +1076,11 @@ class booleano : public ArbolSintactico {
 				}
 			}
 		}
+
+		type * get_tipo(){
+			return tipo;
+		};
+
 		virtual void verificar(){
 			//
 		}
@@ -1071,14 +1091,19 @@ class booleano : public ArbolSintactico {
 class character : public ArbolSintactico {
 	public:
 		char valor;
-		character() : ArbolSintactico(CHARACTERES) {is_type = 1;}
-		character(char v) : valor(v), ArbolSintactico(CHARACTERES) {}
+		character() : ArbolSintactico(&tipo_char::instance()) {is_type = 1;}
+		character(char v) : valor(v), ArbolSintactico(&tipo_char::instance()) {}
 		virtual void imprimir(int tab) {
 			if (!is_type){
 				for (int j = 0; j < tab; j++) cout << " ";
 				cout << "char: " << valor << endl;
 			}
 		}
+
+		type * get_tipo(){
+			return tipo;
+		};
+
 		virtual void verificar(){
 			//
 		}
@@ -1088,11 +1113,16 @@ class character : public ArbolSintactico {
 /* Definicion de la clase para unit (tipo que no retorna nada) */
 class unit : public ArbolSintactico {
 	public:
-		unit() : ArbolSintactico(UNITS) {}
+		unit() : ArbolSintactico(&tipo_unit::instance()) {}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "unit" << endl;
 		}
+
+		type * get_tipo(){
+			return tipo;
+		};
+
 		virtual void verificar(){
 			//
 		}
@@ -1103,12 +1133,17 @@ class unit : public ArbolSintactico {
 class str : public ArbolSintactico {
 	public:
 		string valor;
-		str() : ArbolSintactico(STR) {is_type = 1;}
-		str(string v) : valor(v), ArbolSintactico(STR) {}
+		str() : ArbolSintactico(&tipo_string::instance()) {is_type = 1;}
+		str(string v) : valor(v), ArbolSintactico(&tipo_string::instance()) {}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "string: " << valor << endl;
 		}
+
+		type * get_tipo(){
+			return tipo;
+		};
+
 		virtual void verificar(){
 			//
 		}

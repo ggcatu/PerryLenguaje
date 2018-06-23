@@ -5,6 +5,6 @@ main{
 	create{
 		numeritos bbnum;
 	} execute{
- 		<< "hahaha1" + 1 ;
+ 		<< "as" + 1 ;
  	};
 }
