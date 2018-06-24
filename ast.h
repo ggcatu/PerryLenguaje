@@ -573,9 +573,9 @@ class asignacion : public ArbolSintactico {
 		virtual void verificar(){
 			type * tipo_var = variable->get_tipo();
 			type * tipo_val = valor->get_tipo();
+			//cout << variable->get_tipo() << "  " << valor->get_tipo() << endl;
 			if (tipo_val != tipo_var){
-				if (tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()){
-					cout << variable->get_tipo() << "  " << valor->get_tipo() << endl;
+				if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance()){
 					cout << "Los tipos de la asignacion no son iguales." << endl;
 				}
 
@@ -601,16 +601,28 @@ class exp_aritmetica : public ArbolSintactico {
 		virtual void verificar(){
 			type * tipo_der = der->get_tipo();
 			type * tipo_izq = (izq!=NULL) ? izq->get_tipo(): &tipo_unit::instance();
-				
 			switch(instruccion){
 				case SUMA:
-				case RESTA:
 				case MULT:
 				case DIV:
 					if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance() ||
 						tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
 						tipo = &tipo_error::instance();
 						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
+					}
+					break;
+				case RESTA:
+					if (izq == NULL){
+						if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
+							tipo = &tipo_error::instance();
+							cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
+						}
+					} else{
+						if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance() ||
+							tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
+							tipo = &tipo_error::instance();
+							cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
+						}
 					}
 					break;
 				case MOD:
@@ -636,7 +648,7 @@ class exp_aritmetica : public ArbolSintactico {
 					}
 					break;
 			}
-			if (tipo_der == &tipo_int::instance() && tipo_izq == &tipo_int::instance()){
+			if (tipo_der == &tipo_int::instance() && (tipo_izq == &tipo_int::instance() || izq == NULL)) {
 				tipo = &tipo_int::instance();
 			}
 			else {
@@ -812,9 +824,18 @@ class exp_index : public ArbolSintactico {
 				indexaciones -> imprimir(tab+2);
 			}
 		}
+		type * get_tipo(){
+			return ind->get_tipo();
+		}
+		int get_valor(){
+			return ind -> get_valor();
+		}
 		virtual void verificar(){
 			if (ind->get_tipo() != &tipo_int::instance()) {
 				cout << "La indexacion es de tipo entero." << endl;
+			}
+			if (indexaciones != NULL){
+				indexaciones->verificar();
 			}
 		}
 };
@@ -860,15 +881,36 @@ class ids : public ArbolSintactico {
 					// Hay que sacar el tipo interno
 					switch(tipo->tipo){
 						case ARRAY:
+							tipo = &((tipo_array *)tipo)->p1;
+							break;
 						case LIST:
 							tipo = &((tipo_list *)tipo)->p1;
+							break;
 						case TUPLE: {
+							int indice = indx->get_valor();
+							if (indice == 0){
+								tipo = &((tipo_tuple *)tipo)->p1;
+							}
+							else if (indice == 1) {
+								tipo = &((tipo_tuple *)tipo)->p2;
+							}
+							else {
+								cout << "Fuera del rango del tipo tupla." << endl;
+								tipo = &tipo_error::instance();
+							}
 							break;
 						}
-						default:
-							cout << "ERROR" << endl;
 					}
-				} 
+				} else {
+					switch(tipo->tipo){
+						case ARRAY:
+							tipo = &((tipo_array *)tipo)->p1;
+							break;
+						case LIST:
+							tipo = &((tipo_list *)tipo)->p1;
+							break;
+					}
+				}
 			} else {
 				tipo = idr->get_tipo();
 			}
@@ -913,7 +955,9 @@ class entero : public ArbolSintactico {
 				cout << "int: " << valor << endl;
 			}
 		}
-
+		int get_valor(){
+			return valor;
+		}
 		type * get_tipo(){
 			return tipo;
 		};
@@ -1025,33 +1069,45 @@ class str : public ArbolSintactico {
 };
 
 
-/* Definicion de la clase para ptr (apuntadores) */
-class ptr : public ArbolSintactico {
+/* Definicion de la clase para la lista de parametros de una llamada a funcion */
+class parametros : public ArbolSintactico {
 	public:
-		ArbolSintactico * tipo;
-		ArbolSintactico * id;
-		ArbolSintactico * elem; // atributo para lo que sea que apunta?
-		ptr(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * e): tipo(t), id(i), elem(e) {verificar();}
+		ArbolSintactico * elems;
+		ArbolSintactico * val;
+		parametros( ArbolSintactico * v) : val(v), elems(NULL) {}
+		parametros(ArbolSintactico * e, ArbolSintactico * v) : elems(e), val(v) {verificar();}
+		parametros() : elems(NULL), val(NULL) {}
 		virtual void imprimir(int tab){
-			for (int j = 0; j < tab; j++) cout << " ";
-			cout << "APUNTADOR: " << endl;
-			if (tipo != NULL && id != NULL && elem != NULL){
-				for (int j = 0; j < tab+1; j++) cout << " ";
-				cout << "TIPO: " << endl;
-				tipo -> imprimir(tab+2);
-				for (int j = 0; j < tab+1; j++) cout << " ";
-				cout << "IDENTIFICADOR: " << endl;
-				id -> imprimir(tab+2);
-				for (int j = 0; j < tab+1; j++) cout << " ";
-				cout << "TIPO: " << endl;
-				elem -> imprimir(tab+2);
+			if (elems != NULL){
+				elems -> imprimir(tab);
+			}
+			if (val != NULL){
+				for (int j = 0; j < tab; j++) cout << " ";
+				cout << "PARAMETRO:" << endl;
+				val -> imprimir(tab+1);
 			}
 		}
-		virtual void verificar(){
 
+		int get_valor(){
+			if (val != NULL){
+				return val->get_valor();
+			}
+			return -1;	
+		}
+
+		type * get_tipo(){
+			return val->get_tipo();
+		}
+
+		virtual void verificar(){
+			if (val != NULL){
+				val -> verificar();
+			}
+			if (elems != NULL){
+				elems -> verificar();
+			}
 		}
 };
-
 
 /* Definicion de la clase para la lista de elementos de una lista o arreglo */
 class elementos : public ArbolSintactico {
@@ -1060,17 +1116,51 @@ class elementos : public ArbolSintactico {
 		ArbolSintactico * val;
 		elementos( ArbolSintactico * v) : val(v), elems(NULL) {}
 		elementos(ArbolSintactico * e, ArbolSintactico * v) : elems(e), val(v) {verificar();}
+		elementos() : elems(NULL), val(NULL) {}
 		virtual void imprimir(int tab){
 			if (elems != NULL){
 				elems -> imprimir(tab);
 			}
-			for (int j = 0; j < tab; j++) cout << " ";
-			cout << "PARAMETRO:" << endl;
-			val -> imprimir(tab+1);
+			if (val != NULL){
+				for (int j = 0; j < tab; j++) cout << " ";
+				cout << "PARAMETRO:" << endl;
+				val -> imprimir(tab+1);
+			}
 		}
-		virtual void verificar(){}
-};
 
+		int get_valor(){
+			if (val != NULL){
+				return val->get_valor();
+			}
+			return -1;	
+		}
+
+		type * get_tipo(){
+			if (tipo != NULL){
+				return tipo;
+			}
+			if (elems == NULL){
+				if (val != NULL){
+					tipo = val->get_tipo();
+				} else {
+					tipo = &tipo_unit::instance();
+				}
+			} else{
+				tipo = elems->get_tipo();
+			}
+			return tipo;
+		}
+
+		virtual void verificar(){
+			if (val != NULL && elems != NULL){ 	
+				type * tipo_val = val->get_tipo();
+				type * tipo_elems = elems->get_tipo();
+				if (tipo_val != tipo_elems) {
+					cout << "Las listas y arreglos son homogeneos." << endl;
+				}
+			}
+		}
+};
 
 /* Definicion de la clase para list */
 class lista : public ArbolSintactico {
@@ -1086,7 +1176,14 @@ class lista : public ArbolSintactico {
 				valor -> imprimir(tab+2);
 			}
 		}
-		virtual void verificar(){}
+		
+		type * get_tipo() {
+			return valor->get_tipo();
+		}
+		
+		virtual void verificar(){
+			valor -> verificar();
+		}
 };
 
 
@@ -1104,7 +1201,14 @@ class arreglo : public ArbolSintactico {
 				valor -> imprimir(tab+2);
 			}
 		}
-		virtual void verificar(){}
+		
+		type * get_tipo() {
+			return valor->get_tipo();
+		}
+
+		virtual void verificar(){
+			valor -> verificar();
+		}
 };
 
 
@@ -1126,5 +1230,6 @@ class tupla : public ArbolSintactico {
 				valor2 -> imprimir(tab+2);
 			}
 		}
+
 		virtual void verificar(){}
 };

@@ -18,6 +18,7 @@ class ArbolSintactico {
 		virtual void imprimir(int i){ if(first != NULL) first->imprimir(i); }
 		virtual void verificar() {}; 
 		virtual type * get_tipo(){};
+		virtual int get_valor(){};
 };
 
 #endif

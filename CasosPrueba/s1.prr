@@ -29,39 +29,7 @@ unit test(int @param, bool param2){
 		nonion gag;
 	}
 	execute{
-		inte = 1;
-		floatp = 1.2;
-		boole = false;
-		co = 'j';
-		str = "jajajajaja";
-		while(boole and ((inte == harray[3]))) {
-			floatp = inte + floatp;
-			floatp = inte - floatp;
-			floatp = inte / floatp;
-			floatp = inte * floatp;
-			floatp = inte mod inte;
-			floatp = floatp ** inte;
-
-			boole = inte > floatp;
-			boole = inte < floatp;
-			boole = inte >= floatp;
-			boole = inte <= floatp;
-			break;
-		};
-		for (int i, [0,4], i+1){
-			inte = i+3-4*7;
-		};
-		if(twoforone[0]){
-			<< "falala";
-			>> str;  
-		}else{
-			<< "no falala";
-			>> str;
-			test(param,param2);
-		};
-		new (thelist);
-		free(point);
-		return point;
+		test(param,param2);
 	};
 }
 
