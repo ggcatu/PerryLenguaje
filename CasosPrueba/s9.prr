@@ -2,7 +2,7 @@
 type numeritos = int;
 
 type union onion{
-	char cebolla;
+	int cebolla;
 	float cebollaM;
 }
 
@@ -14,6 +14,7 @@ main{
 		char c;
 		onion p;
 	} execute{
+		a = 'c';
 		<< p.cebolla + 3;
  		<< 3 + 1 - 3 * 2 / 3 ** 3  ;
  	};

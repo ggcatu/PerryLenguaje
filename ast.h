@@ -691,16 +691,12 @@ class asignacion : public ArbolSintactico {
 				siguiente->imprimir(tab+2);
 		}
 		virtual void verificar(){
-			/*
+			
 			// verificar que variable y valor son del mismo tipo
-			table_element * tipo_var = table->lookup(variable->valor, -1);
-			table_el-ement * tipo_val = table->lookup(valor->valor, -1);
-			if (tipovar != tipo_val){
+
+			if (variable->get_tipo() != valor->get_tipo()){
 				cout << "Los tipos de la asignacion no son iguales." << endl;
-			}*/
-			if (siguiente != NULL){
-				siguiente -> verificar();
-			} 
+			}
 		}
 };
 
