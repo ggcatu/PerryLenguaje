@@ -26,6 +26,7 @@ using namespace std;
 /* Definiciones externas (parser.y) que permiten compartir el codigo. */
 extern sym_table table;
 extern int yylineno;
+extern int yycolumn;
 extern char error_strp[1000];
 extern int yyparse();
 
@@ -114,69 +115,13 @@ class include : public ArbolSintactico {
 			}
 		}
 		virtual void verificar(){
-			// verificar que archivo es de tipo string
-			// aun no
-		}
-};
-
-
-/* Definicion de la clase para los structs, union */
-class estructura : public ArbolSintactico {
-	public:
-		ArbolSintactico * id;
-		ArbolSintactico * campos;
-		ArbolSintactico * estructuras;
-		bool st;
-		estructura(ArbolSintactico * i, ArbolSintactico * c, bool t) : id(i), campos(c), st(t), estructuras(NULL) {verificar();}
-		estructura(ArbolSintactico * i, ArbolSintactico * c, ArbolSintactico * es, bool t) : id(i), campos(c), estructuras(es), st(t) {verificar();}
-		virtual void imprimir(int tab){
-			if (st){
-				cout << "STRUCT:" << endl;
+			type * tipo_archivo = archivo->get_tipo();
+			if (tipo_archivo != &tipo_string::instance()){
+				cout << "El nombre del archivo importado debe ser de tipo string." << endl;
 			}
-			else {
-				cout << "UNION:" << endl;
-			}
-			if (campos != NULL){
-				for (int j = 0; j < tab+1; j++) cout << " ";
-				cout << "INDENTIFICADOR:" << endl;
-				id -> imprimir(tab+2);
-				for (int j = 0; j < tab+1; j++) cout << " ";
-				cout << "CAMPOS:" << endl;
-				campos -> imprimir(tab+1);
-			}
-			if (estructuras != NULL){
-				estructuras -> imprimir(tab);
-			}
-		}
-		virtual void verificar(){
-			// verificar?
-		}
-};
-
-
-/* Definicion de la clase para los type */
-class tipo : public ArbolSintactico {
-	public:
-		ArbolSintactico * ti;
-		ArbolSintactico * id;
-		ArbolSintactico * tis;
-		tipo(ArbolSintactico * i, ArbolSintactico * t) : id(i), ti(t), tis(NULL) {verificar();}
-		tipo(ArbolSintactico * i, ArbolSintactico * t, ArbolSintactico * ts) : id(i), ti(t), tis(ts) {verificar();}
-		virtual void imprimir(int tab){
-			cout << "TYPE" << endl;
-			for (int j = 0; j < tab+1; j++) cout << " ";
-			cout << "IDENTIFICADOR:" << endl;
-			id -> imprimir(tab+2);
-			for (int j = 0; j < tab+1; j++) cout << " ";
-			cout << "TIPO:" << endl;
-			if (ti != NULL)
-				ti -> imprimir(tab+2);
-			if (tis != NULL){
-				tis -> imprimir(tab);
-			}
-		}
-		virtual void verificar(){
-			// verificar?
+			if (includes != NULL){
+				includes -> verificar();
+			} 
 		}
 };
 
@@ -236,39 +181,6 @@ class bloque : public ArbolSintactico {
 			if (instrucciones != NULL){
 				instrucciones -> verificar();
 			}
-		}
-};
-
-
-/* Definicion de la clase para la lista de declaraciones */
-class declaracion : public ArbolSintactico {
-	public:
-		ArbolSintactico * tipo;
-		ArbolSintactico * id;
-		ArbolSintactico * exp;
-		ArbolSintactico * declaraciones;
-		declaracion(ArbolSintactico * d, ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * e) : declaraciones(d), tipo(t), id(i), exp(e) {verificar();}
-		declaracion(ArbolSintactico * d, ArbolSintactico * t, ArbolSintactico * i, bool aux) : declaraciones(d), tipo(t), id(i), exp(NULL) {verificar();}
-		declaracion(ArbolSintactico * t, ArbolSintactico * i, ArbolSintactico * e) : tipo(t), id(i), exp(e), declaraciones(NULL) {verificar();}
-		declaracion(ArbolSintactico * t, ArbolSintactico * i) : tipo(t), id(i), exp(NULL), declaraciones(NULL) {verificar();}
-		virtual void imprimir(int tab){
-			if (declaraciones != NULL){
-				declaraciones -> imprimir(tab);
-			}
-			for (int j = 0; j < tab; j++) cout << " ";
-			cout << "TIPO:" << endl;
-			tipo -> imprimir(tab+1);
-			for (int j = 0; j < tab; j++) cout << " ";
-			cout << "IDENTIFICADOR:" << endl;
-			id -> imprimir(tab+2);
-			if (exp != NULL){
-				for (int j = 0; j < tab; j++) cout << " ";
-				cout << "VALOR:" << endl;
-				exp -> imprimir(tab+1); 
-			}
-		}
-		virtual void verificar(){
-			// verificar?
 		}
 };
 
@@ -421,38 +333,6 @@ class instruccion : public ArbolSintactico {
 };
 
 
-/* Definicion de la clase para la lista de parametros de una funcion */
-class parametros : public ArbolSintactico {
-	public:
-		ArbolSintactico * params;
-		bool ref;
-		ArbolSintactico * id;
-		ArbolSintactico * tipo;
-		parametros(ArbolSintactico * t, ArbolSintactico * i, bool r) : tipo(t), id(i), ref(r) {verificar();}
-		parametros(ArbolSintactico * p, ArbolSintactico * t, ArbolSintactico * i, bool r) : params(p), tipo(t), id(i), ref(r) {verificar();}
-		virtual void imprimir(int tab){
-			if (params != NULL){
-				params -> imprimir(tab);
-			}
-			for (int j = 0; j < tab; j++) cout << " ";
-			if (ref){
-				cout << "PARAMETRO POR REFERENCIA:" << endl;
-			} else {
-				cout << "PARAMETRO POR VALOR:" << endl;
-			}
-			for (int j = 0; j < tab+1; j++) cout << " ";
-			cout << "TIPO:" << endl;
-			tipo -> imprimir(tab+2);
-			for (int j = 0; j < tab+1; j++) cout << " ";
-			cout << "IDENTIFICADOR:" << endl;
-			id -> imprimir(tab+2);
-		}
-		virtual void verificar(){
-			// verificar?
-		}
-};
-
-
 /* Definicion de la clase para la llamada a una funcion */
 class llamada : public ArbolSintactico {
 	public:
@@ -495,7 +375,10 @@ class memoria : public ArbolSintactico {
 			id -> imprimir(tab+2);
 		}
 		virtual void verificar(){
-			// que se debe verificar aqui?
+			type * tipo_id = id -> get_tipo();
+			//if (tipo_id != &tipo_pointer::instance()){
+			//	cout << "Solo se puede reservar o liberar memoria para apuntadores." << endl;
+			//}
 		}
 };
 
@@ -519,12 +402,11 @@ class entrada_salida : public ArbolSintactico {
 			exp -> imprimir(tab+2);
 		}
 		virtual void verificar(){
-			// aqui que se debe verificar
+			exp -> verificar();
 		}
 };
 
 
-//COMO LA ITERACION ES DETERMINADA POSIBLEMENTE NO SEA NECESARIO HACER UN ARBOL PARA EL RANGO
 /* Definicion de la clase para el for */
 class it_determinada : public ArbolSintactico {
 	public:
@@ -550,26 +432,21 @@ class it_determinada : public ArbolSintactico {
 			inst -> imprimir(tab+2);
 		}
 		virtual void verificar(){
-			/*
-			// que verificar con la variable?
-			// verificar que inicio, fin, paso son numeros
-			table_element * tipo_variable = table->lookup((variable)->valor, -1);
-			if (tipo_variable != LINT && tipo_variable != LFLOAT){
-				cout << "La variable " << variable. << " debe ser un entero o un flotante" endl;
+			type * tipo_inicio = inicio->get_tipo();
+			type * tipo_fin = fin->get_tipo();
+			type * tipo_paso = paso->get_tipo();
+			if (tipo_inicio != &tipo_int::instance() && tipo_inicio != &tipo_float::instance()){
+				cout << "El inicio del rango del for debe ser de tipo entero o flotante." << endl;
+				tipo = &tipo_error::instance();
 			}
-			table_element * tipo_inicio = table->lookup((inicio)->valor, -1);
-			if (tipo_inicio != LINT && tipo_inicio != LFLOAT){
-				cout << "El inicio del rango del for debe ser un entero o un flotante." << endl;
+			if (tipo_fin != &tipo_int::instance() && tipo_fin != &tipo_float::instance()){
+				cout << "El fin del rango del for debe ser de tipo entero o flotante." << endl;
+				tipo = &tipo_error::instance();
 			}
-			table_element * tipo_fin = table->lookup((fin)->valor, -1);
-			if (tipo_fin != LINT && tipo_fin != LFLOAT){
-				cout << "El fin del rango del for debe ser un entero o un flotante." << endl;
+			if (tipo_paso != &tipo_int::instance() && tipo_paso != &tipo_float::instance()){
+				cout << "El paso del for debe ser de tipo entero o flotante." << endl;
+				tipo = &tipo_error::instance();
 			}
-			table_element * tipo_paso = table->lookup((paso)->valor, -1);
-			if (tipo_paso != LINT && tipo_paso != LFLOAT){
-				cout << "El paso  en el for debe ser un entero o flotante." << endl;
-			}
-			*/
 			inst -> verificar();
 		}
 };
@@ -611,13 +488,15 @@ class inst_guardia : public ArbolSintactico {
 			}
 		}
 		virtual void verificar(){
-			// verificar que condicion es booleano
-			/*
-			table_element * tipo_condicion = table->lookup((condicion)->valor, -1);
-			if (tipo_condicion != LBOOL){
-				cout << "La condicion debe ser de tipo booleano." << endl;
+			if (condicion->get_tipo() != &tipo_bool::instance()){
+				if (instruccion == IF){
+					cout << "La condición del if debe ser de tipo booleano." << endl;	
+				} 
+				else if (instruccion == WHILE){
+					cout << "La condición del while debe ser de tipo booleano." << endl;
+				}
+				tipo = &tipo_error::instance();
 			}
-			*/
 			cuerpo -> verificar();
 			if (cuerpo_else != NULL){ 
 				cuerpo_else -> verificar();
@@ -642,8 +521,9 @@ class ret_brk : public ArbolSintactico {
 			}
 		}
 		virtual void verificar(){
-			// el libro dice que se debe verificar que pertenece a un alcance de for, while = break
-			// verificar que pertenece a una funcion y que el tipo corresponde con su tipo salida
+			if (ret){
+				valor -> verificar();
+			}
 		}
 };
 
@@ -691,12 +571,14 @@ class asignacion : public ArbolSintactico {
 				siguiente->imprimir(tab+2);
 		}
 		virtual void verificar(){
-			
-			// verificar que variable y valor son del mismo tipo
+			type * tipo_var = variable->get_tipo();
+			type * tipo_val = valor->get_tipo();
+			if (tipo_val != tipo_var){
+				if (tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()){
+					cout << variable->get_tipo() << "  " << valor->get_tipo() << endl;
+					cout << "Los tipos de la asignacion no son iguales." << endl;
+				}
 
-			if (variable->get_tipo() != valor->get_tipo()){
-				cout << variable->get_tipo() << "  " << valor->get_tipo() << endl;
-				cout << "Los tipos de la asignacion no son iguales." << endl;
 			}
 		}
 };
@@ -718,7 +600,7 @@ class exp_aritmetica : public ArbolSintactico {
 
 		virtual void verificar(){
 			type * tipo_der = der->get_tipo();
-			type * tipo_izq = izq->get_tipo();
+			type * tipo_izq = (izq!=NULL) ? izq->get_tipo(): &tipo_unit::instance();
 				
 			switch(instruccion){
 				case SUMA:
@@ -736,7 +618,8 @@ class exp_aritmetica : public ArbolSintactico {
 						tipo = &tipo_error::instance();
 						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
-					if (tipo_der != &tipo_int::instance()){
+					if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_int::instance()){
+						tipo = &tipo_error::instance();
 						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
 					}
 					break;
@@ -753,7 +636,12 @@ class exp_aritmetica : public ArbolSintactico {
 					}
 					break;
 			}
-			tipo = &tipo_float::instance();
+			if (tipo_der == &tipo_int::instance() && tipo_izq == &tipo_int::instance()){
+				tipo = &tipo_int::instance();
+			}
+			else {
+				tipo = &tipo_float::instance();
+			}
 		}
 
 		virtual void imprimir(int tab){
@@ -804,21 +692,32 @@ class exp_booleana : public ArbolSintactico {
 		exp_booleana(ArbolSintactico * d, ArbolSintactico * i, int is) : der(d), izq(i), instruccion(static_cast<inst>(is)) {verificar();}
 		exp_booleana(ArbolSintactico * d, int is) : der(d), izq(NULL), instruccion(static_cast<inst>(is)) {verificar();}
 
+		type * get_tipo(){
+			return tipo;
+		}
+
 		void verificar(){
 
 			type * tipo_der = der->get_tipo();
-			type * tipo_izq = izq->get_tipo();				
-
+			type * tipo_izq = (izq!=NULL) ? izq->get_tipo(): &tipo_unit::instance();
 			switch(instruccion){
+				case NEGACION:
+					if (!(tipo_der == &tipo_bool::instance())){
+						tipo = &tipo_error::instance();
+						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
+					}
+					break;
 				case DISYUNCION:
 				case CONJUNCION:
 					if (tipo_izq != &tipo_bool::instance() || tipo_der != &tipo_bool::instance()){
+						tipo = &tipo_error::instance();
 						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
 					}
 					break;
 				case IGUALA:
 				case DISTINTO:
 					if (tipo_izq != tipo_der){
+						tipo = &tipo_error::instance();
 						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
 					}
 					break;
@@ -828,18 +727,15 @@ class exp_booleana : public ArbolSintactico {
 				case MENOR:
 					if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance()){
 						cout << "Las expresiones aritmeticas debe ser de tipo entero o flotante." << endl;
+						tipo = &tipo_error::instance();
 					}
 					if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
+						tipo = &tipo_error::instance();
 						cout << "Las expresiones aritmeticas debe ser de tipo entero o flotante." << endl;
 					}
 					break;
-				case NEGACION:
-					if (!(tipo_der == &tipo_bool::instance())){
-						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
-					}
-					break;
 			}
-			
+			tipo = &tipo_bool::instance();
 		}
 		
 		virtual void imprimir(int tab){
@@ -895,9 +791,7 @@ class exp_point : public ArbolSintactico {
 			cout << "DESREFERENCIACION: " << endl;
 			der -> imprimir(tab+1);
 		}
-		virtual void verificar(){
-			// verificar?
-		}
+		virtual void verificar(){}
 };
 
 
@@ -981,11 +875,6 @@ class ids : public ArbolSintactico {
 			return tipo;
 		};
 
-
-		virtual string str(){
-			// if (idr != NULL)  
-				// return id << "." << idr.str();
-		}
 		virtual void verificar(){
 			type * t;
 			if (idr == NULL){
@@ -1029,9 +918,7 @@ class entero : public ArbolSintactico {
 			return tipo;
 		};
 
-		virtual void verificar(){
-			//
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1052,9 +939,7 @@ class flotante : public ArbolSintactico {
 			return tipo;
 		};
 
-		virtual void verificar(){
-			//
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1079,9 +964,7 @@ class booleano : public ArbolSintactico {
 			return tipo;
 		};
 
-		virtual void verificar(){
-			//
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1102,9 +985,7 @@ class character : public ArbolSintactico {
 			return tipo;
 		};
 
-		virtual void verificar(){
-			//
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1121,9 +1002,7 @@ class unit : public ArbolSintactico {
 			return tipo;
 		};
 
-		virtual void verificar(){
-			//
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1142,9 +1021,7 @@ class str : public ArbolSintactico {
 			return tipo;
 		};
 
-		virtual void verificar(){
-			//
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1191,9 +1068,7 @@ class elementos : public ArbolSintactico {
 			cout << "PARAMETRO:" << endl;
 			val -> imprimir(tab+1);
 		}
-		virtual void verificar(){
-			// que debemos verificar?
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1211,9 +1086,7 @@ class lista : public ArbolSintactico {
 				valor -> imprimir(tab+2);
 			}
 		}
-		virtual void verificar(){
-			// que verificar aqui?
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1231,9 +1104,7 @@ class arreglo : public ArbolSintactico {
 				valor -> imprimir(tab+2);
 			}
 		}
-		virtual void verificar(){
-			// verificamos que los elementos del arreglo son del tipo del arreglo
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1255,7 +1126,5 @@ class tupla : public ArbolSintactico {
 				valor2 -> imprimir(tab+2);
 			}
 		}
-		virtual void verificar(){
-			// verificar que?
-		}
+		virtual void verificar(){}
 };
