@@ -30,6 +30,7 @@ unit test(int @param, bool param2){
 	}
 	execute{
 		test(param,param2);
+		twoforone = (true,4.4);
 	};
 }
 

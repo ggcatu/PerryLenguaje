@@ -189,6 +189,7 @@ class bloque : public ArbolSintactico {
 		}
 };
 
+
 /* Definicion de la clase para los identificadores */
 class identificador : public ArbolSintactico {
 	public:
@@ -218,6 +219,7 @@ class identificador : public ArbolSintactico {
 			cout << "id: " << valor << endl;
 		}
 };
+
 
 /* Definicion de la clase para la lista de declaraciones */
 class tipedec : public ArbolSintactico {
@@ -537,6 +539,7 @@ class ret_brk : public ArbolSintactico {
 		}
 };
 
+
 class skip : public ArbolSintactico {
 	public:
 		ArbolSintactico * siguiente;
@@ -553,6 +556,7 @@ class skip : public ArbolSintactico {
 			} 
 		}
 };
+
 
 /* Definicion de la asignacion */
 class asignacion : public ArbolSintactico {
@@ -914,6 +918,8 @@ class ids : public ArbolSintactico {
 							break;
 						case LIST:
 							tipo = &((tipo_list *)tipo)->p1;
+							break;
+						case TUPLE:
 							break;
 					}
 				}
