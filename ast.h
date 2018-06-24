@@ -695,6 +695,7 @@ class asignacion : public ArbolSintactico {
 			// verificar que variable y valor son del mismo tipo
 
 			if (variable->get_tipo() != valor->get_tipo()){
+				cout << variable->get_tipo() << "  " << valor->get_tipo() << endl;
 				cout << "Los tipos de la asignacion no son iguales." << endl;
 			}
 		}
@@ -905,7 +906,7 @@ class exp_index : public ArbolSintactico {
 	public:
 		ArbolSintactico * ind;
 		ArbolSintactico * indexaciones;
-		exp_index(ArbolSintactico * i,ArbolSintactico * ids) : indexaciones(ids), ind(i) {verificar();}
+		exp_index(ArbolSintactico * i,ArbolSintactico * ids) : ind(i), indexaciones(ids)  {verificar();}
 		exp_index(ArbolSintactico * i) : ind(i), indexaciones(NULL) {verificar();}
 		virtual void imprimir(int tab) {
 			for (int j = 0; j < tab; j++) cout << " ";
@@ -918,15 +919,9 @@ class exp_index : public ArbolSintactico {
 			}
 		}
 		virtual void verificar(){
-			/*
-			table_element * tipo_ind = table->lookup(ind->valor, -1);
-			if (tipo_ind != LINT) {
+			if (ind->get_tipo() != &tipo_int::instance()) {
 				cout << "La indexacion es de tipo entero." << endl;
 			}
-			*/
-			if (indexaciones != NULL){
-				indexaciones -> verificar();
-			} 
 		}
 };
 
@@ -967,6 +962,19 @@ class ids : public ArbolSintactico {
 			} 
 			if (idr == NULL){
 				tipo = id->get_tipo();
+				if (indx != NULL){
+					// Hay que sacar el tipo interno
+					switch(tipo->tipo){
+						case ARRAY:
+						case LIST:
+							tipo = &((tipo_list *)tipo)->p1;
+						case TUPLE: {
+							break;
+						}
+						default:
+							cout << "ERROR" << endl;
+					}
+				} 
 			} else {
 				tipo = idr->get_tipo();
 			}
@@ -979,7 +987,27 @@ class ids : public ArbolSintactico {
 				// return id << "." << idr.str();
 		}
 		virtual void verificar(){
-			// que se debe verificar?
+			type * t;
+			if (idr == NULL){
+				t = id->get_tipo();
+			} else {
+				t = idr->get_tipo();
+			}
+
+			// La condicion no esta completa
+			if (indx != NULL && 
+					( t == &tipo_int::instance() ||
+					  t == &tipo_bool::instance() || 
+					  t == &tipo_float::instance() ||
+					  t == &tipo_char::instance() ||
+					  t == &tipo_tipo::instance() ||
+					  // t == &tipo_pointer::instance() ||
+					  // t == &tipo_unit::instance() ||
+					  t == &tipo_error::instance() 
+					  ) ){
+
+				cout << "Este tipo no es indexable" << endl;
+			}
 		}
 };
 
