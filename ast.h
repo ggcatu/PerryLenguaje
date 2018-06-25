@@ -384,6 +384,7 @@ class memoria : public ArbolSintactico {
 		}
 		virtual void verificar(){
 			type * tipo_id = id -> get_tipo();
+			id -> verificar();
 			//if (tipo_id != &tipo_pointer::instance()){
 			//	cout << "Solo se puede reservar o liberar memoria para apuntadores." << endl;
 			//}
@@ -588,12 +589,40 @@ class asignacion : public ArbolSintactico {
 		virtual void verificar(){
 			type * tipo_var = variable->get_tipo();
 			type * tipo_val = valor->get_tipo();
-			//cout << variable->get_tipo() << "  " << valor->get_tipo() << endl;
-			if (tipo_val != tipo_var){
-				if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance()){
-					cout << "Los tipos de la asignacion no son iguales." << endl;
-				}
+			switch(tipo_var->tipo){
+				case TUPLE:
+					//cout << "3 " <<  &((tipo_tuple *)tipo_var)->p1 << "  " << &((tipo_tuple *)tipo_val)->p1 << " " << &((tipo_tuple *)tipo_var)->p2 << " " << &((tipo_tuple *)tipo_val)->p2 << endl;
+					if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1 || &((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2){
+						if (((&((tipo_tuple *)tipo_var)->p1 != &tipo_float::instance() || &((tipo_tuple *)tipo_val)->p1 != &tipo_int::instance()) && &((tipo_tuple *)tipo_val)->p1 != &tipo_unit::instance()) &&
+							((&((tipo_tuple *)tipo_var)->p2 != &tipo_float::instance() || &((tipo_tuple *)tipo_val)->p2 != &tipo_int::instance()) && &((tipo_tuple *)tipo_val)->p2 != &tipo_unit::instance())) {
+							cout << "Los tipos de la asignacion no son iguales." << endl;
+						}
+					}
+					break;
+				case ARRAY:
+					//cout << "1 " << &((tipo_array *)tipo_var)->p1 << " " << tipo_var << endl;
+					if (&((tipo_array *)tipo_var)->p1 != tipo_val){
+						if ((&((tipo_list *)tipo_var)->p1 != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance()) {
+							cout << "Los tipos de la asignacion no son iguales." << endl;
+						}
+					}
+					break;
+				case LIST:
+					//cout << "2 " << &((tipo_list *)tipo_var)->p1 << " " << tipo_var << endl;
+					if (&((tipo_list *)tipo_var)->p1 != tipo_val){
+						if ((&((tipo_list *)tipo_var)->p1 != &tipo_float::instance() || (tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance())) {
+							cout << "Los tipos de la asignacion no son iguales." << endl;
+						}
+					}
 
+					break;
+				default:
+					//cout << "default " << tipo_var << " " << tipo_val << endl;
+					if (tipo_val != tipo_var){
+						if ((tipo_var != &tipo_float::instance() || (tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance())){
+							cout << "Los tipos de la asignacion no son iguales." << endl;
+						}
+					}
 			}
 		}
 };
@@ -813,6 +842,9 @@ class exp_point : public ArbolSintactico {
 			cout << "DESREFERENCIACION: " << endl;
 			der -> imprimir(tab+1);
 		}
+		type * get_tipo(){
+			return der->get_tipo();
+		}
 		virtual void verificar(){}
 };
 
@@ -914,12 +946,13 @@ class ids : public ArbolSintactico {
 				} else {
 					switch(tipo->tipo){
 						case ARRAY:
-							tipo = &((tipo_array *)tipo)->p1;
+							tipo = (tipo_array *)tipo;
 							break;
 						case LIST:
-							tipo = &((tipo_list *)tipo)->p1;
+							tipo = (tipo_list *)tipo;
 							break;
 						case TUPLE:
+							tipo = (tipo_list *)tipo;
 							break;
 					}
 				}
@@ -1229,6 +1262,12 @@ class tupla : public ArbolSintactico {
 				cout << "SEGUNDO VALOR:" << endl;	
 				valor2 -> imprimir(tab+2);
 			}
+		}
+		type * get_tipo(){
+			type * t1 = valor1->get_tipo();
+			type * t2 = valor2->get_tipo();
+			tipo = new tipo_tuple(*t1,*t2);
+			return tipo;
 		}
 		virtual void verificar(){}
 };

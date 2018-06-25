@@ -22,15 +22,19 @@ unit test(int @param, bool param2){
 		bool boole;
 		char co;
 		string str;
-		array int [5] harray;
+		array float [5] harray;
 		list int thelist;
 		tuple (bool,float) twoforone;
 		ptr int point;
 		nonion gag;
 	}
 	execute{
-		test(param,param2);
-		twoforone = (true,4.4);
+		//test(param,param2);
+		twoforone = (true,4);
+		floatp = 4;
+		harray = [1,2,3];
+		thelist = {1,2,3};
+		harray[0] = 1;
 	};
 }
 
