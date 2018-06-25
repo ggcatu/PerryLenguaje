@@ -1,0 +1,10 @@
+//Error tipos con variables clasico
+
+main{
+	create{
+		int tomate;
+		bool caraota = true;
+	} execute{
+		caraota = tomate;
+ 	};
+}

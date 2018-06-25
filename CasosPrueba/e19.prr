@@ -1,0 +1,12 @@
+//Error tipos en while
+
+main{
+	create{
+		float tomate;
+	} execute{
+		tomate = 5.5;
+		while (tomate){
+			<< tomate;
+		};
+ 	};
+}

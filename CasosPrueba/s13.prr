@@ -1,0 +1,9 @@
+//Asignar variable a si misma
+
+main{
+	create{
+		int tomate;
+	} execute{
+		tomate = tomate;
+ 	};
+}

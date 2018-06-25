@@ -1,0 +1,10 @@
+//Error tipos en operaciones de booleanos
+
+main{
+	create{
+		bool tomate;
+	} execute{
+		tomate = false;
+		tomate = 5.5 and true;
+ 	};
+}

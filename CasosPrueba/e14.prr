@@ -1,0 +1,9 @@
+//Error tipos clasico
+
+main{
+	create{
+		int tomate;
+	} execute{
+		tomate = true;
+ 	};
+}

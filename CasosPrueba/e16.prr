@@ -1,0 +1,10 @@
+//Error tipos en operaciones aritmeticas de flotantes
+
+main{
+	create{
+		float tomate;
+	} execute{
+		tomate = 5.5;
+		tomate = 5.5 + 's';
+ 	};
+}

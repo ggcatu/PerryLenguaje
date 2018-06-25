@@ -1,0 +1,10 @@
+//Error tipos en operaciones aritmeticas de enteros
+
+main{
+	create{
+		int tomate;
+	} execute{
+		tomate = 5;
+		tomate = 5 + 's';
+ 	};
+}

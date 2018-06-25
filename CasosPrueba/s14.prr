@@ -1,0 +1,12 @@
+//Prueba tipos en for
+
+main{
+	create{
+		float tomate;
+	} execute{
+		tomate = 5.5;
+		for(int i, [tomate,2341234], 1){
+			<< tomate;
+		};
+ 	};
+}

@@ -1,0 +1,12 @@
+//Error tipos en if
+
+main{
+	create{
+		float tomate;
+	} execute{
+		tomate = 5.5;
+		if (tomate){
+			<< tomate;
+		};
+ 	};
+}
