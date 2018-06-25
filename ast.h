@@ -29,6 +29,7 @@ extern int yylineno;
 extern int yycolumn;
 extern char error_strp[1000];
 extern int yyparse();
+extern bool error_sintactico;
 
 /* Definicion de la clase raiz */
 class raiz : public ArbolSintactico {
@@ -56,12 +57,12 @@ class raiz : public ArbolSintactico {
 			}
 		}
 		virtual void verificar(){
-			if (programa != NULL){
-				programa -> verificar();
-			}
-			if (includes != NULL){
-				programa -> verificar();
-			}
+			// if (programa != NULL){
+			// 	programa -> verificar();
+			// }
+			// if (includes != NULL){
+			// 	programa -> verificar();
+			// }
 		}
 };
 
@@ -89,12 +90,12 @@ class funcion : public ArbolSintactico {
 			}
 		}
 		virtual void verificar(){
-			if (instrucciones != NULL){
-				instrucciones -> verificar();
-			}
-			if (funciones != NULL){
-				funciones -> verificar();
-			}
+			// if (instrucciones != NULL){
+			// 	instrucciones -> verificar();
+			// }
+			// if (funciones != NULL){
+			// 	funciones -> verificar();
+			// }
 
 		}
 };
@@ -121,10 +122,11 @@ class include : public ArbolSintactico {
 			type * tipo_archivo = archivo->get_tipo();
 			if (tipo_archivo != &tipo_string::instance()){
 				cout << "El nombre del archivo importado debe ser de tipo string." << endl;
+				error_sintactico = 1;
 			}
-			if (includes != NULL){
-				includes -> verificar();
-			} 
+			// if (includes != NULL){
+			// 	includes -> verificar();
+			// } 
 		}
 };
 
@@ -147,12 +149,12 @@ class programa : public ArbolSintactico {
 			}
 		}
 		virtual void verificar(){
-			if (program != NULL){
-				program -> verificar();
-			} 
-			if (sec != NULL){
-				sec -> verificar();
-			}
+			// if (program != NULL){
+			// 	program -> verificar();
+			// } 
+			// if (sec != NULL){
+			// 	sec -> verificar();
+			// }
 		}
 };
 
@@ -180,12 +182,12 @@ class bloque : public ArbolSintactico {
 			}
 		}
 		virtual void verificar(){
-			if (declaraciones != NULL){
-				declaraciones -> verificar();
-			}
-			if (instrucciones != NULL){
-				instrucciones -> verificar();
-			}
+			// if (declaraciones != NULL){
+			// 	declaraciones -> verificar();
+			// }
+			// if (instrucciones != NULL){
+			// 	instrucciones -> verificar();
+			// }
 		}
 };
 
@@ -329,12 +331,12 @@ class instruccion : public ArbolSintactico {
 			}
 		}
 		virtual void verificar(){
-			if (inst != NULL){
-				inst -> verificar();
-			}
-			if (instrucciones != NULL){
-				instrucciones -> verificar();
-			}	
+			// if (inst != NULL){
+			// 	inst -> verificar();
+			// }
+			// if (instrucciones != NULL){
+			// 	instrucciones -> verificar();
+			// }	
 		}
 };
 
@@ -384,7 +386,7 @@ class memoria : public ArbolSintactico {
 		}
 		virtual void verificar(){
 			type * tipo_id = id -> get_tipo();
-			id -> verificar();
+			// id -> verificar();
 			//if (tipo_id != &tipo_pointer::instance()){
 			//	cout << "Solo se puede reservar o liberar memoria para apuntadores." << endl;
 			//}
@@ -412,7 +414,7 @@ class entrada_salida : public ArbolSintactico {
 			exp -> imprimir(tab+2);
 		}
 		virtual void verificar(){
-			exp -> verificar();
+			// exp -> verificar();
 		}
 };
 
@@ -449,16 +451,19 @@ class it_determinada : public ArbolSintactico {
 			if (tipo_inicio != &tipo_int::instance() && tipo_inicio != &tipo_float::instance()){
 				cout << "El inicio del rango del for debe ser de tipo entero o flotante." << endl;
 				tipo = &tipo_error::instance();
+				error_sintactico = 1;
 			}
 			if (tipo_fin != &tipo_int::instance() && tipo_fin != &tipo_float::instance()){
 				cout << "El fin del rango del for debe ser de tipo entero o flotante." << endl;
 				tipo = &tipo_error::instance();
+				error_sintactico = 1;
 			}
 			if (tipo_paso != &tipo_int::instance() && tipo_paso != &tipo_float::instance()){
 				cout << "El paso del for debe ser de tipo entero o flotante." << endl;
 				tipo = &tipo_error::instance();
+				error_sintactico = 1;
 			}
-			inst -> verificar();
+			// inst -> verificar();
 		}
 };
 
@@ -507,11 +512,12 @@ class inst_guardia : public ArbolSintactico {
 				else if (instruccion == WHILE){
 					cout << "La condición del while debe ser de tipo booleano." << endl;
 				}
+				error_sintactico = 1;
 				tipo = &tipo_error::instance();
 			}
-			cuerpo -> verificar();
+			// cuerpo -> verificar();
 			if (cuerpo_else != NULL){ 
-				cuerpo_else -> verificar();
+				// cuerpo_else -> verificar();
 			}
 		}
 };
@@ -534,9 +540,9 @@ class ret_brk : public ArbolSintactico {
 			}
 		}
 		virtual void verificar(){
-			if (ret){
-				valor -> verificar();
-			}
+			// if (ret){
+				// valor -> verificar();
+			// }
 		}
 };
 
@@ -553,7 +559,7 @@ class skip : public ArbolSintactico {
 		}
 		virtual void verificar(){
 			if (siguiente != NULL){
-				siguiente -> verificar();
+				// siguiente -> verificar();
 			} 
 		}
 };
@@ -596,6 +602,7 @@ class asignacion : public ArbolSintactico {
 						if (((&((tipo_tuple *)tipo_var)->p1 != &tipo_float::instance() || &((tipo_tuple *)tipo_val)->p1 != &tipo_int::instance()) && &((tipo_tuple *)tipo_val)->p1 != &tipo_unit::instance()) &&
 							((&((tipo_tuple *)tipo_var)->p2 != &tipo_float::instance() || &((tipo_tuple *)tipo_val)->p2 != &tipo_int::instance()) && &((tipo_tuple *)tipo_val)->p2 != &tipo_unit::instance())) {
 							cout << "Los tipos de la asignacion no son iguales." << endl;
+						error_sintactico = 1;
 						}
 					}
 					break;
@@ -604,6 +611,7 @@ class asignacion : public ArbolSintactico {
 					if (&((tipo_array *)tipo_var)->p1 != tipo_val){
 						if ((&((tipo_list *)tipo_var)->p1 != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance()) {
 							cout << "Los tipos de la asignacion no son iguales." << endl;
+						error_sintactico = 1;
 						}
 					}
 					break;
@@ -612,6 +620,7 @@ class asignacion : public ArbolSintactico {
 					if (&((tipo_list *)tipo_var)->p1 != tipo_val){
 						if ((&((tipo_list *)tipo_var)->p1 != &tipo_float::instance() || (tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance())) {
 							cout << "Los tipos de la asignacion no son iguales." << endl;
+						error_sintactico = 1;
 						}
 					}
 
@@ -621,6 +630,7 @@ class asignacion : public ArbolSintactico {
 					if (tipo_val != tipo_var){
 						if ((tipo_var != &tipo_float::instance() || (tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance())){
 							cout << "Los tipos de la asignacion no son iguales." << endl;
+						error_sintactico = 1;
 						}
 					}
 			}
@@ -652,6 +662,7 @@ class exp_aritmetica : public ArbolSintactico {
 						tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
 						tipo = &tipo_error::instance();
 						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
+						error_sintactico = 1;
 					}
 					break;
 				case RESTA:
@@ -659,35 +670,41 @@ class exp_aritmetica : public ArbolSintactico {
 						if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
 							tipo = &tipo_error::instance();
 							cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
+						error_sintactico = 1;
 						}
 					} else{
 						if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance() ||
 							tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
 							tipo = &tipo_error::instance();
 							cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
+						error_sintactico = 1;
 						}
 					}
 					break;
 				case MOD:
 					if (tipo_izq != &tipo_int::instance()){
 						tipo = &tipo_error::instance();
-						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
+						cout << "MOD Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
+						error_sintactico = 1;
 					}
 					if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_int::instance()){
 						tipo = &tipo_error::instance();
-						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
+						cout << "MOD Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
+						error_sintactico = 1;
 					}
 					break;
 				case POW:
 					if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance() ||
 						tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
 						tipo = &tipo_error::instance();
-						cout << "Las expresiones aritmeticas deben tener tipo entero." << endl;
+						cout << "POW Las expresiones aritmeticas deben tener tipo entero." << endl;
+						error_sintactico = 1;
 					}
 					if (tipo_der != &tipo_int::instance()){
 						cout << tipo_der << " " << &tipo_int::instance() << " " << &tipo_float::instance() << endl;
 						cout << "El exponente debe ser de tipo entero." << endl;
 						tipo = &tipo_error::instance();
+						error_sintactico = 1;
 					}
 					break;
 			}
@@ -757,6 +774,7 @@ class exp_booleana : public ArbolSintactico {
 					if (!(tipo_der == &tipo_bool::instance())){
 						tipo = &tipo_error::instance();
 						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
+						error_sintactico = 1;
 					}
 					break;
 				case DISYUNCION:
@@ -764,6 +782,7 @@ class exp_booleana : public ArbolSintactico {
 					if (tipo_izq != &tipo_bool::instance() || tipo_der != &tipo_bool::instance()){
 						tipo = &tipo_error::instance();
 						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
+						error_sintactico = 1;
 					}
 					break;
 				case IGUALA:
@@ -771,6 +790,7 @@ class exp_booleana : public ArbolSintactico {
 					if (tipo_izq != tipo_der){
 						tipo = &tipo_error::instance();
 						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
+						error_sintactico = 1;
 					}
 					break;
 				case MAYOR:
@@ -780,10 +800,12 @@ class exp_booleana : public ArbolSintactico {
 					if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance()){
 						cout << "Las expresiones aritmeticas debe ser de tipo entero o flotante." << endl;
 						tipo = &tipo_error::instance();
+						error_sintactico = 1;
 					}
 					if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
 						tipo = &tipo_error::instance();
 						cout << "Las expresiones aritmeticas debe ser de tipo entero o flotante." << endl;
+						error_sintactico = 1;
 					}
 					break;
 			}
@@ -876,9 +898,10 @@ class exp_index : public ArbolSintactico {
 		virtual void verificar(){
 			if (ind->get_tipo() != &tipo_int::instance()) {
 				cout << "La indexacion es de tipo entero." << endl;
+						error_sintactico = 1;
 			}
 			if (indexaciones != NULL){
-				indexaciones->verificar();
+				// indexaciones->verificar();
 			}
 		}
 };
@@ -939,6 +962,7 @@ class ids : public ArbolSintactico {
 							else {
 								cout << "Fuera del rango del tipo tupla." << endl;
 								tipo = &tipo_error::instance();
+						error_sintactico = 1;
 							}
 							break;
 						}
@@ -981,6 +1005,7 @@ class ids : public ArbolSintactico {
 					  t == &tipo_error::instance() 
 					  ) ){
 
+						error_sintactico = 1;
 				cout << "Este tipo no es indexable" << endl;
 			}
 		}
@@ -1136,12 +1161,12 @@ class parametros : public ArbolSintactico {
 			return val->get_tipo();
 		}
 		virtual void verificar(){
-			if (val != NULL){
-				val -> verificar();
-			}
-			if (elems != NULL){
-				elems -> verificar();
-			}
+			// if (val != NULL){
+			// 	val -> verificar();
+			// }
+			// if (elems != NULL){
+			// 	elems -> verificar();
+			// }
 		}
 };
 
@@ -1191,6 +1216,7 @@ class elementos : public ArbolSintactico {
 				type * tipo_elems = elems->get_tipo();
 				if (tipo_val != tipo_elems) {
 					cout << "Las listas y arreglos son homogeneos." << endl;
+						error_sintactico = 1;
 				}
 			}
 		}
@@ -1215,7 +1241,7 @@ class lista : public ArbolSintactico {
 			return valor->get_tipo();
 		}
 		virtual void verificar(){
-			valor -> verificar();
+			// valor -> verificar();
 		}
 };
 
@@ -1239,7 +1265,7 @@ class arreglo : public ArbolSintactico {
 			return valor->get_tipo();
 		}
 		virtual void verificar(){
-			valor -> verificar();
+			// valor -> verificar();
 		}
 };
 

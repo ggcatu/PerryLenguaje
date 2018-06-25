@@ -14,7 +14,6 @@ main{
 		onion caraota;
 		int cebolla;
 	} execute{
-		caraota = caraota.cebolla + cebolla;
- 		<< "hahaha1" + 1 ;
+		cebolla = caraota.cebolla + cebolla;
  	};
 }

@@ -9,6 +9,6 @@ main{
 		list int thelist;
 		ptr int point;
 	} execute{
- 		<< "hahaha1" + 1 ;
+ 		b =  3 + 1 ;
  	};
 }

@@ -11,8 +11,9 @@ main{
 			string cebolla;
 			char cebollaM;
 		} inte;
+		int inter;
 	}
 	execute{
-		inte = 1;
+		inter = 1 + 4;
 	};
 }

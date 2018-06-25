@@ -10,17 +10,20 @@ main{
 	}
 	execute{
 		while(boole and ((inte == harray[3]) or not(twoforone[1] != floatp))){
-			inte = inte + floatp;
-			inte = inte - floatp;
-			inte = inte / floatp;
-			inte = inte * floatp;
-			inte = inte mod floatp;
-			inte = inte ** floatp;
+			floatp = inte + floatp;
+			floatp = inte - floatp;
+			floatp = inte / floatp;
+			floatp = inte * floatp;
+
+			floatp = inte * floatp;
+			floatp = floatp ** inte ;
+			inte = inte mod 5;
 
 			boole = inte > floatp;
 			boole = inte < floatp;
 			boole = inte >= floatp;
 			boole = inte <= floatp;
+
 			break;
 		};
 	};
