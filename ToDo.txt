@@ -1,0 +1,4 @@
+Verificar tipos de las llamadas a func
+Arreglar mensaje de error en verificacion de tipos (Meterlos en el vector de errores y personalificacion de mensajes, filas y columnas)
+Peo de los nombres con las Struct/Union
+Completar casos de prueba

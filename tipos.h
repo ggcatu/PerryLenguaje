@@ -56,12 +56,6 @@ class tipo_array: public CRTP_type<tipo_array>{
 		tipo_array(type &p) : CRTP_type(ARRAY), p1(p) {}; 
 };
 
-class tipo_list: public CRTP_type<tipo_list>{
-	public:
-		type &p1;
-		tipo_list(type &p) : CRTP_type(LIST), p1(p) {}; 
-};
-
 class tipo_tuple: public CRTP_type<tipo_tuple>{
 	public:
 		type &p1;
@@ -88,6 +82,13 @@ class tipo_tipo: public CRTP_type<tipo_tipo>{
 class tipo_unit: public CRTP_type<tipo_unit>{
 	friend class CRTP_type<tipo_unit>;
 	tipo_unit() : CRTP_type(UNIT) {}; 
+};
+
+class tipo_list: public CRTP_type<tipo_list>{
+	public:
+		type &p1;
+		tipo_list(type &p) : CRTP_type(LIST), p1(p) {};
+		tipo_list() : CRTP_type(LIST), p1(tipo_unit::instance()) {};
 };
 
 class tipo_funcion: public CRTP_type<tipo_funcion>{

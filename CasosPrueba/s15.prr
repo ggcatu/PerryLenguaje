@@ -1,0 +1,11 @@
+//asignar tupla
+main{
+	create{
+		float tomate;
+		list int lala;
+		tuple (int,bool) tutu;
+	} execute{
+		tomate = 5;
+		tutu[0] = 1;
+ 	};
+}

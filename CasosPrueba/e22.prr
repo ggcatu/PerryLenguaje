@@ -1,0 +1,18 @@
+//Error asignando struct distintos
+
+type struct tuct{
+	int hello;
+}
+
+type struct	 tact{
+	int hello;
+}
+
+main{
+	create{
+		tact hi;
+		tuct ho;
+	} execute{
+		hi = ho;
+ 	};
+}

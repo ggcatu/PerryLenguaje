@@ -31,6 +31,9 @@ extern char error_strp[1000];
 extern int yyparse();
 extern bool error_sintactico;
 
+//Map que contiene los subtipos
+map<type*,type*> subtype;
+
 /* Definicion de la clase raiz */
 class raiz : public ArbolSintactico {
 	public:
@@ -89,15 +92,7 @@ class funcion : public ArbolSintactico {
 				funciones -> imprimir(tab);
 			}
 		}
-		virtual void verificar(){
-			// if (instrucciones != NULL){
-			// 	instrucciones -> verificar();
-			// }
-			// if (funciones != NULL){
-			// 	funciones -> verificar();
-			// }
-
-		}
+		virtual void verificar(){}
 };
 
 
@@ -123,10 +118,7 @@ class include : public ArbolSintactico {
 			if (tipo_archivo != &tipo_string::instance()){
 				cout << "El nombre del archivo importado debe ser de tipo string." << endl;
 				error_sintactico = 1;
-			}
-			// if (includes != NULL){
-			// 	includes -> verificar();
-			// } 
+			} 
 		}
 };
 
@@ -148,14 +140,7 @@ class programa : public ArbolSintactico {
 				sec -> imprimir(tab+1);
 			}
 		}
-		virtual void verificar(){
-			// if (program != NULL){
-			// 	program -> verificar();
-			// } 
-			// if (sec != NULL){
-			// 	sec -> verificar();
-			// }
-		}
+		virtual void verificar(){}
 };
 
 
@@ -181,14 +166,7 @@ class bloque : public ArbolSintactico {
 				instrucciones -> imprimir(tab+2);
 			}
 		}
-		virtual void verificar(){
-			// if (declaraciones != NULL){
-			// 	declaraciones -> verificar();
-			// }
-			// if (instrucciones != NULL){
-			// 	instrucciones -> verificar();
-			// }
-		}
+		virtual void verificar(){}
 };
 
 
@@ -222,7 +200,6 @@ class identificador : public ArbolSintactico {
 		}
 };
 
-
 /* Definicion de la clase para la lista de declaraciones */
 class tipedec : public ArbolSintactico {
 
@@ -238,9 +215,6 @@ class tipedec : public ArbolSintactico {
 
 		bool asignar_tipo(string variable, sym_table * table ){
 			table_element * instancia = table->lookup(variable, -1);
-			// if (instancia == NULL || subtipo1 == NULL){
-				// return false;
-			// }
 			switch(tipo.tipo){
 				case IDENTIFIER: {
 					table_element * elemento = table->lookup(((identificador *)subtipo1)->valor, -1);
@@ -330,14 +304,7 @@ class instruccion : public ArbolSintactico {
 				instrucciones -> imprimir(tab);
 			}
 		}
-		virtual void verificar(){
-			// if (inst != NULL){
-			// 	inst -> verificar();
-			// }
-			// if (instrucciones != NULL){
-			// 	instrucciones -> verificar();
-			// }	
-		}
+		virtual void verificar(){}
 };
 
 
@@ -358,10 +325,7 @@ class llamada : public ArbolSintactico {
 			cout << "PARAMETROS:" << endl;
 			parametros -> imprimir(tab+2);
 		}
-		virtual void verificar(){
-			// verificar que cada tipo es igual a los parametros asociados a id, incluso el numero de parametros
-			// la tabla tiene los parametros?
-		}
+		virtual void verificar(){}
 };
 
 
@@ -386,10 +350,6 @@ class memoria : public ArbolSintactico {
 		}
 		virtual void verificar(){
 			type * tipo_id = id -> get_tipo();
-			// id -> verificar();
-			//if (tipo_id != &tipo_pointer::instance()){
-			//	cout << "Solo se puede reservar o liberar memoria para apuntadores." << endl;
-			//}
 		}
 };
 
@@ -413,9 +373,7 @@ class entrada_salida : public ArbolSintactico {
 			cout << "EXPRESION:" << endl;
 			exp -> imprimir(tab+2);
 		}
-		virtual void verificar(){
-			// exp -> verificar();
-		}
+		virtual void verificar(){}
 };
 
 
@@ -463,7 +421,6 @@ class it_determinada : public ArbolSintactico {
 				tipo = &tipo_error::instance();
 				error_sintactico = 1;
 			}
-			// inst -> verificar();
 		}
 };
 
@@ -515,10 +472,6 @@ class inst_guardia : public ArbolSintactico {
 				error_sintactico = 1;
 				tipo = &tipo_error::instance();
 			}
-			// cuerpo -> verificar();
-			if (cuerpo_else != NULL){ 
-				// cuerpo_else -> verificar();
-			}
 		}
 };
 
@@ -539,11 +492,7 @@ class ret_brk : public ArbolSintactico {
 				cout << "BREAK" << endl;
 			}
 		}
-		virtual void verificar(){
-			// if (ret){
-				// valor -> verificar();
-			// }
-		}
+		virtual void verificar(){}
 };
 
 
@@ -557,11 +506,7 @@ class skip : public ArbolSintactico {
 			if (siguiente != NULL)
 				siguiente->imprimir(tab);
 		}
-		virtual void verificar(){
-			if (siguiente != NULL){
-				// siguiente -> verificar();
-			} 
-		}
+		virtual void verificar(){}
 };
 
 
@@ -607,8 +552,8 @@ class asignacion : public ArbolSintactico {
 					}
 					break;
 				case ARRAY:
-					//cout << "1 " << &((tipo_array *)tipo_var)->p1 << " " << tipo_var << endl;
-					if (&((tipo_array *)tipo_var)->p1 != tipo_val){
+					//cout << "1 " << &((tipo_array *)tipo_var)->p1 << " " << &((tipo_array *)tipo_val)->p1 << endl;
+					if (&((tipo_array *)tipo_var)->p1 != tipo_val &&  &((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1){
 						if ((&((tipo_list *)tipo_var)->p1 != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance()) {
 							cout << "Los tipos de la asignacion no son iguales." << endl;
 						error_sintactico = 1;
@@ -617,7 +562,7 @@ class asignacion : public ArbolSintactico {
 					break;
 				case LIST:
 					//cout << "2 " << &((tipo_list *)tipo_var)->p1 << " " << tipo_var << endl;
-					if (&((tipo_list *)tipo_var)->p1 != tipo_val){
+					if (&((tipo_list *)tipo_var)->p1 != tipo_val &&  &((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1){
 						if ((&((tipo_list *)tipo_var)->p1 != &tipo_float::instance() || (tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance())) {
 							cout << "Los tipos de la asignacion no son iguales." << endl;
 						error_sintactico = 1;
@@ -900,9 +845,6 @@ class exp_index : public ArbolSintactico {
 				cout << "La indexacion es de tipo entero." << endl;
 						error_sintactico = 1;
 			}
-			if (indexaciones != NULL){
-				// indexaciones->verificar();
-			}
 		}
 };
 
@@ -1160,14 +1102,7 @@ class parametros : public ArbolSintactico {
 		type * get_tipo(){
 			return val->get_tipo();
 		}
-		virtual void verificar(){
-			// if (val != NULL){
-			// 	val -> verificar();
-			// }
-			// if (elems != NULL){
-			// 	elems -> verificar();
-			// }
-		}
+		virtual void verificar(){}
 };
 
 /* Definicion de la clase para la lista de elementos de una lista o arreglo */
@@ -1238,11 +1173,13 @@ class lista : public ArbolSintactico {
 			}
 		}
 		type * get_tipo() {
-			return valor->get_tipo();
+			if (valor != NULL){
+				return valor->get_tipo();
+			} else{
+				return &tipo_list::instance();
+			}
 		}
-		virtual void verificar(){
-			// valor -> verificar();
-		}
+		virtual void verificar(){}
 };
 
 
@@ -1264,9 +1201,7 @@ class arreglo : public ArbolSintactico {
 		type * get_tipo() {
 			return valor->get_tipo();
 		}
-		virtual void verificar(){
-			// valor -> verificar();
-		}
+		virtual void verificar(){}
 };
 
 

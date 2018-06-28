@@ -132,7 +132,7 @@ void declarar_variable(string identificador, int columna){
 %token <ch> CHAR
 %token <str> STRING 
 %token <boolean> TRUE FALSE
-%type <arb> S Create Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals Corchetes Parabre Ids_plox Llaveabre LlaveabreSp Llavecierra IdentifierSp ListLlamada
+%type <arb> S Alias Create Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals Corchetes Parabre Ids_plox Llaveabre LlaveabreSp Llavecierra IdentifierSp ListLlamada
 %type <str> Identifier
 
 
@@ -170,9 +170,11 @@ Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }
 			| TYPE UNION Llaveabre error Llavecierra Start  	{ $$ = (ArbolSintactico*)(NULL); }
 			| TYPE UNION Llaveabre error Llavecierra 			{ $$ = (ArbolSintactico*)(NULL); }
 			
-			| TYPE Identifier IGUAL Typedef PUNTOCOMA Start		{ $$ = new skip($6); alias[$2] = $4;}
-			| TYPE Identifier IGUAL Typedef	PUNTOCOMA			{ $$ = (ArbolSintactico*)(NULL); alias[$2] = $4; }
+			| Alias Start										{ $$ = new skip($2);}
+			| Alias												{ $$ = (ArbolSintactico*)(NULL);}
 			; 
+
+Alias       : TYPE Identifier IGUAL Typedef PUNTOCOMA           { alias[$2] = $4; }
 
 Llaveabre 	: IDENTIFIER LLAVEABRE 	 							{ declarar_variable($1, yylloc.first_column); asignar_tipo(new tipedec(* new tipo_tipo()), $1); $$ = new identificador($1); open_scope($$); }
 			;
@@ -199,7 +201,7 @@ Typedef		: BOOL  											{ $$ = new tipedec(tipo_bool::instance()); }
 			| ARRAY Typedef CORCHETEABRE Exp CORCHETECIERRA 	{ $$ = new tipedec(*(new tipo_array(((tipedec *)$2)->tipo)),$2,NULL,$4); }
 			| LIST Typedef 										{ $$ = new tipedec(*new tipo_list(((tipedec *)$2)->tipo),$2); }
 			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{ $$ = new tipedec(*new tipo_tuple(((tipedec *)$3)->tipo, ((tipedec *)$5)->tipo),$3,$5);}
-			| IDENTIFIER										{ $$ = new tipedec(tipo_identifier::instance(), new identificador($1)); }
+			| IDENTIFIER										{ $$ = alias[$1]; }
 			| TYPE STRUCT LlaveabreSp Declist Llavecierra		{ $$ = new tipedec(tipo_identifier::instance(), $3); }
 			| TYPE STRUCT LlaveabreSp error Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
 			

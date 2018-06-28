@@ -1,0 +1,10 @@
+//Error tipos clasico
+
+main{
+	create{
+		array int[3] p;
+		array char[3] s;
+	} execute{
+		p = s;
+ 	};
+}

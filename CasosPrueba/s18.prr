@@ -1,0 +1,16 @@
+//Prueba de alias de tipos
+
+type entero = int;
+
+main{
+	create{
+		int hola;
+	} execute{
+		create{
+			entero n;
+		} execute{
+		 	hola = 1;
+		};
+ 	};
+}
+

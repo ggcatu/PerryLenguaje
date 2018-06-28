@@ -1,0 +1,19 @@
+//asignar struct
+
+type struct tuct{
+	int hello;
+}
+
+type struct ar{
+	char hello;
+}
+
+main{
+	create{
+		tuct hi;
+		ar ho;
+	} execute{
+		hi = ho;
+		// hi.hello = ar.hello;
+ 	};
+}

@@ -1,11 +1,13 @@
 //Error tipos en for
 
+type numeritos = int;
+		
 main{
 	create{
-		float tomate;
+		numeritos tomate;
 	} execute{
-		tomate = 5.5;
-		for(int i, [tomate,6.56], false){
+		tomate = 5;
+		for(int i, [tomate,6.56], 3){
 			<< tomate;
 		};
  	};
