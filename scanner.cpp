@@ -50,9 +50,9 @@ void imprimir_errores(){
 }
 
 void imprimir_tabla(){
-	if (!error_sintactico){
+	//if (!error_sintactico){
 		table.print();
-	}
+	//}
 }
 
 void imprimir_arbol(){

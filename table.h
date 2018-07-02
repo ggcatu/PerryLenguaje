@@ -157,7 +157,7 @@ class sym_table {
 		    	}
 			    std::cout << "]" << std::endl;
 		    }
-
+		    
 		    std::cout << std::endl << std::endl << "Imprimiendo tipos " << std::endl;
 		    std::cout << "INT: " << &tipo_int::instance() << std::endl;
 		    std::cout << "BOOL: " << &tipo_bool::instance() << std::endl;

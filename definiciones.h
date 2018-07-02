@@ -66,6 +66,5 @@ int lastOcurrence(char* s, char x);
 int numOcurrence(char* s, char x, int start);
 void print_vector(vector<Token *> vector);
 void print_errors(vector<Token *> vector);
-
 void init_strings();
 #endif

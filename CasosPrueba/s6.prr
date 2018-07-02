@@ -9,16 +9,10 @@ unit test(int @param, bool param2){
 	create{
 		string str;
 		tuple (bool,float) twoforone;
+		list array int [2] l;
 	}
 	execute{
-		if(twoforone[0]){
-			<< "falala";
-			>> str;  
-		}else{
-			<< "no falala";
-			>> str;
-			test(param,param2);
-		};
+		l[1][1] = 1;
 	};
 }
 
