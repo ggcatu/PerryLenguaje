@@ -40,21 +40,13 @@ class table_element {
 			std::cout << "SCOPE: " << scope; 
 			if (tipo != NULL){
 				std::cout << " TYPE: " << tipo->tipo; 
-
 				switch(tipo->tipo){
 					case TUPLE:
-						std::cout << "<" << (((tipo_tuple *)tipo)->p1).tipo <<", ";
-						std::cout << (((tipo_tuple *)tipo)->p2).tipo << ">";
-						break;
 					case LIST:
-						std::cout << "<" << (((tipo_list *)tipo)->p1).tipo << ">";
-						break;
 					case ARRAY:
-						std::cout << "<" << (((tipo_array *)tipo)->p1).tipo << ">";
-						break;
 					case POINTER:
 						// std::cout << &((tipo_pointer *)tipo)->p1 << std::endl;
-						std::cout << "<" << (((tipo_pointer *)tipo)->p1).tipo << ">";
+						print_tipo(tipo);
 						break;
 					case IDENTIFIER:
 					default:
@@ -62,7 +54,62 @@ class table_element {
 				}
 			}
 			if (child_scope != -1)
-				std::cout << ", CHILD SCOPE: " << child_scope ; 
+				std::cout << ", CHILD SCOPE: " << child_scope;
+		}
+		void print_tipo(type * tipo){
+			switch(tipo->tipo){
+					case TUPLE:
+						std::cout << "<";
+						if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){
+							std::cout << (((tipo_tuple *)tipo)->p1).tipo;
+						} else {
+							std::cout << (((tipo_tuple *)tipo)->p1).tipo;
+							print_tipo(&((tipo_tuple *)tipo)->p1);
+						}
+						std:: cout << ",";
+						if ((((tipo_tuple *)tipo)->p2).tipo == 30 || (((tipo_tuple *)tipo)->p2).tipo == 29 || (((tipo_tuple *)tipo)->p2).tipo == 28 || (((tipo_tuple *)tipo)->p2).tipo == 27 || (((tipo_tuple *)tipo)->p2).tipo == 26){
+							std::cout << (((tipo_tuple *)tipo)->p2).tipo;
+						} else {
+							std::cout << (((tipo_tuple *)tipo)->p2).tipo;
+							print_tipo(&((tipo_tuple *)tipo)->p2);
+						}
+						std::cout << ">";
+						break;
+					case LIST:
+						std::cout << "<";
+						if ((((tipo_list *)tipo)->p1).tipo == 30 || (((tipo_list *)tipo)->p1).tipo == 29 || (((tipo_list *)tipo)->p1).tipo == 28 || (((tipo_list *)tipo)->p1).tipo == 27 || (((tipo_list *)tipo)->p1).tipo == 26){
+							std::cout << (((tipo_list *)tipo)->p1).tipo;
+						} else {
+							std::cout << (((tipo_list *)tipo)->p1).tipo;
+							print_tipo(&((tipo_list *)tipo)->p1);
+						}
+						std::cout << ">";
+						break;
+					case ARRAY:
+						std::cout << "<";
+						if ((((tipo_array *)tipo)->p1).tipo == 30 || (((tipo_array *)tipo)->p1).tipo == 29 || (((tipo_array *)tipo)->p1).tipo == 28 || (((tipo_array *)tipo)->p1).tipo == 27 || (((tipo_array *)tipo)->p1).tipo == 26){
+							std::cout << (((tipo_array *)tipo)->p1).tipo;
+						} else {
+							std::cout << (((tipo_array *)tipo)->p1).tipo;
+							print_tipo(&((tipo_array *)tipo)->p1);
+						}
+						std::cout << ">";
+						break;
+					case POINTER:
+						std::cout << "<";
+						// std::cout << &((tipo_pointer *)tipo)->p1 << std::endl;
+						if ((((tipo_pointer *)tipo)->p1).tipo == 30 || (((tipo_pointer *)tipo)->p1).tipo == 29 || (((tipo_pointer *)tipo)->p1).tipo == 28 || (((tipo_pointer *)tipo)->p1).tipo == 27 || (((tipo_pointer *)tipo)->p1).tipo == 26){
+							std::cout << (((tipo_pointer *)tipo)->p1).tipo;
+						} else {
+							std::cout << (((tipo_pointer *)tipo)->p1).tipo;
+							print_tipo(&((tipo_pointer *)tipo)->p1);
+						}
+						std::cout << ">";
+						break;
+					case IDENTIFIER:
+					default:
+						break;
+				}
 		}
 };
 

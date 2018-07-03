@@ -2,6 +2,7 @@
 #define ARB_H
 #include <stdio.h>
 #include <iostream>
+#include <string>
 #include "tipos.h"
 
 /* Definicion de la clase base ArbolSintactico */
@@ -19,6 +20,7 @@ class ArbolSintactico {
 		virtual void verificar() {}; 
 		virtual type * get_tipo(){};
 		virtual int get_valor(){};
+		virtual string get_nombre(){};
 };
 
 #endif

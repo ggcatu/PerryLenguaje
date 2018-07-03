@@ -10,10 +10,12 @@ type struct ar{
 
 main{
 	create{
-		tuct hi;
-		ar ho;
+		//tuct hi;
+		//ar ho;
+		int i;
 	} execute{
-		hi = ho;
+		//hi = ho;
 		// hi.hello = ar.hello;
+		break;
  	};
 }

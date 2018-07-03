@@ -9,16 +9,12 @@ unit test(int @param, bool param2){
 	create{
 		string str;
 		tuple (bool,float) twoforone;
-		array array int [2][2] l;
-		array array int [2][2] a;
-		array array int [2][2] b;
 	}
 	execute{
-		//l[1][1] = 1;
-		//l = 1;
-		//l[1] = [1];
-		l[1] = 2;
-	};
+		if (twoforone[0]){
+			<< "aja";
+		}
+	}
 }
 
 main{

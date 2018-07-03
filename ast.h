@@ -59,7 +59,6 @@ class raiz : public ArbolSintactico {
 				}
 			}
 		}
-		virtual void verificar(){}
 };
 
 
@@ -85,7 +84,6 @@ class funcion : public ArbolSintactico {
 				funciones -> imprimir(tab);
 			}
 		}
-		virtual void verificar(){}
 };
 
 
@@ -133,7 +131,6 @@ class programa : public ArbolSintactico {
 				sec -> imprimir(tab+1);
 			}
 		}
-		virtual void verificar(){}
 };
 
 
@@ -159,7 +156,6 @@ class bloque : public ArbolSintactico {
 				instrucciones -> imprimir(tab+2);
 			}
 		}
-		virtual void verificar(){}
 };
 
 
@@ -176,7 +172,6 @@ class identificador : public ArbolSintactico {
 			if (tipo != NULL){
 				return tipo;
 			}
-
 			table_element * instancia = table.lookup(valor, -1);
 			// cout << "Busqueda de " << valor <<endl;
 			// table.print();
@@ -186,7 +181,10 @@ class identificador : public ArbolSintactico {
 				return tipo;
 			}
 			return &tipo_error::instance();
-		};
+		}
+		string get_nombre(){
+			return valor;
+		}
 		virtual void imprimir(int tab) {
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "id: " << valor << endl;
@@ -195,7 +193,6 @@ class identificador : public ArbolSintactico {
 
 /* Definicion de la clase para la lista de declaraciones */
 class tipedec : public ArbolSintactico {
-
 	public:
 		type& tipo;
 		ArbolSintactico * subtipo1;
@@ -223,7 +220,6 @@ class tipedec : public ArbolSintactico {
 			}
 			return true;
 		}
-
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			switch(tipo.tipo){
@@ -297,7 +293,6 @@ class instruccion : public ArbolSintactico {
 				instrucciones -> imprimir(tab);
 			}
 		}
-		virtual void verificar(){}
 };
 
 
@@ -318,7 +313,6 @@ class llamada : public ArbolSintactico {
 			cout << "PARAMETROS:" << endl;
 			parametros -> imprimir(tab+2);
 		}
-		virtual void verificar(){}
 };
 
 
@@ -340,9 +334,6 @@ class memoria : public ArbolSintactico {
 			for (int j = 0; j < tab+1; j++) cout << " ";
 			cout << "IDENTIFICADOR:" << endl;
 			id -> imprimir(tab+2);
-		}
-		virtual void verificar(){
-			type * tipo_id = id -> get_tipo();
 		}
 };
 
@@ -366,7 +357,6 @@ class entrada_salida : public ArbolSintactico {
 			cout << "EXPRESION:" << endl;
 			exp -> imprimir(tab+2);
 		}
-		virtual void verificar(){}
 };
 
 
@@ -485,7 +475,6 @@ class ret_brk : public ArbolSintactico {
 				cout << "BREAK" << endl;
 			}
 		}
-		virtual void verificar(){}
 };
 
 
@@ -499,7 +488,6 @@ class skip : public ArbolSintactico {
 			if (siguiente != NULL)
 				siguiente->imprimir(tab);
 		}
-		virtual void verificar(){}
 };
 
 
@@ -535,50 +523,49 @@ class asignacion : public ArbolSintactico {
 			type * tipo_val = valor->get_tipo();
 			//cout << tipo_var << " " << tipo_val << endl;
 			switch(tipo_var->tipo) {
+				case STRUCT:
+					//cout << variable->get_nombre() << " " << valor->get_nombre();
+					break;
 				case TUPLE:
 					//cout << "3 " <<  &((tipo_tuple *)tipo_var)->p1 << "  " << &((tipo_tuple *)tipo_val)->p1 << " " << &((tipo_tuple *)tipo_var)->p2 << " " << &((tipo_tuple *)tipo_val)->p2 << endl;
-					/*if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
+					if (tipo_val->tipo != TUPLE){
 						cout << "Los tipos de la asignacion no son iguales." << endl;
 						error_sintactico = 1;
-						tipo = &tipo_error::instance();
-					}*/
-					if ((&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1 || &((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) && (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1 ) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)) ) {
-						if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
-							cout << "Los tipos de la asignacion no son iguales." << endl;
-							error_sintactico = 1;
+					} else {
+						if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1 || &((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
+							if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
+								cout << "Los tipos de la asignacion no son iguales." << endl;
+								error_sintactico = 1;
+							}
 						}
 					}
 					break;
 				case ARRAY:
-					cout << "1 " << &((tipo_array *)tipo_var)->p1 << " " << tipo_var << " " << &((tipo_array *)tipo_val)->p1 << " " << tipo_val << endl;					
-					cout << "1d " << (&((tipo_array *)tipo_var)->p1 != tipo_val) << " " << (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) << " " << verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1) << endl;
-					if (&((tipo_array *)tipo_var)->p1 != tipo_val && &((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
-						/*if (&((tipo_array *)tipo_var)->p1 != tipo_val && (&((tipo_array *)tipo_var)->p1 != &tipo_int::instance() || &((tipo_array *)tipo_var)->p1 != &tipo_float::instance() || &((tipo_array *)tipo_var)->p1 != &tipo_char::instance() || &((tipo_array *)tipo_var)->p1 != &tipo_bool::instance())) {
+					//cout << "1 " << &((tipo_array *)tipo_var)->p1 << " " << tipo_var << " " << &((tipo_array *)tipo_val)->p1 << " " << tipo_val << endl;					
+					//cout << "1d " << (&((tipo_array *)tipo_var)->p1 != tipo_val) << " " << (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) << " " << verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1) << endl;
+					//cout << "1t " << tipo_var->tipo << " " << tipo_val->tipo << endl;
+					if (tipo_val->tipo != ARRAY){
+						cout << "Los tipos de la asignacion no son iguales." << endl;
+						error_sintactico = 1;
+					} else {
+						if (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
 							if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
 								cout << "Los tipos de la asignacion no son iguales." << endl;
 								error_sintactico = 1;
-								tipo = &tipo_error::instance();
 							}
-						}*/
-						if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
-							cout << "Los tipos de la asignacion no son iguales." << endl;
-							error_sintactico = 1;
 						}
 					}
 					break;
 				case LIST:
-					//cout << "2 " << &((tipo_list *)tipo_var)->p1 << " " << tipo_var << endl;					
-					/*if (&((tipo_list *)tipo_var)->p1 != tipo_val && (&((tipo_list *)tipo_var)->p1 != &tipo_int::instance()) {
-						if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
-							cout << "Los tipos de la asignacion no son iguales." << endl;
-							error_sintactico = 1;
-							tipo = &tipo_error::instance();
-						}
-					}*/
-					if ((&((tipo_list *)tipo_var)->p1 != tipo_val || &((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) &&  verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
-						if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
-							cout << "Los tipos de la asignacion no son iguales." << endl;
-							error_sintactico = 1;
+					if (tipo_val->tipo != LIST){
+						cout << "Los tipos de la asignacion no son iguales." << endl;
+						error_sintactico = 1;
+					} else {
+						if (&((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) {
+							if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
+								cout << "Los tipos de la asignacion no son iguales." << endl;
+								error_sintactico = 1;
+							}
 						}
 					}
 					break;
@@ -591,36 +578,48 @@ class asignacion : public ArbolSintactico {
 							tipo = &tipo_error::instance();
 						}
 					}
-			}
+				}
 		}
 		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
-			cout << "vaux" << tipo_var << tipo_val << endl;
+			//cout << "vaux" << tipo_var << tipo_val << endl;
 			if (tipo_val != 0){
 				switch(tipo_var->tipo){
 					case TUPLE:
 						//cout << "3aux " <<  &((tipo_tuple *)tipo_var)->p1 << "  " << &((tipo_tuple *)tipo_val)->p1 << " " << &((tipo_tuple *)tipo_var)->p2 << " " << &((tipo_tuple *)tipo_val)->p2 << endl;
-						if ((&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1 || &((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) && (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1 ) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)) ) {
-							if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
-								return true;
+						if (tipo_val->tipo != TUPLE){
+							return true;
+						} else {
+							if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1 || &((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
+								if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
+									return true;
+								}
 							}
 						}
 						return false;
 						break;
 					case ARRAY:
-						cout << "1aux " << &((tipo_array *)tipo_var)->p1 << " " << &((tipo_array *)tipo_val)->p1 << endl;				
-						cout << "1daux " << (&((tipo_array *)tipo_var)->p1 != tipo_val) << " " << (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) << " " << verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1) << endl;
-						if (&((tipo_array *)tipo_var)->p1 != tipo_val && &((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
-							if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
-								return true;
+						//cout << "1aux " << &((tipo_array *)tipo_var)->p1 << " " << &((tipo_array *)tipo_val)->p1 << endl;				
+						//cout << "1daux " << (&((tipo_array *)tipo_var)->p1 != tipo_val) << " " << (&((tipo_array *)tipo_var)->p1 != tipo_val) << " " << verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1) << endl;
+						if (tipo_val->tipo != ARRAY){
+							return true;
+						} else {
+							if (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
+									return  true;
+								}
 							}
 						}
 						return false;
 						break;
 					case LIST:
 						//cout << "2aux " << &((tipo_list *)tipo_var)->p1 << " " << tipo_var << endl;					
-						if ((&((tipo_list *)tipo_var)->p1 != tipo_val || &((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) &&  verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
-							if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
-								return true;
+						if (tipo_val->tipo != LIST){
+							return true;
+						} else {
+							if (&((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
+									return true;
+								}
 							}
 						}
 						return false;
@@ -629,8 +628,6 @@ class asignacion : public ArbolSintactico {
 						//cout << "defaultaux " << tipo_var << " " << tipo_val << endl;
 						if (tipo_val != tipo_var){
 							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance()){
-								//cout << "Los tipos de la asignacion no son iguales." << endl;
-								//error_sintactico = 1;
 								return true;
 							}
 						}
@@ -864,6 +861,7 @@ class exp_point : public ArbolSintactico {
 	public:
 		ArbolSintactico * der;
 		exp_point(ArbolSintactico * d) : der(d) {verificar();}
+
 		virtual void imprimir(int tab) {
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "DESREFERENCIACION: " << endl;
@@ -872,7 +870,6 @@ class exp_point : public ArbolSintactico {
 		type * get_tipo(){
 			return der->get_tipo();
 		}
-		virtual void verificar(){}
 };
 
 
@@ -903,7 +900,7 @@ class exp_index : public ArbolSintactico {
 		virtual void verificar(){
 			if (ind->get_tipo() != &tipo_int::instance()) {
 				cout << "La indexacion es de tipo entero." << endl;
-						error_sintactico = 1;
+				error_sintactico = 1;
 			}
 		}
 };
@@ -954,38 +951,35 @@ class ids : public ArbolSintactico {
 							tipo = &((tipo_list *)tipo)->p1;
 							break;
 						case TUPLE: {
-							int indice = indx->get_valor();
-							if (indice == 0){
-								tipo = &((tipo_tuple *)tipo)->p1;
-							}
-							else if (indice == 1) {
-								tipo = &((tipo_tuple *)tipo)->p2;
-							}
-							else {
-								cout << "Fuera del rango del tipo tupla." << endl;
+							if (indx->get_tipo() == &tipo_int::instance()){
+								int indice = indx->get_valor();
+								if (indice == 0){
+									tipo = &((tipo_tuple *)tipo)->p1;
+								}
+								else if (indice == 1) {
+									tipo = &((tipo_tuple *)tipo)->p2;
+								}
+								else {
+									cout << "Fuera del rango del tipo tupla." << endl;
+									tipo = &tipo_error::instance();
+									error_sintactico = 1;
+								}
+							} else {
+								cout << "Solo se puede indexar en las tuplas con enteros." << endl;
 								tipo = &tipo_error::instance();
-						error_sintactico = 1;
+								error_sintactico = 1;
 							}
 							break;
 						}
-					}
-				} else {
-					switch(tipo->tipo){
-						case ARRAY:
-							tipo = (tipo_array *)tipo;
-							break;
-						case LIST:
-							tipo = (tipo_list *)tipo;
-							break;
-						case TUPLE:
-							tipo = (tipo_list *)tipo;
-							break;
 					}
 				}
 			} else {
 				tipo = idr->get_tipo();
 			}
 			return tipo;
+		}
+		string get_nombre(){
+			return id->get_nombre();
 		}
 		virtual void verificar(){
 			type * t;
@@ -1005,10 +999,10 @@ class ids : public ArbolSintactico {
 					  // t == &tipo_pointer::instance() ||
 					  t == &tipo_unit::instance() ||
 					  t == &tipo_error::instance() 
-					  ) ){
-
-						error_sintactico = 1;
+					  )) {
+				error_sintactico = 1;
 				cout << "Este tipo no es indexable" << endl;
+				tipo = &tipo_error::instance();
 			}
 		}
 };
@@ -1033,7 +1027,6 @@ class entero : public ArbolSintactico {
 		type * get_tipo(){
 			return tipo;
 		}
-		virtual void verificar(){}
 };
 
 
@@ -1052,7 +1045,6 @@ class flotante : public ArbolSintactico {
 		type * get_tipo(){
 			return tipo;
 		}
-		virtual void verificar(){}
 };
 
 
@@ -1076,7 +1068,6 @@ class booleano : public ArbolSintactico {
 		type * get_tipo(){
 			return tipo;
 		}
-		virtual void verificar(){}
 };
 
 
@@ -1096,7 +1087,6 @@ class character : public ArbolSintactico {
 		type * get_tipo(){
 			return tipo;
 		}
-		virtual void verificar(){}
 };
 
 
@@ -1112,7 +1102,6 @@ class unit : public ArbolSintactico {
 		type * get_tipo(){
 			return tipo;
 		}
-		virtual void verificar(){}
 };
 
 
@@ -1130,7 +1119,6 @@ class str : public ArbolSintactico {
 		type * get_tipo(){
 			return tipo;
 		}
-		virtual void verificar(){}
 };
 
 
@@ -1162,7 +1150,6 @@ class parametros : public ArbolSintactico {
 		type * get_tipo(){
 			return val->get_tipo();
 		}
-		virtual void verificar(){}
 };
 
 /* Definicion de la clase para la lista de elementos de una lista o arreglo */
@@ -1212,48 +1199,44 @@ class elementos : public ArbolSintactico {
 			switch(tipo_var->tipo) {
 				case TUPLE:
 					//cout << "3 " <<  &((tipo_tuple *)tipo_var)->p1 << "  " << &((tipo_tuple *)tipo_val)->p1 << " " << &((tipo_tuple *)tipo_var)->p2 << " " << &((tipo_tuple *)tipo_val)->p2 << endl;
-					/*if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
-						cout << "Los tipos de la asignacion no son iguales." << endl;
+					if (tipo_val->tipo != TUPLE){
+						cout << "Las listas y arreglos son homogeneos." << endl;
 						error_sintactico = 1;
-						tipo = &tipo_error::instance();
-					}*/
-					if ((&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1 || &((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) && (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1 ) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)) ) {
-						if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
-							cout << "Los tipos de la asignacion no son iguales." << endl;
-							error_sintactico = 1;
+					} else {
+						if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1 || &((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
+							if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
+								cout << "Las listas y arreglos son homogeneos." << endl;
+								error_sintactico = 1;
+							}
 						}
 					}
 					break;
 				case ARRAY:
-					cout << "1 " << &((tipo_array *)tipo_var)->p1 << " " << tipo_var << " " << &((tipo_array *)tipo_val)->p1 << " " << tipo_val << endl;					
-					cout << "1d " << (&((tipo_array *)tipo_var)->p1 != tipo_val) << " " << (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) << " " << verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1) << endl;
-					if (&((tipo_array *)tipo_var)->p1 != tipo_val && &((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
-						/*if (&((tipo_array *)tipo_var)->p1 != tipo_val && (&((tipo_array *)tipo_var)->p1 != &tipo_int::instance() || &((tipo_array *)tipo_var)->p1 != &tipo_float::instance() || &((tipo_array *)tipo_var)->p1 != &tipo_char::instance() || &((tipo_array *)tipo_var)->p1 != &tipo_bool::instance())) {
+					//cout << "1 " << &((tipo_array *)tipo_var)->p1 << " " << tipo_var << " " << &((tipo_array *)tipo_val)->p1 << " " << tipo_val << endl;					
+					//cout << "1d " << (&((tipo_array *)tipo_var)->p1 != tipo_val) << " " << (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) << " " << verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1) << endl;
+					//cout << "1t " << tipo_var->tipo << " " << tipo_val->tipo << endl;
+					if (tipo_val->tipo != ARRAY){
+						cout << "Las listas y arreglos son homogeneos." << endl;
+						error_sintactico = 1;
+					} else {
+						if (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
 							if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
-								cout << "Los tipos de la asignacion no son iguales." << endl;
+								cout << "Las listas y arreglos son homogeneos." << endl;
 								error_sintactico = 1;
-								tipo = &tipo_error::instance();
 							}
-						}*/
-						if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
-							cout << "Los tipos de la asignacion no son iguales." << endl;
-							error_sintactico = 1;
 						}
 					}
 					break;
 				case LIST:
-					//cout << "2 " << &((tipo_list *)tipo_var)->p1 << " " << tipo_var << endl;					
-					/*if (&((tipo_list *)tipo_var)->p1 != tipo_val && (&((tipo_list *)tipo_var)->p1 != &tipo_int::instance()) {
-						if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
-							cout << "Los tipos de la asignacion no son iguales." << endl;
-							error_sintactico = 1;
-							tipo = &tipo_error::instance();
-						}
-					}*/
-					if ((&((tipo_list *)tipo_var)->p1 != tipo_val || &((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) &&  verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
-						if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
-							cout << "Los tipos de la asignacion no son iguales." << endl;
-							error_sintactico = 1;
+					if (tipo_val->tipo != LIST){
+						cout << "Las listas y arreglos son homogeneos." << endl;
+						error_sintactico = 1;
+					} else {
+						if (&((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) {
+							if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
+								cout << "Las listas y arreglos son homogeneos." << endl;
+								error_sintactico = 1;
+							}
 						}
 					}
 					break;
@@ -1266,36 +1249,48 @@ class elementos : public ArbolSintactico {
 							tipo = &tipo_error::instance();
 						}
 					}
-			}
+				}
 		}
 		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
-			cout << "vaux" << tipo_var << tipo_val << endl;
+			//cout << "vaux" << tipo_var << tipo_val << endl;
 			if (tipo_val != 0){
 				switch(tipo_var->tipo){
 					case TUPLE:
 						//cout << "3aux " <<  &((tipo_tuple *)tipo_var)->p1 << "  " << &((tipo_tuple *)tipo_val)->p1 << " " << &((tipo_tuple *)tipo_var)->p2 << " " << &((tipo_tuple *)tipo_val)->p2 << endl;
-						if ((&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1 || &((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) && (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1 ) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)) ) {
-							if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
-								return true;
+						if (tipo_val->tipo != TUPLE){
+							return true;
+						} else {
+							if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1 || &((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
+								if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
+									return true;
+								}
 							}
 						}
 						return false;
 						break;
 					case ARRAY:
-						cout << "1aux " << &((tipo_array *)tipo_var)->p1 << " " << &((tipo_array *)tipo_val)->p1 << endl;				
-						cout << "1daux " << (&((tipo_array *)tipo_var)->p1 != tipo_val) << " " << (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) << " " << verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1) << endl;
-						if (&((tipo_array *)tipo_var)->p1 != tipo_val && &((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
-							if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
-								return true;
+						//cout << "1aux " << &((tipo_array *)tipo_var)->p1 << " " << &((tipo_array *)tipo_val)->p1 << endl;				
+						//cout << "1daux " << (&((tipo_array *)tipo_var)->p1 != tipo_val) << " " << (&((tipo_array *)tipo_var)->p1 != tipo_val) << " " << verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1) << endl;
+						if (tipo_val->tipo != ARRAY){
+							return true;
+						} else {
+							if (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
+									return  true;
+								}
 							}
 						}
 						return false;
 						break;
 					case LIST:
 						//cout << "2aux " << &((tipo_list *)tipo_var)->p1 << " " << tipo_var << endl;					
-						if ((&((tipo_list *)tipo_var)->p1 != tipo_val || &((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) &&  verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
-							if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
-								return true;
+						if (tipo_val->tipo != LIST){
+							return true;
+						} else {
+							if (&((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
+									return true;
+								}
 							}
 						}
 						return false;
@@ -1304,8 +1299,6 @@ class elementos : public ArbolSintactico {
 						//cout << "defaultaux " << tipo_var << " " << tipo_val << endl;
 						if (tipo_val != tipo_var){
 							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance()){
-								//cout << "Los tipos de la asignacion no son iguales." << endl;
-								//error_sintactico = 1;
 								return true;
 							}
 						}
@@ -1315,6 +1308,7 @@ class elementos : public ArbolSintactico {
 			return true;
 		}
 };
+
 
 /* Definicion de la clase para list */
 class lista : public ArbolSintactico {
@@ -1337,7 +1331,7 @@ class lista : public ArbolSintactico {
 				if (t == &tipo_unit::instance()){
 					tipo = &tipo_list::instance();
 				} else {
-					tipo = new tipo_array(*t);
+					tipo = new tipo_list(*t);
 				}
 				return tipo;
 			} else{
@@ -1345,7 +1339,6 @@ class lista : public ArbolSintactico {
 				return tipo;
 			}
 		}
-		virtual void verificar(){}
 };
 
 
@@ -1378,7 +1371,6 @@ class arreglo : public ArbolSintactico {
 				return tipo;
 			}
 		}
-		virtual void verificar(){}
 };
 
 
@@ -1407,5 +1399,4 @@ class tupla : public ArbolSintactico {
 			tipo = new tipo_tuple(*t1,*t2);
 			return tipo;
 		}
-		virtual void verificar(){}
 };
