@@ -894,6 +894,72 @@ class exp_index : public ArbolSintactico {
 		type * get_tipo(){
 			return ind->get_tipo();
 		}
+		type * get_tipo_index(type * t){
+			if (indexaciones != NULL){
+				switch(t->tipo){
+					case ARRAY:
+						indexaciones->get_tipo_index(&((tipo_array *)t)->p1);
+						break;
+					case LIST:
+						indexaciones->get_tipo_index(&((tipo_list *)t)->p1);
+						break;
+					case TUPLE: {
+						if (ind->get_tipo() == &tipo_int::instance()){
+							int indice = ind->get_valor();
+							if (indice == 0){
+								indexaciones->get_tipo_index(&((tipo_tuple *)t)->p1);
+							}
+							else if (indice == 1) {
+								indexaciones->get_tipo_index(&((tipo_tuple *)t)->p2);
+							}
+							else {
+								cout << "Fuera del rango del tipo tupla." << endl;
+								error_sintactico = 1;
+								return &tipo_error::instance();
+							}
+						} else {
+							cout << "Solo se puede indexar en las tuplas con enteros." << endl;
+							error_sintactico = 1;
+							return &tipo_error::instance();
+						}
+						break;
+					}
+					default:
+						return t;
+				}
+			}
+			switch(t->tipo){
+				case ARRAY:
+					return &((tipo_array *)t)->p1;
+					break;
+				case LIST:
+					return &((tipo_list *)t)->p1;
+					break;
+				case TUPLE: {
+					if (ind->get_tipo() == &tipo_int::instance()){
+						int indice = ind->get_valor();
+						if (indice == 0){
+							return &((tipo_tuple *)t)->p1;
+						}
+						else if (indice == 1) {
+							return &((tipo_tuple *)t)->p2;
+						}
+						else {
+							cout << "Fuera del rango del tipo tupla." << endl;
+							error_sintactico = 1;
+							return &tipo_error::instance();
+						}
+					} else {
+						cout << "Solo se puede indexar en las tuplas con enteros." << endl;
+						error_sintactico = 1;
+						return &tipo_error::instance();
+					}
+					break;
+				}
+				default:
+					return t;
+			}
+		}
 		int get_valor(){
 			return ind -> get_valor();
 		}
@@ -945,19 +1011,19 @@ class ids : public ArbolSintactico {
 					// Hay que sacar el tipo interno
 					switch(tipo->tipo){
 						case ARRAY:
-							tipo = &((tipo_array *)tipo)->p1;
+							tipo = indx->get_tipo_index(&((tipo_array *)tipo)->p1);
 							break;
 						case LIST:
-							tipo = &((tipo_list *)tipo)->p1;
+							tipo = indx->get_tipo_index(&((tipo_list *)tipo)->p1);
 							break;
 						case TUPLE: {
 							if (indx->get_tipo() == &tipo_int::instance()){
 								int indice = indx->get_valor();
 								if (indice == 0){
-									tipo = &((tipo_tuple *)tipo)->p1;
+									tipo = indx->get_tipo_index(&((tipo_tuple *)tipo)->p1);
 								}
 								else if (indice == 1) {
-									tipo = &((tipo_tuple *)tipo)->p2;
+									tipo = indx->get_tipo_index(&((tipo_tuple *)tipo)->p2);
 								}
 								else {
 									cout << "Fuera del rango del tipo tupla." << endl;
