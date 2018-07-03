@@ -532,8 +532,14 @@ class asignacion : public ArbolSintactico {
 						cout << "Los tipos de la asignacion no son iguales." << endl;
 						error_sintactico = 1;
 					} else {
-						if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1 || &((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
-							if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
+						if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1) {
+							if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1)){
+								cout << "Los tipos de la asignacion no son iguales." << endl;
+								error_sintactico = 1;
+							}
+						}
+						if (&((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
+							if (verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
 								cout << "Los tipos de la asignacion no son iguales." << endl;
 								error_sintactico = 1;
 							}
@@ -589,8 +595,13 @@ class asignacion : public ArbolSintactico {
 						if (tipo_val->tipo != TUPLE){
 							return true;
 						} else {
-							if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1 || &((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
-								if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
+							if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1)){
+									return true;
+								}
+							}
+							if (&((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
+								if (verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
 									return true;
 								}
 							}
@@ -925,6 +936,7 @@ class exp_index : public ArbolSintactico {
 						return t;
 				}
 			}
+			/*
 			switch(t->tipo){
 				case ARRAY:
 					return &((tipo_array *)t)->p1;
@@ -952,7 +964,8 @@ class exp_index : public ArbolSintactico {
 				}
 				default:
 					return t;
-			}
+			}*/
+			return t;
 		}
 		int get_valor(){
 			return ind -> get_valor();
