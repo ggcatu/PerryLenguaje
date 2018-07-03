@@ -2,10 +2,8 @@
 
 main{
 	create{
-		array array int [2][2] l;
+		array tuple (int, array int [2]) [2] l;
 	} execute{
-		l[1][1] = [1];
-		l = 1;
-		l[1] = {1};
+		l[1][0] = 1;
  	};
 }
