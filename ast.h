@@ -898,19 +898,17 @@ class exp_index : public ArbolSintactico {
 			if (indexaciones != NULL){
 				switch(t->tipo){
 					case ARRAY:
-						indexaciones->get_tipo_index(&((tipo_array *)t)->p1);
-						break;
+						return indexaciones->get_tipo_index(&((tipo_array *)t)->p1);
 					case LIST:
-						indexaciones->get_tipo_index(&((tipo_list *)t)->p1);
-						break;
+						return indexaciones->get_tipo_index(&((tipo_list *)t)->p1);
 					case TUPLE: {
 						if (ind->get_tipo() == &tipo_int::instance()){
 							int indice = ind->get_valor();
 							if (indice == 0){
-								indexaciones->get_tipo_index(&((tipo_tuple *)t)->p1);
+								return indexaciones->get_tipo_index(&((tipo_tuple *)t)->p1);
 							}
 							else if (indice == 1) {
-								indexaciones->get_tipo_index(&((tipo_tuple *)t)->p2);
+								return indexaciones->get_tipo_index(&((tipo_tuple *)t)->p2);
 							}
 							else {
 								cout << "Fuera del rango del tipo tupla." << endl;
@@ -922,7 +920,6 @@ class exp_index : public ArbolSintactico {
 							error_sintactico = 1;
 							return &tipo_error::instance();
 						}
-						break;
 					}
 					default:
 						return t;
@@ -931,10 +928,8 @@ class exp_index : public ArbolSintactico {
 			switch(t->tipo){
 				case ARRAY:
 					return &((tipo_array *)t)->p1;
-					break;
 				case LIST:
 					return &((tipo_list *)t)->p1;
-					break;
 				case TUPLE: {
 					if (ind->get_tipo() == &tipo_int::instance()){
 						int indice = ind->get_valor();
@@ -954,7 +949,6 @@ class exp_index : public ArbolSintactico {
 						error_sintactico = 1;
 						return &tipo_error::instance();
 					}
-					break;
 				}
 				default:
 					return t;

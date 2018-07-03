@@ -3,7 +3,10 @@
 main{
 	create{
 		array tuple (int, array int [2]) [2] l;
+		array array int [2][2] a;
 	} execute{
-		l[1][0] = 1;
+		//l[0][1] = [1];
+		a[1][1] = 1;
+		break;
  	};
 }
