@@ -670,7 +670,7 @@ class exp_aritmetica : public ArbolSintactico {
 							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_izq->tipo],EXPARITMETICA));
 							error_sintactico = 1;
 						}
-						if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
+						if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance() && tipo != &tipo_error::instance()){
 							tipo = &tipo_error::instance();
 							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_der->tipo],EXPARITMETICA));
 							error_sintactico = 1;
@@ -680,12 +680,16 @@ class exp_aritmetica : public ArbolSintactico {
 						if (izq == NULL){
 							if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
 								tipo = &tipo_error::instance();
-								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_izq->tipo],EXPARITMETICA));
+								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_der->tipo],EXPARITMETICA));
 								error_sintactico = 1;
 							}
 						} else{
-							if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance() ||
-								tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
+							if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance()){
+								tipo = &tipo_error::instance();
+								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_izq->tipo],EXPARITMETICA));
+								error_sintactico = 1;
+							}
+							if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance() && tipo != &tipo_error::instance()){
 								tipo = &tipo_error::instance();
 								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_der->tipo],EXPARITMETICA));
 								error_sintactico = 1;
@@ -695,34 +699,35 @@ class exp_aritmetica : public ArbolSintactico {
 					case MOD:
 						if (tipo_izq != &tipo_int::instance()){
 							tipo = &tipo_error::instance();
-							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_izq->tipo],EXPARITMETICA));
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),"En la operación \"mod\" se espera el tipo INT y se tiene el tipo "+tipo2word[tipo_der->tipo],VERIFICACION));
 							error_sintactico = 1;
 						}
-						if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_int::instance()){
+						if (tipo_der != &tipo_int::instance() && tipo != &tipo_error::instance()){
 							tipo = &tipo_error::instance();
-							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_der->tipo],EXPARITMETICA));
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),"En la operación \"mod\" se espera el tipo INT y se tiene el tipo "+tipo2word[tipo_der->tipo],VERIFICACION));
 							error_sintactico = 1;
 						}
 						break;
 					case POW:
-						if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance() ||
-							tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
+						if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance()){
 							tipo = &tipo_error::instance();
 							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_izq->tipo],EXPARITMETICA));
 							error_sintactico = 1;
 						}
-						if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
+						if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance() && tipo != &tipo_error::instance()){
 							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_der->tipo],EXPARITMETICA));
 							tipo = &tipo_error::instance();
 							error_sintactico = 1;
 						}
 						break;
 				}
-				if (tipo_der == &tipo_int::instance() && (tipo_izq == &tipo_int::instance() || izq == NULL)) {
-					tipo = &tipo_int::instance();
-				}
-				else {
-					tipo = &tipo_float::instance();
+				if (tipo != &tipo_error::instance()){
+					if (tipo_der == &tipo_int::instance() && (tipo_izq == &tipo_int::instance() || izq == NULL)) {
+						tipo = &tipo_int::instance();
+					}
+					else {
+						tipo = &tipo_float::instance();
+					}
 				}
 			} else {
 				tipo = &tipo_error::instance();
@@ -799,7 +804,7 @@ class exp_booleana : public ArbolSintactico {
 							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),tipo2word[tipo_izq->tipo],EXPBOOLEANA));
 							error_sintactico = 1;
 						}
-						if (tipo_der != &tipo_bool::instance()){
+						if (tipo_der != &tipo_bool::instance() && tipo != &tipo_error::instance()){
 							tipo = &tipo_error::instance();
 							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),tipo2word[tipo_der->tipo],EXPBOOLEANA));
 							error_sintactico = 1;
@@ -809,7 +814,7 @@ class exp_booleana : public ArbolSintactico {
 					case DISTINTO:
 						if (verificar_aux(tipo_izq,tipo_der)){
 							tipo = &tipo_error::instance();
-							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Los tipos de en los operadores == y != deben ser iguales. "+tipo2word[tipo_izq->tipo]+" != "+tipo2word[tipo_der->tipo],VERIFICACION));
+							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Los tipos en los operadores \"==\"  y \"!=\" deben ser iguales. "+tipo2word[tipo_izq->tipo]+" != "+tipo2word[tipo_der->tipo],VERIFICACION));
 							error_sintactico = 1;
 						}
 						break;
@@ -818,18 +823,20 @@ class exp_booleana : public ArbolSintactico {
 					case MAYORIGUAL:
 					case MENOR:
 						if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance()){
-							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),tipo2word[tipo_der->tipo],EXPARITMETICA));
+							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),tipo2word[tipo_izq->tipo],EXPARITMETICA));
 							tipo = &tipo_error::instance();
 							error_sintactico = 1;
 						}
-						if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
+						if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance() && tipo != &tipo_error::instance()){
 							tipo = &tipo_error::instance();
 							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),tipo2word[tipo_der->tipo],EXPARITMETICA));
 							error_sintactico = 1;
 						}
 						break;
 				}
-				tipo = &tipo_bool::instance();
+				if (tipo != &tipo_error::instance()){
+					tipo = &tipo_bool::instance();
+				}
 			} else {
 				tipo = &tipo_error::instance();
 			}
