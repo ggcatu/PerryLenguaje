@@ -31,7 +31,7 @@ extern char error_strp[1000];
 extern int yyparse();
 extern bool error_sintactico;
 extern vector<Token *> errors;
-extern string tipo2word[300];
+extern string tipo2word[100];
 
 /* Definicion de la clase raiz */
 class raiz : public ArbolSintactico {

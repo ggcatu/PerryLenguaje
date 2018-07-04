@@ -29,7 +29,7 @@ Por otro lado facilita bastante modificar el to_string de los tokens.
 */
 
 string nToWord[300];
-string tipo2word[300];
+string tipo2word[100];
 
 void init_strings(){
 	nToWord[LLAVEABRE] = "LLAVEABRE"; 
@@ -214,7 +214,6 @@ string TokenError::to_string() {
 			return "Error: Los tipos de la asignación no son iguales. " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna);
 		case ELEMENTOS:
 			return "Error: Los arreglos y listas son homogéneos. " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna);
-
 	}
 }
 
