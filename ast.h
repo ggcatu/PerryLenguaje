@@ -576,7 +576,7 @@ class asignacion : public ArbolSintactico {
 						break;
 					default:
 						if (tipo_val != tipo_var){
-							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance()){
+							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance())){
 								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
 								error_sintactico = 1;
 								tipo = &tipo_error::instance();
@@ -1307,7 +1307,7 @@ class elementos : public ArbolSintactico {
 						break;
 					default:
 						if (tipo_val != tipo_var){
-							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance()){
+							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val){
 								errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ELEMENTOS));
 								error_sintactico = 1;
 								tipo = &tipo_error::instance();
