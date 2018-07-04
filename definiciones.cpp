@@ -9,6 +9,7 @@ Así mismo contiene la definicion de las clases que se utilizaron para guardar l
 
 #include <string>
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h> 
@@ -28,6 +29,7 @@ Por otro lado facilita bastante modificar el to_string de los tokens.
 */
 
 string nToWord[300];
+string tipo2word[300];
 
 void init_strings(){
 	nToWord[LLAVEABRE] = "LLAVEABRE"; 
@@ -97,6 +99,20 @@ void init_strings(){
 	nToWord[FREE] = "FREE"; 
 	nToWord[REFERENCE] = "REFERENCE"; 
 	nToWord[OPTR] = "OPTR"; 
+
+	tipo2word[STRUCT] = "STRUCT"; 
+	tipo2word[UNION] = "UNION"; 
+	tipo2word[ARRAY] = "ARRAY"; 
+	tipo2word[LIST] = "LIST"; 
+	tipo2word[TUPLE] = "TUPLE"; 
+	tipo2word[LSTRING] = "STRING"; 
+	tipo2word[LFLOAT] = "FLOAT"; 
+	tipo2word[LCHAR] = "CHAR"; 
+	tipo2word[BOOL] = "BOOL"; 
+	tipo2word[LINT] = "INT"; 
+	tipo2word[POINTER] = "POINTER"; 
+	tipo2word[UNIT] = "UNIT";
+	tipo2word[TYPE] = "TYPE";
 }
 
 // Magia negra sacada de internet, permite pasar de int a string
@@ -188,6 +204,17 @@ string TokenError::to_string() {
 			return "Error: Redefinicion de variable \"" + valor + "\" en la fila " + IntToString(fila) + ", columna " + IntToString(columna); 
 		case PARSER:
 			return "Error: Parseo \"" + valor + "\" en la fila " + IntToString(fila) + ", columna " + IntToString(columna); 
+		case VERIFICACION:
+			return "Error: " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna);
+		case EXPARITMETICA:
+			return "Error: En las expresiones aritméticas se espera el tipo INT o el tipo FLOAT y se tiene el tipo " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna);
+		case EXPBOOLEANA:
+			return "Error: En las expresiones booleanas se espera el tipo BOOL y se tiene el tipo " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna);
+		case ASIGNACION:
+			return "Error: Los tipos de la asignación no son iguales. " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna);
+		case ELEMENTOS:
+			return "Error: Los arreglos y listas son homogéneos. " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna);
+
 	}
 }
 

@@ -11,6 +11,7 @@ de las clases y funciones implementadas en definiciones.cpp
 
 #include <string>
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h> 
@@ -19,9 +20,10 @@ de las clases y funciones implementadas en definiciones.cpp
 
 using namespace std;
 
-enum ErrorEnum {LEXER, REDEFINICION, NODEFINICION, PARSER};
+enum ErrorEnum {LEXER, REDEFINICION, NODEFINICION, PARSER, VERIFICACION, EXPARITMETICA, EXPBOOLEANA, ASIGNACION, ELEMENTOS};
 
 extern string nToWord[];
+extern string tipos2word[];
 string IntToString ( int number );
 string FloatToString (float number);
 

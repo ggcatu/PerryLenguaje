@@ -3,12 +3,13 @@
 
 #include <string>
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h> 
 #include <cstring>
-#include "tokentype.h"
 #include <string>
+#include "tokentype.h"
 
 using namespace std;
 
@@ -27,7 +28,7 @@ template <class T> class CRTP_type : public type {
 		static T&  instance(){
 			static T instance = *(new T()); 
 			return instance;
-		}	
+		};
 };
 
 class tipo_bool: public CRTP_type<tipo_bool>{
@@ -108,4 +109,5 @@ class tipo_error: public CRTP_type<tipo_error>{
 	tipo_error() : CRTP_type(TYPE_ERROR) {}; 
 
 };
+
 #endif

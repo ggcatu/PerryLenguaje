@@ -8,12 +8,11 @@ en el proyecto
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
-#include <map>
 #include <ctype.h>
 #include <cstdlib>
 #include <string>
-#include <sstream>
 #include <vector>
 #include <algorithm>
 #include <iterator>
@@ -27,12 +26,12 @@ using namespace std;
 extern sym_table table;
 extern int yylineno;
 extern int yycolumn;
+extern char * yytext;
 extern char error_strp[1000];
 extern int yyparse();
 extern bool error_sintactico;
-
-//Map que contiene los subtipos
-//map<type*,type*> subtype;
+extern vector<Token *> errors;
+extern string tipo2word[300];
 
 /* Definicion de la clase raiz */
 class raiz : public ArbolSintactico {
@@ -107,7 +106,7 @@ class include : public ArbolSintactico {
 		virtual void verificar(){
 			type * tipo_archivo = archivo->get_tipo();
 			if (tipo_archivo != &tipo_string::instance()){
-				cout << "El nombre del archivo importado debe ser de tipo string." << endl;
+				errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Los nombres de los archivos importados son cadenas de caracteres. STRING != "+tipo2word[tipo_archivo->tipo],VERIFICACION));
 				error_sintactico = 1;
 			} 
 		}
@@ -211,7 +210,8 @@ class tipedec : public ArbolSintactico {
 					if (elemento != NULL){
 						instancia->set_child_scope(elemento->child_scope);
 					} else {
-						cout << "Error: " << ((identificador *)subtipo1)->valor << " no es un tipo" << endl;
+						errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),((identificador *)subtipo1)->valor+" no es un tipo",VERIFICACION));
+						error_sintactico = 1;
 						return false;
 					}
 				}
@@ -389,18 +389,18 @@ class it_determinada : public ArbolSintactico {
 			type * tipo_inicio = inicio->get_tipo();
 			type * tipo_fin = fin->get_tipo();
 			type * tipo_paso = paso->get_tipo();
-			if (tipo_inicio != &tipo_int::instance() && tipo_inicio != &tipo_float::instance()){
-				cout << "El inicio del rango del for debe ser de tipo entero o flotante." << endl;
+			if (tipo_inicio != &tipo_int::instance() && tipo_inicio != &tipo_float::instance() && tipo_inicio != &tipo_error::instance()){
+				errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"El inicio del rango del for debe ser de tipo entero o flotante. Se esperaba el tipo INT o el tipo float FLOAT y se tiene el tipo != "+tipo2word[tipo_inicio->tipo],VERIFICACION));
 				tipo = &tipo_error::instance();
 				error_sintactico = 1;
 			}
-			if (tipo_fin != &tipo_int::instance() && tipo_fin != &tipo_float::instance()){
-				cout << "El fin del rango del for debe ser de tipo entero o flotante." << endl;
+			if (tipo_fin != &tipo_int::instance() && tipo_fin != &tipo_float::instance() && tipo_fin != &tipo_error::instance()){
+				errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"El fin del rango del for debe ser de tipo entero o flotante. Se esperaba el tipo INT o el tipo float FLOAT y se tiene el tipo "+tipo2word[tipo_fin->tipo],VERIFICACION));
 				tipo = &tipo_error::instance();
 				error_sintactico = 1;
 			}
-			if (tipo_paso != &tipo_int::instance() && tipo_paso != &tipo_float::instance()){
-				cout << "El paso del for debe ser de tipo entero o flotante." << endl;
+			if (tipo_paso != &tipo_int::instance() && tipo_paso != &tipo_float::instance() && tipo_paso != &tipo_error::instance()){
+				errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"El paso del for debe ser de tipo entero o flotante. Se esperaba el tipo INT o el tipo float FLOAT y se tiene el tipo "+tipo2word[tipo_paso->tipo],VERIFICACION));
 				tipo = &tipo_error::instance();
 				error_sintactico = 1;
 			}
@@ -445,12 +445,12 @@ class inst_guardia : public ArbolSintactico {
 			}
 		}
 		virtual void verificar(){
-			if (condicion->get_tipo() != &tipo_bool::instance()){
+			if (condicion->get_tipo() != &tipo_bool::instance() && condicion->get_tipo() != &tipo_error::instance()){
 				if (instruccion == IF){
-					cout << "La condición del if debe ser de tipo booleano." << endl;	
+					errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"La condición del if debe ser de tipo booleano. Se esperaba el tipo BOOL y se tiene el tipo "+tipo2word[condicion->get_tipo()->tipo],VERIFICACION));
 				} 
 				else if (instruccion == WHILE){
-					cout << "La condición del while debe ser de tipo booleano." << endl;
+					errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"La condición del while debe ser de tipo booleano. Se esperaba el tipo BOOL y se tiene el tipo "+tipo2word[condicion->get_tipo()->tipo],VERIFICACION));
 				}
 				error_sintactico = 1;
 				tipo = &tipo_error::instance();
@@ -521,77 +521,74 @@ class asignacion : public ArbolSintactico {
 		virtual void verificar(){
 			type * tipo_var = variable->get_tipo();
 			type * tipo_val = valor->get_tipo();
-			//cout << tipo_var << " " << tipo_val << endl;
-			switch(tipo_var->tipo) {
-				case STRUCT:
-					//cout << variable->get_nombre() << " " << valor->get_nombre();
-					break;
-				case TUPLE:
-					//cout << "3 " <<  &((tipo_tuple *)tipo_var)->p1 << "  " << &((tipo_tuple *)tipo_val)->p1 << " " << &((tipo_tuple *)tipo_var)->p2 << " " << &((tipo_tuple *)tipo_val)->p2 << endl;
-					if (tipo_val->tipo != TUPLE){
-						cout << "Los tipos de la asignacion no son iguales." << endl;
-						error_sintactico = 1;
-					} else {
-						if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1) {
-							if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1)){
-								cout << "Los tipos de la asignacion no son iguales." << endl;
-								error_sintactico = 1;
-							}
-						}
-						if (&((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
-							if (verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
-								cout << "Los tipos de la asignacion no son iguales." << endl;
-								error_sintactico = 1;
-							}
-						}
-					}
-					break;
-				case ARRAY:
-					//cout << "1 " << &((tipo_array *)tipo_var)->p1 << " " << tipo_var << " " << &((tipo_array *)tipo_val)->p1 << " " << tipo_val << endl;					
-					//cout << "1d " << (&((tipo_array *)tipo_var)->p1 != tipo_val) << " " << (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) << " " << verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1) << endl;
-					//cout << "1t " << tipo_var->tipo << " " << tipo_val->tipo << endl;
-					if (tipo_val->tipo != ARRAY){
-						cout << "Los tipos de la asignacion no son iguales." << endl;
-						error_sintactico = 1;
-					} else {
-						if (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
-							if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
-								cout << "Los tipos de la asignacion no son iguales." << endl;
-								error_sintactico = 1;
-							}
-						}
-					}
-					break;
-				case LIST:
-					if (tipo_val->tipo != LIST){
-						cout << "Los tipos de la asignacion no son iguales." << endl;
-						error_sintactico = 1;
-					} else {
-						if (&((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) {
-							if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
-								cout << "Los tipos de la asignacion no son iguales." << endl;
-								error_sintactico = 1;
-							}
-						}
-					}
-					break;
-				default:
-					//cout << "default " << tipo_var << " " << tipo_val << endl;
-					if (tipo_val != tipo_var){
-						if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance()){
-							cout << "Los tipos de la asignacion no son iguales." << endl;
+			if (tipo_var != &tipo_error::instance() && tipo_val != &tipo_error::instance()){
+				switch(tipo_var->tipo) {
+					case TUPLE:
+						if (tipo_val->tipo != TUPLE){
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
 							error_sintactico = 1;
 							tipo = &tipo_error::instance();
+						} else {
+							if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1)){
+									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[(&((tipo_tuple *)tipo_var)->p1)->tipo]+" != "+tipo2word[(&((tipo_tuple *)tipo_val)->p1)->tipo],ASIGNACION));
+									error_sintactico = 1;
+									tipo = &tipo_error::instance();
+								}
+							}
+							if (&((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
+								if (verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
+									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[(&((tipo_tuple *)tipo_var)->p2)->tipo]+" != "+tipo2word[(&((tipo_tuple *)tipo_val)->p2)->tipo],ASIGNACION));
+									error_sintactico = 1;
+									tipo = &tipo_error::instance();
+								}
+							}
+						}
+						break;
+					case ARRAY:
+						if (tipo_val->tipo != ARRAY){
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
+							error_sintactico = 1;
+						} else {
+							if (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
+									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[(&((tipo_array *)tipo_var)->p1)->tipo]+" != "+tipo2word[(&((tipo_array *)tipo_val)->p1)->tipo],ASIGNACION));
+									error_sintactico = 1;
+									tipo = &tipo_error::instance();
+								}
+							}
+						}
+						break;
+					case LIST:
+						if (tipo_val->tipo != LIST){
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
+							error_sintactico = 1;
+							tipo = &tipo_error::instance();
+						} else {
+							if (&((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
+									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[(&((tipo_list *)tipo_var)->p1)->tipo]+" != "+tipo2word[(&((tipo_list *)tipo_val)->p1)->tipo],ASIGNACION));
+									error_sintactico = 1;
+									tipo = &tipo_error::instance();
+								}
+							}
+						}
+						break;
+					default:
+						if (tipo_val != tipo_var){
+							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance()){
+								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
+								error_sintactico = 1;
+								tipo = &tipo_error::instance();
+							}
 						}
 					}
-				}
+			}
 		}
 		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
-			//cout << "vaux" << tipo_var << tipo_val << endl;
 			if (tipo_val != 0){
 				switch(tipo_var->tipo){
 					case TUPLE:
-						//cout << "3aux " <<  &((tipo_tuple *)tipo_var)->p1 << "  " << &((tipo_tuple *)tipo_val)->p1 << " " << &((tipo_tuple *)tipo_var)->p2 << " " << &((tipo_tuple *)tipo_val)->p2 << endl;
 						if (tipo_val->tipo != TUPLE){
 							return true;
 						} else {
@@ -609,8 +606,6 @@ class asignacion : public ArbolSintactico {
 						return false;
 						break;
 					case ARRAY:
-						//cout << "1aux " << &((tipo_array *)tipo_var)->p1 << " " << &((tipo_array *)tipo_val)->p1 << endl;				
-						//cout << "1daux " << (&((tipo_array *)tipo_var)->p1 != tipo_val) << " " << (&((tipo_array *)tipo_var)->p1 != tipo_val) << " " << verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1) << endl;
 						if (tipo_val->tipo != ARRAY){
 							return true;
 						} else {
@@ -623,7 +618,6 @@ class asignacion : public ArbolSintactico {
 						return false;
 						break;
 					case LIST:
-						//cout << "2aux " << &((tipo_list *)tipo_var)->p1 << " " << tipo_var << endl;					
 						if (tipo_val->tipo != LIST){
 							return true;
 						} else {
@@ -636,7 +630,6 @@ class asignacion : public ArbolSintactico {
 						return false;
 						break;
 					default:
-						//cout << "defaultaux " << tipo_var << " " << tipo_val << endl;
 						if (tipo_val != tipo_var){
 							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance()){
 								return true;
@@ -666,67 +659,75 @@ class exp_aritmetica : public ArbolSintactico {
 		};
 		virtual void verificar(){
 			type * tipo_der = der->get_tipo();
-			type * tipo_izq = (izq!=NULL) ? izq->get_tipo(): &tipo_unit::instance();
-			switch(instruccion){
-				case SUMA:
-				case MULT:
-				case DIV:
-					if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance() ||
-						tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
-						tipo = &tipo_error::instance();
-						cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
-						error_sintactico = 1;
-					}
-					break;
-				case RESTA:
-					if (izq == NULL){
+			type * tipo_izq = (izq!=NULL) ? izq->get_tipo() : &tipo_unit::instance();
+			if (tipo_der != &tipo_error::instance() && tipo_izq != &tipo_error::instance()){
+				switch(instruccion){
+					case SUMA:
+					case MULT:
+					case DIV:
+						if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance()){
+							tipo = &tipo_error::instance();
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_izq->tipo],EXPARITMETICA));
+							error_sintactico = 1;
+						}
 						if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
 							tipo = &tipo_error::instance();
-							cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
-						error_sintactico = 1;
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_der->tipo],EXPARITMETICA));
+							error_sintactico = 1;
 						}
-					} else{
+						break;
+					case RESTA:
+						if (izq == NULL){
+							if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
+								tipo = &tipo_error::instance();
+								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_izq->tipo],EXPARITMETICA));
+								error_sintactico = 1;
+							}
+						} else{
+							if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance() ||
+								tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
+								tipo = &tipo_error::instance();
+								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_der->tipo],EXPARITMETICA));
+								error_sintactico = 1;
+							}
+						}
+						break;
+					case MOD:
+						if (tipo_izq != &tipo_int::instance()){
+							tipo = &tipo_error::instance();
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_izq->tipo],EXPARITMETICA));
+							error_sintactico = 1;
+						}
+						if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_int::instance()){
+							tipo = &tipo_error::instance();
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_der->tipo],EXPARITMETICA));
+							error_sintactico = 1;
+						}
+						break;
+					case POW:
 						if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance() ||
 							tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
 							tipo = &tipo_error::instance();
-							cout << "Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
-						error_sintactico = 1;
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_izq->tipo],EXPARITMETICA));
+							error_sintactico = 1;
 						}
-					}
-					break;
-				case MOD:
-					if (tipo_izq != &tipo_int::instance()){
-						tipo = &tipo_error::instance();
-						cout << "MOD Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
-						error_sintactico = 1;
-					}
-					if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_int::instance()){
-						tipo = &tipo_error::instance();
-						cout << "MOD Las expresiones aritmeticas deben tener tipo entero o flotante." << endl;
-						error_sintactico = 1;
-					}
-					break;
-				case POW:
-					if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance() ||
-						tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
-						tipo = &tipo_error::instance();
-						cout << "POW Las expresiones aritmeticas deben tener tipo entero." << endl;
-						error_sintactico = 1;
-					}
-					if (tipo_der != &tipo_int::instance()){
-						cout << tipo_der << " " << &tipo_int::instance() << " " << &tipo_float::instance() << endl;
-						cout << "El exponente debe ser de tipo entero." << endl;
-						tipo = &tipo_error::instance();
-						error_sintactico = 1;
-					}
-					break;
+						if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_der->tipo],EXPARITMETICA));
+							tipo = &tipo_error::instance();
+							error_sintactico = 1;
+						}
+						break;
+				}
+				if (tipo_der == &tipo_int::instance() && (tipo_izq == &tipo_int::instance() || izq == NULL)) {
+					tipo = &tipo_int::instance();
+				}
+				else {
+					tipo = &tipo_float::instance();
+				}
+			} else {
+				tipo = &tipo_error::instance();
 			}
-			if (tipo_der == &tipo_int::instance() && (tipo_izq == &tipo_int::instance() || izq == NULL)) {
-				tipo = &tipo_int::instance();
-			}
-			else {
-				tipo = &tipo_float::instance();
-			}
+
 		}
 		virtual void imprimir(int tab){
 			
@@ -782,47 +783,56 @@ class exp_booleana : public ArbolSintactico {
 		void verificar(){
 			type * tipo_der = der->get_tipo();
 			type * tipo_izq = (izq!=NULL) ? izq->get_tipo(): &tipo_unit::instance();
-			switch(instruccion){
-				case NEGACION:
-					if (!(tipo_der == &tipo_bool::instance())){
-						tipo = &tipo_error::instance();
-						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
-						error_sintactico = 1;
-					}
-					break;
-				case DISYUNCION:
-				case CONJUNCION:
-					if (tipo_izq != &tipo_bool::instance() || tipo_der != &tipo_bool::instance()){
-						tipo = &tipo_error::instance();
-						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
-						error_sintactico = 1;
-					}
-					break;
-				case IGUALA:
-				case DISTINTO:
-					if (tipo_izq != tipo_der){
-						tipo = &tipo_error::instance();
-						cout << "Las expresiones boolenas deben ser de tipo booleno." << endl;
-						error_sintactico = 1;
-					}
-					break;
-				case MAYOR:
-				case MENORIGUAL:
-				case MAYORIGUAL:
-				case MENOR:
-					if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance()){
-						cout << "Las expresiones aritmeticas debe ser de tipo entero o flotante." << endl;
-						tipo = &tipo_error::instance();
-						error_sintactico = 1;
-					}
-					if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
-						tipo = &tipo_error::instance();
-						cout << "Las expresiones aritmeticas debe ser de tipo entero o flotante." << endl;
-						error_sintactico = 1;
-					}
-					break;
+			if (tipo_der != &tipo_error::instance() && tipo_izq != &tipo_error::instance()){
+				switch(instruccion){
+					case NEGACION:
+						if (tipo_der != &tipo_bool::instance()){
+							tipo = &tipo_error::instance();
+							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),tipo2word[tipo_der->tipo],EXPBOOLEANA));
+							error_sintactico = 1;
+						}
+						break;
+					case DISYUNCION:
+					case CONJUNCION:
+						if (tipo_izq != &tipo_bool::instance()){
+							tipo = &tipo_error::instance();
+							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),tipo2word[tipo_izq->tipo],EXPBOOLEANA));
+							error_sintactico = 1;
+						}
+						if (tipo_der != &tipo_bool::instance()){
+							tipo = &tipo_error::instance();
+							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),tipo2word[tipo_der->tipo],EXPBOOLEANA));
+							error_sintactico = 1;
+						}
+						break;
+					case IGUALA:
+					case DISTINTO:
+						if (tipo_izq != tipo_der){
+							tipo = &tipo_error::instance();
+							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Los tipos de en los operadores == y != deben ser iguales. "+tipo2word[tipo_izq->tipo]+" != "+tipo2word[tipo_der->tipo],VERIFICACION));
+							error_sintactico = 1;
+						}
+						break;
+					case MAYOR:
+					case MENORIGUAL:
+					case MAYORIGUAL:
+					case MENOR:
+						if (tipo_izq != &tipo_int::instance() && tipo_izq != &tipo_float::instance()){
+							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),tipo2word[tipo_der->tipo],EXPARITMETICA));
+							tipo = &tipo_error::instance();
+							error_sintactico = 1;
+						}
+						if (tipo_der != &tipo_int::instance() && tipo_der != &tipo_float::instance()){
+							tipo = &tipo_error::instance();
+							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),tipo2word[tipo_der->tipo],EXPARITMETICA));
+							error_sintactico = 1;
+						}
+						break;
+				}
+				tipo = &tipo_bool::instance();
+			} else {
+				tipo = &tipo_error::instance();
 			}
-			tipo = &tipo_bool::instance();
 		}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
@@ -922,12 +932,12 @@ class exp_index : public ArbolSintactico {
 								return indexaciones->get_tipo_index(&((tipo_tuple *)t)->p2);
 							}
 							else {
-								cout << "Fuera del rango del tipo tupla." << endl;
+								errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Fuera del rango de las tuplas",VERIFICACION));
 								error_sintactico = 1;
 								return &tipo_error::instance();
 							}
 						} else {
-							cout << "Solo se puede indexar en las tuplas con enteros." << endl;
+							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Sólo se puede indexar con enteros. Se esperaba el tipo INT y se tiene el tipo "+tipo2word[ind->get_tipo()->tipo],VERIFICACION));
 							error_sintactico = 1;
 							return &tipo_error::instance();
 						}
@@ -936,35 +946,6 @@ class exp_index : public ArbolSintactico {
 						return t;
 				}
 			}
-			/*
-			switch(t->tipo){
-				case ARRAY:
-					return &((tipo_array *)t)->p1;
-				case LIST:
-					return &((tipo_list *)t)->p1;
-				case TUPLE: {
-					if (ind->get_tipo() == &tipo_int::instance()){
-						int indice = ind->get_valor();
-						if (indice == 0){
-							return &((tipo_tuple *)t)->p1;
-						}
-						else if (indice == 1) {
-							return &((tipo_tuple *)t)->p2;
-						}
-						else {
-							cout << "Fuera del rango del tipo tupla." << endl;
-							error_sintactico = 1;
-							return &tipo_error::instance();
-						}
-					} else {
-						cout << "Solo se puede indexar en las tuplas con enteros." << endl;
-						error_sintactico = 1;
-						return &tipo_error::instance();
-					}
-				}
-				default:
-					return t;
-			}*/
 			return t;
 		}
 		int get_valor(){
@@ -972,8 +953,9 @@ class exp_index : public ArbolSintactico {
 		}
 		virtual void verificar(){
 			if (ind->get_tipo() != &tipo_int::instance()) {
-				cout << "La indexacion es de tipo entero." << endl;
+				errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Sólo se puede indexar con enteros. Se esperaba el tipo INT y se tiene el tipo "+tipo2word[ind->get_tipo()->tipo],VERIFICACION));
 				error_sintactico = 1;
+				tipo = &tipo_error::instance();
 			}
 		}
 };
@@ -1033,12 +1015,12 @@ class ids : public ArbolSintactico {
 									tipo = indx->get_tipo_index(&((tipo_tuple *)tipo)->p2);
 								}
 								else {
-									cout << "Fuera del rango del tipo tupla." << endl;
+									errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Fuera del rango de las tuplas",VERIFICACION));
 									tipo = &tipo_error::instance();
 									error_sintactico = 1;
 								}
 							} else {
-								cout << "Solo se puede indexar en las tuplas con enteros." << endl;
+								errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Sólo se puede indexar con enteros. Se esperaba el tipo INT y se tiene el tipo "+tipo2word[indx->get_tipo()->tipo],VERIFICACION));
 								tipo = &tipo_error::instance();
 								error_sintactico = 1;
 							}
@@ -1074,7 +1056,7 @@ class ids : public ArbolSintactico {
 					  t == &tipo_error::instance() 
 					  )) {
 				error_sintactico = 1;
-				cout << "Este tipo no es indexable" << endl;
+				errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"El tipo "+ tipo2word[t->tipo]+" no es indexable",VERIFICACION));
 				tipo = &tipo_error::instance();
 			}
 		}
@@ -1268,73 +1250,86 @@ class elementos : public ArbolSintactico {
 		virtual void verificar(){
 			type * tipo_var = val->get_tipo();
 			type * tipo_val = elems->get_tipo();
-			//cout << tipo_var << " " << tipo_val << endl;
-			switch(tipo_var->tipo) {
-				case TUPLE:
-					//cout << "3 " <<  &((tipo_tuple *)tipo_var)->p1 << "  " << &((tipo_tuple *)tipo_val)->p1 << " " << &((tipo_tuple *)tipo_var)->p2 << " " << &((tipo_tuple *)tipo_val)->p2 << endl;
-					if (tipo_val->tipo != TUPLE){
-						cout << "Las listas y arreglos son homogeneos." << endl;
-						error_sintactico = 1;
-					} else {
-						if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1 || &((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
-							if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
-								cout << "Las listas y arreglos son homogeneos." << endl;
-								error_sintactico = 1;
-							}
-						}
-					}
-					break;
-				case ARRAY:
-					//cout << "1 " << &((tipo_array *)tipo_var)->p1 << " " << tipo_var << " " << &((tipo_array *)tipo_val)->p1 << " " << tipo_val << endl;					
-					//cout << "1d " << (&((tipo_array *)tipo_var)->p1 != tipo_val) << " " << (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) << " " << verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1) << endl;
-					//cout << "1t " << tipo_var->tipo << " " << tipo_val->tipo << endl;
-					if (tipo_val->tipo != ARRAY){
-						cout << "Las listas y arreglos son homogeneos." << endl;
-						error_sintactico = 1;
-					} else {
-						if (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
-							if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
-								cout << "Las listas y arreglos son homogeneos." << endl;
-								error_sintactico = 1;
-							}
-						}
-					}
-					break;
-				case LIST:
-					if (tipo_val->tipo != LIST){
-						cout << "Las listas y arreglos son homogeneos." << endl;
-						error_sintactico = 1;
-					} else {
-						if (&((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) {
-							if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
-								cout << "Las listas y arreglos son homogeneos." << endl;
-								error_sintactico = 1;
-							}
-						}
-					}
-					break;
-				default:
-					//cout << "default " << tipo_var << " " << tipo_val << endl;
-					if (tipo_val != tipo_var){
-						if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance()){
-							cout << "Los tipos de la asignacion no son iguales." << endl;
+			if (tipo_var != &tipo_error::instance() && tipo_val != &tipo_error::instance()){
+				switch(tipo_var->tipo) {
+					case TUPLE:
+						if (tipo_val->tipo != TUPLE){
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ELEMENTOS));
 							error_sintactico = 1;
 							tipo = &tipo_error::instance();
+						} else {
+							if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1)){
+									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[(&((tipo_tuple *)tipo_var)->p1)->tipo]+" != "+tipo2word[(&((tipo_tuple *)tipo_val)->p1)->tipo],ELEMENTOS));
+									error_sintactico = 1;
+									tipo = &tipo_error::instance();
+								}
+							}
+							if (&((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
+								if (verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
+									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[(&((tipo_tuple *)tipo_var)->p2)->tipo]+" != "+tipo2word[(&((tipo_tuple *)tipo_val)->p2)->tipo],ELEMENTOS));
+									error_sintactico = 1;
+									tipo = &tipo_error::instance();
+								}
+							}
+						}
+						break;
+					case ARRAY:
+						if (tipo_val->tipo != ARRAY){
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ELEMENTOS));
+							error_sintactico = 1;
+							tipo = &tipo_error::instance();
+
+						} else {
+							if (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
+									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[(&((tipo_array *)tipo_var)->p1)->tipo]+" != "+tipo2word[(&((tipo_array *)tipo_val)->p1)->tipo],ELEMENTOS));
+									error_sintactico = 1;
+									tipo = &tipo_error::instance();
+								}
+							}
+						}
+						break;
+					case LIST:
+						if (tipo_val->tipo != LIST){
+							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ELEMENTOS));
+							error_sintactico = 1;
+							tipo = &tipo_error::instance();
+						} else {
+							if (&((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
+									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[(&((tipo_list *)tipo_var)->p1)->tipo]+" != "+tipo2word[(&((tipo_list *)tipo_val)->p1)->tipo],ELEMENTOS));
+									error_sintactico = 1;
+									tipo = &tipo_error::instance();
+								}
+							}
+						}
+						break;
+					default:
+						if (tipo_val != tipo_var){
+							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance()){
+								errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ELEMENTOS));
+								error_sintactico = 1;
+								tipo = &tipo_error::instance();
+							}
 						}
 					}
-				}
+			}
 		}
 		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
-			//cout << "vaux" << tipo_var << tipo_val << endl;
 			if (tipo_val != 0){
 				switch(tipo_var->tipo){
 					case TUPLE:
-						//cout << "3aux " <<  &((tipo_tuple *)tipo_var)->p1 << "  " << &((tipo_tuple *)tipo_val)->p1 << " " << &((tipo_tuple *)tipo_var)->p2 << " " << &((tipo_tuple *)tipo_val)->p2 << endl;
 						if (tipo_val->tipo != TUPLE){
 							return true;
 						} else {
-							if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1 || &((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
-								if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1) || verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
+							if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1)){
+									return true;
+								}
+							}
+							if (&((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
+								if (verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
 									return true;
 								}
 							}
@@ -1342,8 +1337,6 @@ class elementos : public ArbolSintactico {
 						return false;
 						break;
 					case ARRAY:
-						//cout << "1aux " << &((tipo_array *)tipo_var)->p1 << " " << &((tipo_array *)tipo_val)->p1 << endl;				
-						//cout << "1daux " << (&((tipo_array *)tipo_var)->p1 != tipo_val) << " " << (&((tipo_array *)tipo_var)->p1 != tipo_val) << " " << verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1) << endl;
 						if (tipo_val->tipo != ARRAY){
 							return true;
 						} else {
@@ -1356,7 +1349,6 @@ class elementos : public ArbolSintactico {
 						return false;
 						break;
 					case LIST:
-						//cout << "2aux " << &((tipo_list *)tipo_var)->p1 << " " << tipo_var << endl;					
 						if (tipo_val->tipo != LIST){
 							return true;
 						} else {
@@ -1369,7 +1361,6 @@ class elementos : public ArbolSintactico {
 						return false;
 						break;
 					default:
-						//cout << "defaultaux " << tipo_var << " " << tipo_val << endl;
 						if (tipo_val != tipo_var){
 							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance()){
 								return true;

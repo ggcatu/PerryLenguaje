@@ -5,7 +5,7 @@ unit test(int @param, bool param2){
 		int inte;
 	}
 	execute{
-		inte = 1;
+		inte = 2+true;
 		return inte;
 	};
 }

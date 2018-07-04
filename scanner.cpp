@@ -19,7 +19,6 @@ de las clases y funciones implementadas en definiciones.cpp
 
 using namespace std;
 
-
 /*
 Funciones importadas de lex.yy.c, provenientes de FLEX.
 	yylex permite leer el próximo token.
