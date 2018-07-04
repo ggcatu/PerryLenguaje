@@ -807,7 +807,7 @@ class exp_booleana : public ArbolSintactico {
 						break;
 					case IGUALA:
 					case DISTINTO:
-						if (tipo_izq != tipo_der){
+						if (verificar_aux(tipo_izq,tipo_der)){
 							tipo = &tipo_error::instance();
 							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Los tipos de en los operadores == y != deben ser iguales. "+tipo2word[tipo_izq->tipo]+" != "+tipo2word[tipo_der->tipo],VERIFICACION));
 							error_sintactico = 1;
@@ -833,6 +833,61 @@ class exp_booleana : public ArbolSintactico {
 			} else {
 				tipo = &tipo_error::instance();
 			}
+		}
+		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
+			if (tipo_val != 0){
+				switch(tipo_var->tipo){
+					case TUPLE:
+						if (tipo_val->tipo != TUPLE){
+							return true;
+						} else {
+							if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1)){
+									return true;
+								}
+							}
+							if (&((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
+								if (verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
+									return true;
+								}
+							}
+						}
+						return false;
+						break;
+					case ARRAY:
+						if (tipo_val->tipo != ARRAY){
+							return true;
+						} else {
+							if (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
+									return  true;
+								}
+							}
+						}
+						return false;
+						break;
+					case LIST:
+						if (tipo_val->tipo != LIST){
+							return true;
+						} else {
+							if (&((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
+									return true;
+								}
+							}
+						}
+						return false;
+						break;
+					default:
+						if (tipo_val != tipo_var){
+							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && tipo_val != &tipo_unit::instance()){
+								return true;
+							}
+						}
+						return false;
+				}
+			}
+			return true;
 		}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
@@ -1394,7 +1449,11 @@ class lista : public ArbolSintactico {
 				type * t = valor->get_tipo();
 				if (t == &tipo_unit::instance()){
 					tipo = &tipo_list::instance();
-				} else {
+				} 
+				else if (t == &tipo_error::instance()){
+					tipo = &tipo_error::instance();
+				}
+				else {
 					tipo = new tipo_list(*t);
 				}
 				return tipo;
@@ -1426,7 +1485,11 @@ class arreglo : public ArbolSintactico {
 				type * t = valor->get_tipo();
 				if (t == &tipo_unit::instance()){
 					tipo = &tipo_array::instance();
-				} else {
+				} 
+				else if (t == &tipo_error::instance()){
+					tipo = &tipo_error::instance();
+				}
+				else {
 					tipo = new tipo_array(*t);
 				}
 				return tipo;
@@ -1460,7 +1523,11 @@ class tupla : public ArbolSintactico {
 		type * get_tipo(){
 			type * t1 = valor1->get_tipo();
 			type * t2 = valor2->get_tipo();
-			tipo = new tipo_tuple(*t1,*t2);
+			if (t1 != &tipo_error::instance() && t2 != &tipo_error::instance()){
+				tipo = new tipo_tuple(*t1,*t2);	
+			} else {
+				tipo =  &tipo_error::instance();
+			}
 			return tipo;
 		}
 };
