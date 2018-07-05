@@ -8,6 +8,7 @@ main{
 		array int [1] b;
 		bool c;
 		float f;
+		string s;
 	} execute{
 		/*
 		l[0][0] = 1;
@@ -15,9 +16,9 @@ main{
 		a[1] = [1];
 		t[0] = 1;
 		*/
-		//b = [];
+		b = [];
 		c = 1 == 1;
-		f = true mod 3;
+		s = '2';
 		break;
  	};
 }

@@ -4,7 +4,7 @@ perry: scanner.o lex.yy.c parser.tab.c definiciones.o ast.h ast.cpp
 scanner.o: scanner.cpp parser.tab.c definiciones.o
 	g++ -c scanner.cpp definiciones.cpp
 
-definiciones.o:
+definiciones.o: definiciones.h
 	g++ -c definiciones.cpp
 
 lex.yy.c: lexer.l
