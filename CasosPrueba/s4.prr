@@ -5,13 +5,26 @@ unit test(int @param, bool param2){
 		int inte;
 	}
 	execute{
-		inte = 2+true;
+		inte = 2+2;
+		return inte;
+	};
+}
+
+int utest(int @param, bool param2){
+	create{
+		int inte;
+	}
+	execute{
+		inte = 2+2;
 		return inte;
 	};
 }
 
 main{
+	create{
+		int a;
+	}
  	execute{
- 		<< "hahaha";
+ 		a = &a;
  	};
 }

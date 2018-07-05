@@ -197,23 +197,23 @@ TokenError::TokenError (int x, int y, int z, string v, ErrorEnum t) : Token(x,y,
 string TokenError::to_string() {
 	switch(tipo){
 		case LEXER:
-			return "Error: Expresión inesperada \"" + valor + "\" en la fila " + IntToString(fila) + ", columna " + IntToString(columna); 
+			return "Error: Expresión inesperada \"" + valor + "\" en la fila " + IntToString(fila) + ", columna " + IntToString(columna)+"."; 
 		case NODEFINICION:
-			return "Error: Variable no definida \"" + valor + "\" en la fila " + IntToString(fila) + ", columna " + IntToString(columna); 
+			return "Error: Variable no definida \"" + valor + "\" en la fila " + IntToString(fila) + ", columna " + IntToString(columna)+"."; 
 		case REDEFINICION:
-			return "Error: Redefinicion de variable \"" + valor + "\" en la fila " + IntToString(fila) + ", columna " + IntToString(columna); 
+			return "Error: Redefinicion de variable \"" + valor + "\" en la fila " + IntToString(fila) + ", columna " + IntToString(columna)+"."; 
 		case PARSER:
-			return "Error: Parseo \"" + valor + "\" en la fila " + IntToString(fila) + ", columna " + IntToString(columna); 
+			return "Error: Parseo \"" + valor + "\" en la fila " + IntToString(fila) + ", columna " + IntToString(columna)+"."; 
 		case VERIFICACION:
-			return "Error: " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna);
+			return "Error: " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna)+".";
 		case EXPARITMETICA:
-			return "Error: En las expresiones aritméticas se espera el tipo INT o el tipo FLOAT y se tiene el tipo " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna);
+			return "Error: En las expresiones aritméticas se espera el tipo INT o el tipo FLOAT y se tiene el tipo " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna)+".";
 		case EXPBOOLEANA:
-			return "Error: En las expresiones booleanas se espera el tipo BOOL y se tiene el tipo " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna);
+			return "Error: En las expresiones booleanas se espera el tipo BOOL y se tiene el tipo " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna)+".";
 		case ASIGNACION:
-			return "Error: Los tipos de la asignación no son iguales. " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna);
+			return "Error: Los tipos de la asignación no son iguales. " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna)+".";
 		case ELEMENTOS:
-			return "Error: Los arreglos y listas son homogéneos. " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna);
+			return "Error: Los arreglos y listas son homogéneos. " + valor + ". En la fila " + IntToString(fila) + ", columna " + IntToString(columna)+".";
 	}
 }
 
