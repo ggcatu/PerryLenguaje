@@ -23,8 +23,9 @@ int utest(int @param, bool param2){
 main{
 	create{
 		int a;
+		ptr int b;
 	}
  	execute{
- 		a = &a;
+ 		a = &b;
  	};
 }

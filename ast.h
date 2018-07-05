@@ -952,15 +952,13 @@ class exp_point : public ArbolSintactico {
 			der -> imprimir(tab+1);
 		}
 		type * get_tipo(){
-			return der->get_tipo();
-		}
-		virtual void verificar(){
 			type * tipo_der = der->get_tipo();
 			if (tipo_der->tipo != POINTER){
 				errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Sólo se puede desreferenciar sobre apuntadores. Se esperaba el tipo POINTER y se tiene el tipo "+tipo2word[tipo_der->tipo],VERIFICACION));
 				error_sintactico = 1;
-				tipo = &tipo_error::instance();
+				return &tipo_error::instance();
 			}
+			return &((tipo_pointer *)tipo_der)->p1;
 		}
 };
 
