@@ -174,7 +174,7 @@ Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }
 			| Alias												{ $$ = (ArbolSintactico*)(NULL);}
 			; 
 
-Alias       : TYPE Identifier IGUAL Typedef PUNTOCOMA           { alias[$2] = $4; }
+Alias       : TYPE Identifier IGUAL Typedef PUNTOCOMA           { alias[$2] = $4; asignar_tipo(new tipedec(* new tipo_tipo()), $2); }
 
 Llaveabre 	: IDENTIFIER LLAVEABRE 	 							{ declarar_variable($1, yylloc.first_column); asignar_tipo(new tipedec(* new tipo_tipo()), $1); $$ = new identificador($1); open_scope($$); }
 			;

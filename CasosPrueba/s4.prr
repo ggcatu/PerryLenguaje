@@ -10,6 +10,8 @@ unit test(int @param, bool param2){
 	};
 }
 
+type numeee = int;
+
 int utest(int @param, bool param2){
 	create{
 		int inte;
@@ -24,8 +26,10 @@ main{
 	create{
 		int a;
 		ptr int b;
+		numeee c;
 	}
  	execute{
  		a = &b;
+ 		c = 1;
  	};
 }

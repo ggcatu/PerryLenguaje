@@ -14,6 +14,8 @@ extern bool error_sintactico;
 
 /* Elementos de la tabla de simbolos, despues se expandira */
 class table_element {
+	private:
+		string tipo2word[100];
 	public:
 		std::string id;
 		int scope;
@@ -36,80 +38,82 @@ class table_element {
 			child_scope = s;
 		}
 
+		void init_tipo2string(){
+			tipo2word[STRUCT] = "STRUCT"; 
+			tipo2word[UNION] = "UNION"; 
+			tipo2word[ARRAY] = "ARRAY"; 
+			tipo2word[LIST] = "LIST"; 
+			tipo2word[TUPLE] = "TUPLE"; 
+			tipo2word[LSTRING] = "STRING"; 
+			tipo2word[LFLOAT] = "FLOAT"; 
+			tipo2word[LCHAR] = "CHAR"; 
+			tipo2word[BOOL] = "BOOL"; 
+			tipo2word[LINT] = "INT"; 
+			tipo2word[POINTER] = "POINTER"; 
+			tipo2word[UNIT] = "UNIT";
+			tipo2word[TYPE] = "TYPE";
+		}
+
 		void print(){
+			init_tipo2string();
 			std::cout << "SCOPE: " << scope; 
 			if (tipo != NULL){
-				std::cout << " TYPE: " << tipo->tipo; 
-				switch(tipo->tipo){
-					case TUPLE:
-					case LIST:
-					case ARRAY:
-					case POINTER:
-						// std::cout << &((tipo_pointer *)tipo)->p1 << std::endl;
-						print_tipo(tipo);
-						break;
-					case IDENTIFIER:
-					default:
-						break;
-				}
+				std::cout << " TYPE: "; 
+				print_tipo(tipo);
 			}
 			if (child_scope != -1)
 				std::cout << ", CHILD SCOPE: " << child_scope;
 		}
-		void print_tipo(type * tipo){
+
+		void print_tipo(type * tipo){ 
+			std::cout << tipo2word[tipo->tipo];
 			switch(tipo->tipo){
-					case TUPLE:
-						std::cout << "<";
-						if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){
-							std::cout << (((tipo_tuple *)tipo)->p1).tipo;
-						} else {
-							std::cout << (((tipo_tuple *)tipo)->p1).tipo;
-							print_tipo(&((tipo_tuple *)tipo)->p1);
-						}
-						std:: cout << ",";
-						if ((((tipo_tuple *)tipo)->p2).tipo == 30 || (((tipo_tuple *)tipo)->p2).tipo == 29 || (((tipo_tuple *)tipo)->p2).tipo == 28 || (((tipo_tuple *)tipo)->p2).tipo == 27 || (((tipo_tuple *)tipo)->p2).tipo == 26){
-							std::cout << (((tipo_tuple *)tipo)->p2).tipo;
-						} else {
-							std::cout << (((tipo_tuple *)tipo)->p2).tipo;
-							print_tipo(&((tipo_tuple *)tipo)->p2);
-						}
-						std::cout << ">";
-						break;
-					case LIST:
-						std::cout << "<";
-						if ((((tipo_list *)tipo)->p1).tipo == 30 || (((tipo_list *)tipo)->p1).tipo == 29 || (((tipo_list *)tipo)->p1).tipo == 28 || (((tipo_list *)tipo)->p1).tipo == 27 || (((tipo_list *)tipo)->p1).tipo == 26){
-							std::cout << (((tipo_list *)tipo)->p1).tipo;
-						} else {
-							std::cout << (((tipo_list *)tipo)->p1).tipo;
-							print_tipo(&((tipo_list *)tipo)->p1);
-						}
-						std::cout << ">";
-						break;
-					case ARRAY:
-						std::cout << "<";
-						if ((((tipo_array *)tipo)->p1).tipo == 30 || (((tipo_array *)tipo)->p1).tipo == 29 || (((tipo_array *)tipo)->p1).tipo == 28 || (((tipo_array *)tipo)->p1).tipo == 27 || (((tipo_array *)tipo)->p1).tipo == 26){
-							std::cout << (((tipo_array *)tipo)->p1).tipo;
-						} else {
-							std::cout << (((tipo_array *)tipo)->p1).tipo;
-							print_tipo(&((tipo_array *)tipo)->p1);
-						}
-						std::cout << ">";
-						break;
-					case POINTER:
-						std::cout << "<";
-						// std::cout << &((tipo_pointer *)tipo)->p1 << std::endl;
-						if ((((tipo_pointer *)tipo)->p1).tipo == 30 || (((tipo_pointer *)tipo)->p1).tipo == 29 || (((tipo_pointer *)tipo)->p1).tipo == 28 || (((tipo_pointer *)tipo)->p1).tipo == 27 || (((tipo_pointer *)tipo)->p1).tipo == 26){
-							std::cout << (((tipo_pointer *)tipo)->p1).tipo;
-						} else {
-							std::cout << (((tipo_pointer *)tipo)->p1).tipo;
-							print_tipo(&((tipo_pointer *)tipo)->p1);
-						}
-						std::cout << ">";
-						break;
-					case IDENTIFIER:
-					default:
-						break;
-				}
+				case TUPLE:
+					std::cout << "<";
+					if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){
+						std::cout << tipo2word[(((tipo_tuple *)tipo)->p1).tipo];
+					} else {
+						print_tipo(&((tipo_tuple *)tipo)->p1);
+					}
+					std:: cout << ",";
+					if ((((tipo_tuple *)tipo)->p2).tipo == 30 || (((tipo_tuple *)tipo)->p2).tipo == 29 || (((tipo_tuple *)tipo)->p2).tipo == 28 || (((tipo_tuple *)tipo)->p2).tipo == 27 || (((tipo_tuple *)tipo)->p2).tipo == 26){
+						std::cout << tipo2word[(((tipo_tuple *)tipo)->p2).tipo];
+					} else {
+						print_tipo(&((tipo_tuple *)tipo)->p2);
+					}
+					std::cout << ">";
+					break;
+				case LIST:
+					std::cout << "<";
+					if ((((tipo_list *)tipo)->p1).tipo == 30 || (((tipo_list *)tipo)->p1).tipo == 29 || (((tipo_list *)tipo)->p1).tipo == 28 || (((tipo_list *)tipo)->p1).tipo == 27 || (((tipo_list *)tipo)->p1).tipo == 26){
+						std::cout << tipo2word[(((tipo_list *)tipo)->p1).tipo];
+					} else {
+						print_tipo(&((tipo_list *)tipo)->p1);
+					}
+					std::cout << ">";
+					break;
+				case ARRAY:
+					std::cout << "<";
+					if ((((tipo_array *)tipo)->p1).tipo == 30 || (((tipo_array *)tipo)->p1).tipo == 29 || (((tipo_array *)tipo)->p1).tipo == 28 || (((tipo_array *)tipo)->p1).tipo == 27 || (((tipo_array *)tipo)->p1).tipo == 26){
+						std::cout << tipo2word[(((tipo_array *)tipo)->p1).tipo];
+					} else {
+						print_tipo(&((tipo_array *)tipo)->p1);
+					}
+					std::cout << ">";
+					break;
+				case POINTER:
+					std::cout << "<";
+					if ((((tipo_pointer *)tipo)->p1).tipo == 30 || (((tipo_pointer *)tipo)->p1).tipo == 29 || (((tipo_pointer *)tipo)->p1).tipo == 28 || (((tipo_pointer *)tipo)->p1).tipo == 27 || (((tipo_pointer *)tipo)->p1).tipo == 26){
+						std::cout << tipo2word[(((tipo_pointer *)tipo)->p1).tipo];
+					} else {
+						print_tipo(&((tipo_pointer *)tipo)->p1);
+					}
+					std::cout << ">";
+					break;
+				case IDENTIFIER:
+				default:
+					break;
+			}
 		}
 };
 
@@ -193,7 +197,7 @@ class sym_table {
 			return true;
 		}
 
-		void print(){		
+		void print(){
 			std::cout << std::endl << "Imprimiendo tabla de simbolos:" << std::endl; 
 		    for(std::map<std::string, std::deque<table_element> >::iterator it = tabla.begin(); it != tabla.end(); ++it) {
 		    	std::cout << "Variable: " << it->first << " [";
@@ -204,7 +208,7 @@ class sym_table {
 		    	}
 			    std::cout << "]" << std::endl;
 		    }
-		    
+		    /*
 		    std::cout << std::endl << std::endl << "Imprimiendo tipos " << std::endl;
 		    std::cout << "INT: " << &tipo_int::instance() << std::endl;
 		    std::cout << "BOOL: " << &tipo_bool::instance() << std::endl;
@@ -213,6 +217,7 @@ class sym_table {
 		    std::cout << "CHAR: " << &tipo_char::instance() << std::endl;
 		    std::cout << "STR: " << &tipo_string::instance() << std::endl;
 		    std::cout << "ERROR: " << &tipo_error::instance() << std::endl;
+		    */
 		}
 };
 

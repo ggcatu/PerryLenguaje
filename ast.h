@@ -815,7 +815,10 @@ class exp_booleana : public ArbolSintactico {
 					case DISTINTO:
 						if (verificar_aux(tipo_izq,tipo_der)){
 							tipo = &tipo_error::instance();
-							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Los tipos en los operadores \"==\"  y \"!=\" deben ser iguales. "+tipo2word[tipo_izq->tipo]+" != "+tipo2word[tipo_der->tipo],VERIFICACION));
+							string s = tipo2s("",tipo_der);
+							s += " != ";
+							s += tipo2s("",tipo_izq);
+							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Los tipos en los operadores \"==\" y \"!=\" deben ser iguales. "+s,VERIFICACION));
 							error_sintactico = 1;
 						}
 						break;
@@ -841,6 +844,61 @@ class exp_booleana : public ArbolSintactico {
 			} else {
 				tipo = &tipo_error::instance();
 			}
+		}
+		string tipo2s(string s, type * tipo){
+			s += tipo2word[tipo->tipo];
+			switch(tipo->tipo){
+				case TUPLE:
+					s += "<";
+					if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_tuple *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_tuple *)tipo)->p1);
+					}
+					s += ",";
+					if ((((tipo_tuple *)tipo)->p2).tipo == 30 || (((tipo_tuple *)tipo)->p2).tipo == 29 || (((tipo_tuple *)tipo)->p2).tipo == 28 || (((tipo_tuple *)tipo)->p2).tipo == 27 || (((tipo_tuple *)tipo)->p2).tipo == 26){
+						s += tipo2word[(((tipo_tuple *)tipo)->p2).tipo];
+					} else {
+						return tipo2s(s,&((tipo_tuple *)tipo)->p2);
+					}
+					s += ">";
+					return s;
+					break;
+				case LIST:
+					s += "<";
+					if ((((tipo_list *)tipo)->p1).tipo == 30 || (((tipo_list *)tipo)->p1).tipo == 29 || (((tipo_list *)tipo)->p1).tipo == 28 || (((tipo_list *)tipo)->p1).tipo == 27 || (((tipo_list *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_list *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_list *)tipo)->p1);
+					}
+					s += ">";
+					return s;
+					break;
+				case ARRAY:
+					s += "<";
+					if ((((tipo_array *)tipo)->p1).tipo == 30 || (((tipo_array *)tipo)->p1).tipo == 29 || (((tipo_array *)tipo)->p1).tipo == 28 || (((tipo_array *)tipo)->p1).tipo == 27 || (((tipo_array *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_array *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_array *)tipo)->p1);
+					}
+					s += ">";
+					return s;
+					break;
+				case POINTER:
+					s += "<";
+					if ((((tipo_pointer *)tipo)->p1).tipo == 30 || (((tipo_pointer *)tipo)->p1).tipo == 29 || (((tipo_pointer *)tipo)->p1).tipo == 28 || (((tipo_pointer *)tipo)->p1).tipo == 27 || (((tipo_pointer *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_pointer *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_pointer *)tipo)->p1);
+					}
+					s += ">";
+					return s;
+					break;
+				case IDENTIFIER:
+				default:
+					break;
+			}
+			return s;
 		}
 		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
 			if (tipo_val != 0){
