@@ -32,7 +32,7 @@ extern char error_strp[1000];
 extern int yyparse();
 extern bool error_sintactico;
 extern vector<Token *> errors;
-extern string tipo2word[100];
+extern string tipo2word[300];
 
 /* Definicion de la clase raiz */
 class raiz : public ArbolSintactico {
@@ -524,6 +524,13 @@ class asignacion : public ArbolSintactico {
 			type * tipo_val = valor->get_tipo();
 			if (tipo_var != &tipo_error::instance() && tipo_val != &tipo_error::instance()){
 				switch(tipo_var->tipo) {
+					case TYPE:
+						if (variable->get_nombre() != valor->get_nombre()){
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
+							error_sintactico = 1;
+							tipo = &tipo_error::instance();
+						}
+						break;
 					case TUPLE:
 						if (tipo_val->tipo != TUPLE){
 							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
@@ -791,6 +798,13 @@ class exp_booleana : public ArbolSintactico {
 			type * tipo_izq = (izq!=NULL) ? izq->get_tipo(): &tipo_unit::instance();
 			if (tipo_der != &tipo_error::instance() && tipo_izq != &tipo_error::instance()){
 				switch(instruccion){
+					case TYPE:
+						if (der->get_nombre() != izq->get_nombre()){
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_izq->tipo]+" != "+tipo2word[tipo_der->tipo],ASIGNACION));
+							error_sintactico = 1;
+							tipo = &tipo_error::instance();
+						}
+						break;
 					case NEGACION:
 						if (tipo_der != &tipo_bool::instance()){
 							tipo = &tipo_error::instance();
@@ -1379,6 +1393,13 @@ class elementos : public ArbolSintactico {
 			type * tipo_val = elems->get_tipo();
 			if (tipo_var != &tipo_error::instance() && tipo_val != &tipo_error::instance()){
 				switch(tipo_var->tipo) {
+					case TYPE:
+						if (val->get_nombre() != elems->get_nombre()){
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
+							error_sintactico = 1;
+							tipo = &tipo_error::instance();
+						}
+						break;
 					case TUPLE:
 						if (tipo_val->tipo != TUPLE){
 							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ELEMENTOS));

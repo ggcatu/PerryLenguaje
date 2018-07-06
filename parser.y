@@ -212,8 +212,8 @@ Typedef		: BOOL  											{ $$ = new tipedec(tipo_bool::instance()); }
 			| UNIT 												{ $$ = new tipedec(tipo_unit::instance()); }
 			;
 
-LlaveabreSp : LLAVEABRE 										{  string u = uuid(); $$ = new identificador(u); 
-																   declarar_variable(u, yylloc.first_column); open_scope(new identificador(u));}
+LlaveabreSp : LLAVEABRE 										{  string u = uuid(); $$ = new identificador(u);
+																   declarar_variable(u, yylloc.first_column); open_scope(new identificador(u)); asignar_tipo(new tipedec(* new tipo_tipo()), u); }
 			; 
 
 

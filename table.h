@@ -15,7 +15,7 @@ extern bool error_sintactico;
 /* Elementos de la tabla de simbolos, despues se expandira */
 class table_element {
 	private:
-		string tipo2word[100];
+		string tipo2word[300];
 	public:
 		std::string id;
 		int scope;
@@ -52,6 +52,7 @@ class table_element {
 			tipo2word[POINTER] = "POINTER"; 
 			tipo2word[UNIT] = "UNIT";
 			tipo2word[TYPE] = "TYPE";
+			tipo2word[IDENTIFIER] = "TYPE"; 
 		}
 
 		void print(){

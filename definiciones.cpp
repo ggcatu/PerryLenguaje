@@ -29,7 +29,7 @@ Por otro lado facilita bastante modificar el to_string de los tokens.
 */
 
 string nToWord[300];
-string tipo2word[100];
+string tipo2word[300];
 
 void init_strings(){
 	nToWord[LLAVEABRE] = "LLAVEABRE"; 
@@ -98,7 +98,7 @@ void init_strings(){
 	nToWord[NEW] = "NEW"; 
 	nToWord[FREE] = "FREE"; 
 	nToWord[REFERENCE] = "REFERENCE"; 
-	nToWord[OPTR] = "OPTR"; 
+	nToWord[OPTR] = "OPTR";
 
 	tipo2word[STRUCT] = "STRUCT"; 
 	tipo2word[UNION] = "UNION"; 
@@ -113,6 +113,7 @@ void init_strings(){
 	tipo2word[POINTER] = "POINTER"; 
 	tipo2word[UNIT] = "UNIT";
 	tipo2word[TYPE] = "TYPE";
+	tipo2word[IDENTIFIER] = "TYPE"; 
 }
 
 // Magia negra sacada de internet, permite pasar de int a string

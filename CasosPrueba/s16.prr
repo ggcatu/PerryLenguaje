@@ -1,6 +1,6 @@
 //asignar struct
 
-type struct tuct{
+type struct t{
 	int hello;
 }
 
@@ -12,10 +12,14 @@ main{
 	create{
 		//tuct hi;
 		//ar ho;
-		int i = {1};
+		int i;
+		type struct {
+			int hello;
+		} p;
 	} execute{
 		//hi = ho;
 		// hi.hello = ar.hello;
+		i = p.hello;
 		break;
  	};
 }
