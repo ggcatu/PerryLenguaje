@@ -12,7 +12,7 @@ main{
 	create{
 		//tuct hi;
 		//ar ho;
-		int i;
+		int i = {1};
 	} execute{
 		//hi = ho;
 		// hi.hello = ar.hello;

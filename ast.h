@@ -1178,7 +1178,7 @@ class ids : public ArbolSintactico {
 					  t == &tipo_float::instance() ||
 					  t == &tipo_char::instance() ||
 					  t == &tipo_tipo::instance() ||
-					  // t == &tipo_pointer::instance() ||
+					  t->tipo == POINTER ||
 					  t == &tipo_unit::instance() ||
 					  t == &tipo_error::instance() 
 					  )) {
