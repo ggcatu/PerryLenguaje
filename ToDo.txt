@@ -1,5 +1,3 @@
 Verificar tipos de las llamadas a func
-s16 da SF
-Peo de los nombres con las Struct/Union
-Faltan los subtipos
+Faltan los subtipos sin cablearlos con ifs, usar alguna estructura que no explote
 Completar casos de prueba
