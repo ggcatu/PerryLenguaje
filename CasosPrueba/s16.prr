@@ -8,18 +8,25 @@ type struct ar{
 	char hello;
 }
 
+type numeros = int;
+type num = numeros;
+
 main{
 	create{
-		//tuct hi;
-		//ar ho;
-		int i;
+		t hi;
+		ar ho;
+		numeros i;
+		num j;
 		type struct {
-			int hello;
+			int enteros;
 		} p;
 	} execute{
 		//hi = ho;
-		// hi.hello = ar.hello;
-		i = p.hello;
+		//hi.hello = ho.hello;
+		i = p.enteros;
+		i = 1;
+		j = i;
+		p = hi;
 		break;
  	};
 }

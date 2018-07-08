@@ -65,7 +65,11 @@ class tipo_tuple: public CRTP_type<tipo_tuple>{
 
 class tipo_identifier: public CRTP_type<tipo_identifier>{
 	friend class CRTP_type<tipo_identifier>;
-	tipo_identifier() : CRTP_type(IDENTIFIER) {}; 
+	public:
+		string p1;
+	tipo_identifier() : CRTP_type(IDENTIFIER), p1("") {};
+	tipo_identifier(string p) : CRTP_type(IDENTIFIER), p1(p) {};
+
 };
 
 class tipo_pointer: public CRTP_type<tipo_pointer>{
@@ -76,7 +80,9 @@ class tipo_pointer: public CRTP_type<tipo_pointer>{
 
 class tipo_tipo: public CRTP_type<tipo_tipo>{
 	public:
-		tipo_tipo() : CRTP_type(TYPE) {}; 
+		string p1;
+		tipo_tipo(string p): CRTP_type(TYPE), p1(p) {};
+		tipo_tipo() : CRTP_type(TYPE), p1("") {}; 
 };
 
 class tipo_unit: public CRTP_type<tipo_unit>{

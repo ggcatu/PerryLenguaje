@@ -203,7 +203,7 @@ class tipedec : public ArbolSintactico {
 		tipedec( type& n, ArbolSintactico * s1) : tipo(n), subtipo1(s1), subtipo2(NULL), tam(NULL) {is_type = 1;}
 		tipedec( type& n) : tipo(n), subtipo1(NULL), subtipo2(NULL), tam(NULL) {is_type = 1;}
 
-		bool asignar_tipo(string variable, sym_table * table ){
+		bool asignar_tipo(string variable, sym_table * table){
 			table_element * instancia = table->lookup(variable, -1);
 			switch(tipo.tipo){
 				case IDENTIFIER: {
@@ -282,7 +282,7 @@ class instruccion : public ArbolSintactico {
 	public:
 		ArbolSintactico * instrucciones;
 		ArbolSintactico * inst;
-		instruccion() {}
+		instruccion() : inst(NULL), instrucciones(NULL) {}
 		instruccion(ArbolSintactico * is, ArbolSintactico * i) : instrucciones(is), inst(i) {verificar();}
 		instruccion(ArbolSintactico * i) : instrucciones(NULL), inst(i) {verificar();}
 
@@ -525,10 +525,16 @@ class asignacion : public ArbolSintactico {
 			if (tipo_var != &tipo_error::instance() && tipo_val != &tipo_error::instance()){
 				switch(tipo_var->tipo) {
 					case TYPE:
-						if (variable->get_nombre() != valor->get_nombre()){
+						if (tipo_val->tipo != TYPE){
 							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
 							error_sintactico = 1;
 							tipo = &tipo_error::instance();
+						} else {
+							if (((tipo_tipo *)tipo_var)->p1 != ((tipo_tipo *)tipo_val)->p1){
+								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
+								error_sintactico = 1;
+								tipo = &tipo_error::instance();
+							}
 						}
 						break;
 					case TUPLE:
@@ -596,6 +602,15 @@ class asignacion : public ArbolSintactico {
 		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
 			if (tipo_val != 0){
 				switch(tipo_var->tipo){
+					case TYPE:
+						if (tipo_val->tipo != TYPE){
+							return true;
+						} else {
+							if (((tipo_tipo *)tipo_var)->p1 != ((tipo_tipo *)tipo_val)->p1){
+								return true;
+							}
+						}
+						return false;
 					case TUPLE:
 						if (tipo_val->tipo != TUPLE){
 							return true;
@@ -612,7 +627,6 @@ class asignacion : public ArbolSintactico {
 							}
 						}
 						return false;
-						break;
 					case ARRAY:
 						if (tipo_val->tipo != ARRAY){
 							return true;
@@ -624,7 +638,6 @@ class asignacion : public ArbolSintactico {
 							}
 						}
 						return false;
-						break;
 					case LIST:
 						if (tipo_val->tipo != LIST){
 							return true;
@@ -636,7 +649,6 @@ class asignacion : public ArbolSintactico {
 							}
 						}
 						return false;
-						break;
 					default:
 						if (tipo_val != tipo_var){
 							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && (tipo_var != &tipo_string::instance() || tipo_val != &tipo_char::instance()) && tipo_val != &tipo_unit::instance()){
@@ -799,7 +811,7 @@ class exp_booleana : public ArbolSintactico {
 			if (tipo_der != &tipo_error::instance() && tipo_izq != &tipo_error::instance()){
 				switch(instruccion){
 					case TYPE:
-						if (der->get_nombre() != izq->get_nombre()){
+						if (((tipo_tipo *)tipo_der)->p1 != ((tipo_tipo *)tipo_izq)->p1){
 							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_izq->tipo]+" != "+tipo2word[tipo_der->tipo],ASIGNACION));
 							error_sintactico = 1;
 							tipo = &tipo_error::instance();
@@ -917,6 +929,15 @@ class exp_booleana : public ArbolSintactico {
 		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
 			if (tipo_val != 0){
 				switch(tipo_var->tipo){
+					case TYPE:
+						if (tipo_val->tipo != TYPE){
+							return true;
+						} else {
+							if (((tipo_tipo *)tipo_var)->p1 != ((tipo_tipo *)tipo_val)->p1){
+								return true;
+							}
+						}
+						return false;
 					case TUPLE:
 						if (tipo_val->tipo != TUPLE){
 							return true;
@@ -1394,10 +1415,16 @@ class elementos : public ArbolSintactico {
 			if (tipo_var != &tipo_error::instance() && tipo_val != &tipo_error::instance()){
 				switch(tipo_var->tipo) {
 					case TYPE:
-						if (val->get_nombre() != elems->get_nombre()){
+						if (tipo_val->tipo != TYPE){
 							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
 							error_sintactico = 1;
 							tipo = &tipo_error::instance();
+						} else {
+							if (((tipo_tipo *)tipo_var)->p1 != ((tipo_tipo *)tipo_val)->p1){
+								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
+								error_sintactico = 1;
+								tipo = &tipo_error::instance();
+							}
 						}
 						break;
 					case TUPLE:
@@ -1467,6 +1494,15 @@ class elementos : public ArbolSintactico {
 		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
 			if (tipo_val != 0){
 				switch(tipo_var->tipo){
+					case TYPE:
+						if (tipo_val->tipo != TYPE){
+							return true;
+						} else {
+							if (((tipo_tipo *)tipo_var)->p1 != ((tipo_tipo *)tipo_val)->p1){
+								return true;
+							}
+						}
+						return false;
 					case TUPLE:
 						if (tipo_val->tipo != TUPLE){
 							return true;
@@ -1483,7 +1519,6 @@ class elementos : public ArbolSintactico {
 							}
 						}
 						return false;
-						break;
 					case ARRAY:
 						if (tipo_val->tipo != ARRAY){
 							return true;
@@ -1495,7 +1530,6 @@ class elementos : public ArbolSintactico {
 							}
 						}
 						return false;
-						break;
 					case LIST:
 						if (tipo_val->tipo != LIST){
 							return true;
@@ -1507,7 +1541,6 @@ class elementos : public ArbolSintactico {
 							}
 						}
 						return false;
-						break;
 					default:
 						if (tipo_val != tipo_var){
 							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && (tipo_var != &tipo_string::instance() || tipo_val != &tipo_char::instance()) && tipo_val != &tipo_unit::instance()){

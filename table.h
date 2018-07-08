@@ -15,7 +15,7 @@ extern bool error_sintactico;
 /* Elementos de la tabla de simbolos, despues se expandira */
 class table_element {
 	private:
-		string tipo2word[300];
+		string tipo2word[100];
 	public:
 		std::string id;
 		int scope;
@@ -52,7 +52,6 @@ class table_element {
 			tipo2word[POINTER] = "POINTER"; 
 			tipo2word[UNIT] = "UNIT";
 			tipo2word[TYPE] = "TYPE";
-			tipo2word[IDENTIFIER] = "TYPE"; 
 		}
 
 		void print(){
@@ -69,6 +68,9 @@ class table_element {
 		void print_tipo(type * tipo){ 
 			std::cout << tipo2word[tipo->tipo];
 			switch(tipo->tipo){
+				/*case TYPE:
+					std::cout << " (" << (((tipo_tipo *)tipo)->p1) << ")";
+					break;*/
 				case TUPLE:
 					std::cout << "<";
 					if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){
@@ -137,7 +139,7 @@ class sym_table {
 		void open_scope(std::string x){
 			table_element * scope = lookup(x, -1);
 			if (scope == NULL){
-				std::cout << x << " esta variable no esta definida." << std::endl;
+				std::cout << x << " esta variable no está definida." << std::endl;
 				stack.push_back(-1);
 			}
 			else if (scope->child_scope == -1){
@@ -151,7 +153,7 @@ class sym_table {
 
 		void exit_scope(){
 			if (!stack.empty())
-			stack.pop_back();
+				stack.pop_back();
 		}
 
 		table_element * lookup(std::string x, int scope){
