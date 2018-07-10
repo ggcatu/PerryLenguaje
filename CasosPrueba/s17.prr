@@ -1,9 +1,9 @@
-//Error tipos clasico
+//Asignando dentro arreglos
 
 main{
 	create{
 		array int[3] p;
-		array char[3] s;
+		array int[3] s;
 	} execute{
 		p = s;
  	};

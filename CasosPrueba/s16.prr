@@ -24,7 +24,6 @@ main{
 		//hi = ho;
 		hi.hello = ho.hello;
 		i = p.enteros;
-		i = 1;
 		j = i;
 		p = hi;
 		break;

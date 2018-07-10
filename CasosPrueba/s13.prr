@@ -4,6 +4,6 @@ main{
 	create{
 		int tomate;
 	} execute{
-		tomate = '3';
+		tomate = tomate;
  	};
 }
