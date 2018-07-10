@@ -1,0 +1,18 @@
+//Error con tipos complejos
+
+type struct t{
+	int hello;
+}
+
+type struct ar{
+	char hello;
+}
+
+main{
+	create{
+		t ho;
+		array tuple (t,ar) [3] tutu;
+	} execute{
+		tutu[1][1] = ho;
+ 	};
+}

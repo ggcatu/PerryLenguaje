@@ -177,7 +177,7 @@ Alias       : TYPE Identifier IGUAL Typedef PUNTOCOMA           { alias[$2] = $4
 			;
 
 Llaveabre 	: IDENTIFIER LLAVEABRE 	 							{ declarar_variable($1, yylloc.first_column); 
-																  alias[$1] = new tipedec(tipo_identifier::instance(),new identificador($1));
+																  alias[$1] = new tipedec(* new tipo_identifier($1),new identificador($1));
 																  asignar_tipo(new tipedec(*new tipo_tipo($1)), $1); 
 																  open_scope(new identificador($1)); }
 			;

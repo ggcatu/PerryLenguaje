@@ -1,24 +1,24 @@
 // Prueba no completa para verificar tipos de cosas exoticas
 
+type struct nonion{
+	string cebolla;
+	char cebollaM;
+}
+
 main{
 	create{
-		array tuple (int, tuple (int,int)) [2] l;
+		array tuple (int, nonion) [3] harray;
 		array array int [2][2] a;
-		tuple (int,int) t;
-		array int [1] b;
 		bool c;
 		float f;
 		string s;
+		nonion cebollita;
 	} execute{
-		/*
-		l[0][0] = 1;
-		a[1][1] = (1,1);
+		harray[0][0] = 1;
+		harray[1][0] = cebollita;
+		a[1][1] = 1;
 		a[1] = [1];
-		t[0] = 1;
-		*/
-		b = [];
-		c = {[(1,2)]} == {[(false,true)]};
+		c = {[(1,2)]} == {[(5,4)]};
 		s = '2';
-		break;
  	};
 }

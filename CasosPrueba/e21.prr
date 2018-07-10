@@ -1,14 +1,11 @@
-//Error tipos en for
+//Error de arreglos
 
-type numeritos = int;
-		
 main{
 	create{
-		numeritos tomate;
+		array tuple (int, tuple (int,int)) [2] l;
+		string s;
 	} execute{
-		tomate = 5;
-		for(int i, [tomate,6.56], 3){
-			<< tomate;
-		};
+		l[1] = {2,2,3};
+		s = '2';
  	};
 }

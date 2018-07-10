@@ -1,4 +1,4 @@
-//Prueba de alias de tipos²
+//Prueba de alias de tipos
 
 type entero = int;
 type numeritos = entero;
@@ -12,6 +12,7 @@ main{
 			numeritos m;
 		} execute{
 		 	m = 1;
+		 	n = m;
 		};
  	};
 }

@@ -524,14 +524,33 @@ class asignacion : public ArbolSintactico {
 			type * tipo_val = valor->get_tipo();
 			if (tipo_var != &tipo_error::instance() && tipo_val != &tipo_error::instance()){
 				switch(tipo_var->tipo) {
+					case IDENTIFIER:
+						if (tipo_val->tipo != IDENTIFIER){
+							string s = tipo2s("",tipo_var);
+							s += " != ";
+							s += tipo2s("",tipo_val);
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
+							error_sintactico = 1;
+							tipo = &tipo_error::instance();
+						} else {
+							if (((tipo_identifier *)tipo_var)->p1 != ((tipo_identifier *)tipo_val)->p1){
+								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),((tipo_identifier *)tipo_var)->p1+" != "+((tipo_identifier *)tipo_val)->p1,ASIGNACION));
+								error_sintactico = 1;
+								tipo = &tipo_error::instance();
+							}
+						}
+						break;
 					case TYPE:
 						if (tipo_val->tipo != TYPE){
-							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
+							string s = tipo2s("",tipo_var);
+							s += " != ";
+							s += tipo2s("",tipo_val);
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
 							error_sintactico = 1;
 							tipo = &tipo_error::instance();
 						} else {
 							if (((tipo_tipo *)tipo_var)->p1 != ((tipo_tipo *)tipo_val)->p1){
-								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
+								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),((tipo_tipo *)tipo_var)->p1+" != "+((tipo_tipo *)tipo_val)->p1,ASIGNACION));
 								error_sintactico = 1;
 								tipo = &tipo_error::instance();
 							}
@@ -539,20 +558,29 @@ class asignacion : public ArbolSintactico {
 						break;
 					case TUPLE:
 						if (tipo_val->tipo != TUPLE){
-							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
+							string s = tipo2s("",tipo_var);
+							s += " != ";
+							s += tipo2s("",tipo_val);
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
 							error_sintactico = 1;
 							tipo = &tipo_error::instance();
 						} else {
 							if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1) {
 								if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1)){
-									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[(&((tipo_tuple *)tipo_var)->p1)->tipo]+" != "+tipo2word[(&((tipo_tuple *)tipo_val)->p1)->tipo],ASIGNACION));
+									string s = tipo2s("",&((tipo_tuple *)tipo_var)->p1);
+									s += " != ";
+									s += tipo2s("",&((tipo_tuple *)tipo_val)->p1);
+									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
 									error_sintactico = 1;
 									tipo = &tipo_error::instance();
 								}
 							}
 							if (&((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
 								if (verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
-									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[(&((tipo_tuple *)tipo_var)->p2)->tipo]+" != "+tipo2word[(&((tipo_tuple *)tipo_val)->p2)->tipo],ASIGNACION));
+									string s = tipo2s("",&((tipo_tuple *)tipo_var)->p2);
+									s += " != ";
+									s += tipo2s("",&((tipo_tuple *)tipo_val)->p2);
+									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
 									error_sintactico = 1;
 									tipo = &tipo_error::instance();
 								}
@@ -561,12 +589,18 @@ class asignacion : public ArbolSintactico {
 						break;
 					case ARRAY:
 						if (tipo_val->tipo != ARRAY){
-							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
+							string s = tipo2s("",tipo_var);
+							s += " != ";
+							s += tipo2s("",tipo_val);
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
 							error_sintactico = 1;
 						} else {
 							if (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
 								if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
-									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[(&((tipo_array *)tipo_var)->p1)->tipo]+" != "+tipo2word[(&((tipo_array *)tipo_val)->p1)->tipo],ASIGNACION));
+									string s = tipo2s("",&((tipo_array *)tipo_var)->p1);
+									s += " != ";
+									s += tipo2s("",&((tipo_array *)tipo_val)->p1);
+									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
 									error_sintactico = 1;
 									tipo = &tipo_error::instance();
 								}
@@ -575,13 +609,19 @@ class asignacion : public ArbolSintactico {
 						break;
 					case LIST:
 						if (tipo_val->tipo != LIST){
-							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
+							string s = tipo2s("",tipo_var);
+							s += " != ";
+							s += tipo2s("",tipo_val);
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
 							error_sintactico = 1;
 							tipo = &tipo_error::instance();
 						} else {
 							if (&((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) {
 								if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
-									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[(&((tipo_list *)tipo_var)->p1)->tipo]+" != "+tipo2word[(&((tipo_list *)tipo_val)->p1)->tipo],ASIGNACION));
+									string s = tipo2s("",&((tipo_list *)tipo_var)->p1);
+									s += " != ";
+									s += tipo2s("",&((tipo_list *)tipo_val)->p1);
+									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
 									error_sintactico = 1;
 									tipo = &tipo_error::instance();
 								}
@@ -602,11 +642,11 @@ class asignacion : public ArbolSintactico {
 		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
 			if (tipo_val != 0){
 				switch(tipo_var->tipo){
-					case TYPE:
-						if (tipo_val->tipo != TYPE){
+					case IDENTIFIER:
+						if (tipo_val->tipo != IDENTIFIER){
 							return true;
 						} else {
-							if (((tipo_tipo *)tipo_var)->p1 != ((tipo_tipo *)tipo_val)->p1){
+							if (((tipo_identifier *)tipo_var)->p1 != ((tipo_identifier *)tipo_val)->p1){
 								return true;
 							}
 						}
@@ -660,7 +700,61 @@ class asignacion : public ArbolSintactico {
 			}
 			return true;
 		}
-
+		string tipo2s(string s, type * tipo){
+			s += tipo2word[tipo->tipo];
+			switch(tipo->tipo){
+				case TUPLE:
+					s += "<";
+					if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_tuple *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_tuple *)tipo)->p1);
+					}
+					s += ",";
+					if ((((tipo_tuple *)tipo)->p2).tipo == 30 || (((tipo_tuple *)tipo)->p2).tipo == 29 || (((tipo_tuple *)tipo)->p2).tipo == 28 || (((tipo_tuple *)tipo)->p2).tipo == 27 || (((tipo_tuple *)tipo)->p2).tipo == 26){
+						s += tipo2word[(((tipo_tuple *)tipo)->p2).tipo];
+					} else {
+						return tipo2s(s,&((tipo_tuple *)tipo)->p2);
+					}
+					s += ">";
+					return s;
+					break;
+				case LIST:
+					s += "<";
+					if ((((tipo_list *)tipo)->p1).tipo == 30 || (((tipo_list *)tipo)->p1).tipo == 29 || (((tipo_list *)tipo)->p1).tipo == 28 || (((tipo_list *)tipo)->p1).tipo == 27 || (((tipo_list *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_list *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_list *)tipo)->p1);
+					}
+					s += ">";
+					return s;
+					break;
+				case ARRAY:
+					s += "<";
+					if ((((tipo_array *)tipo)->p1).tipo == 30 || (((tipo_array *)tipo)->p1).tipo == 29 || (((tipo_array *)tipo)->p1).tipo == 28 || (((tipo_array *)tipo)->p1).tipo == 27 || (((tipo_array *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_array *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_array *)tipo)->p1);
+					}
+					s += ">";
+					return s;
+					break;
+				case POINTER:
+					s += "<";
+					if ((((tipo_pointer *)tipo)->p1).tipo == 30 || (((tipo_pointer *)tipo)->p1).tipo == 29 || (((tipo_pointer *)tipo)->p1).tipo == 28 || (((tipo_pointer *)tipo)->p1).tipo == 27 || (((tipo_pointer *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_pointer *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_pointer *)tipo)->p1);
+					}
+					s += ">";
+					return s;
+					break;
+				case IDENTIFIER:
+				default:
+					break;
+			}
+			return s;
+		}
 };
 
 
@@ -810,13 +904,6 @@ class exp_booleana : public ArbolSintactico {
 			type * tipo_izq = (izq!=NULL) ? izq->get_tipo(): &tipo_unit::instance();
 			if (tipo_der != &tipo_error::instance() && tipo_izq != &tipo_error::instance()){
 				switch(instruccion){
-					case TYPE:
-						if (((tipo_tipo *)tipo_der)->p1 != ((tipo_tipo *)tipo_izq)->p1){
-							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_izq->tipo]+" != "+tipo2word[tipo_der->tipo],ASIGNACION));
-							error_sintactico = 1;
-							tipo = &tipo_error::instance();
-						}
-						break;
 					case NEGACION:
 						if (tipo_der != &tipo_bool::instance()){
 							tipo = &tipo_error::instance();
@@ -871,64 +958,18 @@ class exp_booleana : public ArbolSintactico {
 				tipo = &tipo_error::instance();
 			}
 		}
-		string tipo2s(string s, type * tipo){
-			s += tipo2word[tipo->tipo];
-			switch(tipo->tipo){
-				case TUPLE:
-					s += "<";
-					if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){
-						s += tipo2word[(((tipo_tuple *)tipo)->p1).tipo];
-					} else {
-						return tipo2s(s,&((tipo_tuple *)tipo)->p1);
-					}
-					s += ",";
-					if ((((tipo_tuple *)tipo)->p2).tipo == 30 || (((tipo_tuple *)tipo)->p2).tipo == 29 || (((tipo_tuple *)tipo)->p2).tipo == 28 || (((tipo_tuple *)tipo)->p2).tipo == 27 || (((tipo_tuple *)tipo)->p2).tipo == 26){
-						s += tipo2word[(((tipo_tuple *)tipo)->p2).tipo];
-					} else {
-						return tipo2s(s,&((tipo_tuple *)tipo)->p2);
-					}
-					s += ">";
-					return s;
-					break;
-				case LIST:
-					s += "<";
-					if ((((tipo_list *)tipo)->p1).tipo == 30 || (((tipo_list *)tipo)->p1).tipo == 29 || (((tipo_list *)tipo)->p1).tipo == 28 || (((tipo_list *)tipo)->p1).tipo == 27 || (((tipo_list *)tipo)->p1).tipo == 26){
-						s += tipo2word[(((tipo_list *)tipo)->p1).tipo];
-					} else {
-						return tipo2s(s,&((tipo_list *)tipo)->p1);
-					}
-					s += ">";
-					return s;
-					break;
-				case ARRAY:
-					s += "<";
-					if ((((tipo_array *)tipo)->p1).tipo == 30 || (((tipo_array *)tipo)->p1).tipo == 29 || (((tipo_array *)tipo)->p1).tipo == 28 || (((tipo_array *)tipo)->p1).tipo == 27 || (((tipo_array *)tipo)->p1).tipo == 26){
-						s += tipo2word[(((tipo_array *)tipo)->p1).tipo];
-					} else {
-						return tipo2s(s,&((tipo_array *)tipo)->p1);
-					}
-					s += ">";
-					return s;
-					break;
-				case POINTER:
-					s += "<";
-					if ((((tipo_pointer *)tipo)->p1).tipo == 30 || (((tipo_pointer *)tipo)->p1).tipo == 29 || (((tipo_pointer *)tipo)->p1).tipo == 28 || (((tipo_pointer *)tipo)->p1).tipo == 27 || (((tipo_pointer *)tipo)->p1).tipo == 26){
-						s += tipo2word[(((tipo_pointer *)tipo)->p1).tipo];
-					} else {
-						return tipo2s(s,&((tipo_pointer *)tipo)->p1);
-					}
-					s += ">";
-					return s;
-					break;
-				case IDENTIFIER:
-				default:
-					break;
-			}
-			return s;
-		}
 		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
 			if (tipo_val != 0){
 				switch(tipo_var->tipo){
+					case IDENTIFIER:
+						if (tipo_val->tipo != IDENTIFIER){
+							return true;
+						} else {
+							if (((tipo_identifier *)tipo_var)->p1 != ((tipo_identifier *)tipo_val)->p1){
+								return true;
+							}
+						}
+						return false;
 					case TYPE:
 						if (tipo_val->tipo != TYPE){
 							return true;
@@ -989,6 +1030,61 @@ class exp_booleana : public ArbolSintactico {
 				}
 			}
 			return true;
+		}
+		string tipo2s(string s, type * tipo){
+			s += tipo2word[tipo->tipo];
+			switch(tipo->tipo){
+				case TUPLE:
+					s += "<";
+					if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_tuple *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_tuple *)tipo)->p1);
+					}
+					s += ",";
+					if ((((tipo_tuple *)tipo)->p2).tipo == 30 || (((tipo_tuple *)tipo)->p2).tipo == 29 || (((tipo_tuple *)tipo)->p2).tipo == 28 || (((tipo_tuple *)tipo)->p2).tipo == 27 || (((tipo_tuple *)tipo)->p2).tipo == 26){
+						s += tipo2word[(((tipo_tuple *)tipo)->p2).tipo];
+					} else {
+						return tipo2s(s,&((tipo_tuple *)tipo)->p2);
+					}
+					s += ">";
+					return s;
+					break;
+				case LIST:
+					s += "<";
+					if ((((tipo_list *)tipo)->p1).tipo == 30 || (((tipo_list *)tipo)->p1).tipo == 29 || (((tipo_list *)tipo)->p1).tipo == 28 || (((tipo_list *)tipo)->p1).tipo == 27 || (((tipo_list *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_list *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_list *)tipo)->p1);
+					}
+					s += ">";
+					return s;
+					break;
+				case ARRAY:
+					s += "<";
+					if ((((tipo_array *)tipo)->p1).tipo == 30 || (((tipo_array *)tipo)->p1).tipo == 29 || (((tipo_array *)tipo)->p1).tipo == 28 || (((tipo_array *)tipo)->p1).tipo == 27 || (((tipo_array *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_array *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_array *)tipo)->p1);
+					}
+					s += ">";
+					return s;
+					break;
+				case POINTER:
+					s += "<";
+					if ((((tipo_pointer *)tipo)->p1).tipo == 30 || (((tipo_pointer *)tipo)->p1).tipo == 29 || (((tipo_pointer *)tipo)->p1).tipo == 28 || (((tipo_pointer *)tipo)->p1).tipo == 27 || (((tipo_pointer *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_pointer *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_pointer *)tipo)->p1);
+					}
+					s += ">";
+					return s;
+					break;
+				case IDENTIFIER:
+				default:
+					break;
+			}
+			return s;
 		}
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
@@ -1107,8 +1203,35 @@ class exp_index : public ArbolSintactico {
 					default:
 						return t;
 				}
+		}
+		switch(t->tipo){
+			case ARRAY:
+				return &((tipo_array *)t)->p1;
+			case LIST:
+				return &((tipo_list *)t)->p1;
+			case TUPLE: {
+				if (ind->get_tipo() == &tipo_int::instance()){
+					int indice = ind->get_valor();
+					if (indice == 0){
+						return &((tipo_tuple *)t)->p1;
+					}
+					else if (indice == 1) {
+						return &((tipo_tuple *)t)->p2;
+					}
+					else {
+						errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Fuera del rango de las tuplas",VERIFICACION));
+						error_sintactico = 1;
+						return &tipo_error::instance();
+					}
+				} else {
+					errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Sólo se puede indexar con enteros. Se esperaba el tipo INT y se tiene el tipo "+tipo2word[ind->get_tipo()->tipo],VERIFICACION));
+					error_sintactico = 1;
+					return &tipo_error::instance();
+				}
 			}
-			return t;
+			default:
+				return t;
+			}
 		}
 		int get_valor(){
 			return ind -> get_valor();
@@ -1160,35 +1283,7 @@ class ids : public ArbolSintactico {
 				tipo = id->get_tipo();
 				if (indx != NULL){
 					// Hay que sacar el tipo interno
-					switch(tipo->tipo){
-						case ARRAY:
-							tipo = indx->get_tipo_index(&((tipo_array *)tipo)->p1);
-							break;
-						case LIST:
-							tipo = indx->get_tipo_index(&((tipo_list *)tipo)->p1);
-							break;
-						case TUPLE: {
-							if (indx->get_tipo() == &tipo_int::instance()){
-								int indice = indx->get_valor();
-								if (indice == 0){
-									tipo = indx->get_tipo_index(&((tipo_tuple *)tipo)->p1);
-								}
-								else if (indice == 1) {
-									tipo = indx->get_tipo_index(&((tipo_tuple *)tipo)->p2);
-								}
-								else {
-									errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Fuera del rango de las tuplas",VERIFICACION));
-									tipo = &tipo_error::instance();
-									error_sintactico = 1;
-								}
-							} else {
-								errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Sólo se puede indexar con enteros. Se esperaba el tipo INT y se tiene el tipo "+tipo2word[indx->get_tipo()->tipo],VERIFICACION));
-								tipo = &tipo_error::instance();
-								error_sintactico = 1;
-							}
-							break;
-						}
-					}
+					tipo = indx->get_tipo_index(tipo);
 				}
 			} else {
 				tipo = idr->get_tipo();
@@ -1414,14 +1509,33 @@ class elementos : public ArbolSintactico {
 			type * tipo_val = elems->get_tipo();
 			if (tipo_var != &tipo_error::instance() && tipo_val != &tipo_error::instance()){
 				switch(tipo_var->tipo) {
+					case IDENTIFIER:
+						if (tipo_val->tipo != IDENTIFIER){
+							string s = tipo2s("",tipo_var);
+							s += " != ";
+							s += tipo2s("",tipo_val);
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
+							error_sintactico = 1;
+							tipo = &tipo_error::instance();
+						} else {
+							if (((tipo_identifier *)tipo_var)->p1 != ((tipo_identifier *)tipo_val)->p1){
+								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),((tipo_identifier *)tipo_var)->p1+" != "+((tipo_identifier *)tipo_val)->p1,ASIGNACION));
+								error_sintactico = 1;
+								tipo = &tipo_error::instance();
+							}
+						}
+						break;
 					case TYPE:
 						if (tipo_val->tipo != TYPE){
-							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
+							string s = tipo2s("",tipo_var);
+							s += " != ";
+							s += tipo2s("",tipo_val);
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
 							error_sintactico = 1;
 							tipo = &tipo_error::instance();
 						} else {
 							if (((tipo_tipo *)tipo_var)->p1 != ((tipo_tipo *)tipo_val)->p1){
-								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
+								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),((tipo_tipo *)tipo_var)->p1+" != "+((tipo_tipo *)tipo_val)->p1,ASIGNACION));
 								error_sintactico = 1;
 								tipo = &tipo_error::instance();
 							}
@@ -1429,20 +1543,29 @@ class elementos : public ArbolSintactico {
 						break;
 					case TUPLE:
 						if (tipo_val->tipo != TUPLE){
-							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ELEMENTOS));
+							string s = tipo2s("",tipo_var);
+							s += " != ";
+							s += tipo2s("",tipo_val);
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
 							error_sintactico = 1;
 							tipo = &tipo_error::instance();
 						} else {
 							if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1) {
 								if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1)){
-									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[(&((tipo_tuple *)tipo_var)->p1)->tipo]+" != "+tipo2word[(&((tipo_tuple *)tipo_val)->p1)->tipo],ELEMENTOS));
+									string s = tipo2s("",&((tipo_tuple *)tipo_var)->p1);
+									s += " != ";
+									s += tipo2s("",&((tipo_tuple *)tipo_val)->p1);
+									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
 									error_sintactico = 1;
 									tipo = &tipo_error::instance();
 								}
 							}
 							if (&((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
 								if (verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
-									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[(&((tipo_tuple *)tipo_var)->p2)->tipo]+" != "+tipo2word[(&((tipo_tuple *)tipo_val)->p2)->tipo],ELEMENTOS));
+									string s = tipo2s("",&((tipo_tuple *)tipo_var)->p2);
+									s += " != ";
+									s += tipo2s("",&((tipo_tuple *)tipo_val)->p2);
+									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
 									error_sintactico = 1;
 									tipo = &tipo_error::instance();
 								}
@@ -1451,14 +1574,18 @@ class elementos : public ArbolSintactico {
 						break;
 					case ARRAY:
 						if (tipo_val->tipo != ARRAY){
-							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ELEMENTOS));
+							string s = tipo2s("",tipo_var);
+							s += " != ";
+							s += tipo2s("",tipo_val);
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
 							error_sintactico = 1;
-							tipo = &tipo_error::instance();
-
 						} else {
 							if (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
 								if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
-									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[(&((tipo_array *)tipo_var)->p1)->tipo]+" != "+tipo2word[(&((tipo_array *)tipo_val)->p1)->tipo],ELEMENTOS));
+									string s = tipo2s("",&((tipo_array *)tipo_var)->p1);
+									s += " != ";
+									s += tipo2s("",&((tipo_array *)tipo_val)->p1);
+									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
 									error_sintactico = 1;
 									tipo = &tipo_error::instance();
 								}
@@ -1467,13 +1594,19 @@ class elementos : public ArbolSintactico {
 						break;
 					case LIST:
 						if (tipo_val->tipo != LIST){
-							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ELEMENTOS));
+							string s = tipo2s("",tipo_var);
+							s += " != ";
+							s += tipo2s("",tipo_val);
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
 							error_sintactico = 1;
 							tipo = &tipo_error::instance();
 						} else {
 							if (&((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) {
 								if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
-									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[(&((tipo_list *)tipo_var)->p1)->tipo]+" != "+tipo2word[(&((tipo_list *)tipo_val)->p1)->tipo],ELEMENTOS));
+									string s = tipo2s("",&((tipo_list *)tipo_var)->p1);
+									s += " != ";
+									s += tipo2s("",&((tipo_list *)tipo_val)->p1);
+									errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
 									error_sintactico = 1;
 									tipo = &tipo_error::instance();
 								}
@@ -1483,7 +1616,7 @@ class elementos : public ArbolSintactico {
 					default:
 						if (tipo_val != tipo_var){
 							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && (tipo_var != &tipo_string::instance() || tipo_val != &tipo_char::instance())){
-								errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ELEMENTOS));
+								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),tipo2word[tipo_var->tipo]+" != "+tipo2word[tipo_val->tipo],ASIGNACION));
 								error_sintactico = 1;
 								tipo = &tipo_error::instance();
 							}
@@ -1494,6 +1627,15 @@ class elementos : public ArbolSintactico {
 		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
 			if (tipo_val != 0){
 				switch(tipo_var->tipo){
+					case IDENTIFIER:
+						if (tipo_val->tipo != IDENTIFIER){
+							return true;
+						} else {
+							if (((tipo_identifier *)tipo_var)->p1 != ((tipo_identifier *)tipo_val)->p1){
+								return true;
+							}
+						}
+						return false;
 					case TYPE:
 						if (tipo_val->tipo != TYPE){
 							return true;
@@ -1551,6 +1693,61 @@ class elementos : public ArbolSintactico {
 				}
 			}
 			return true;
+		}
+		string tipo2s(string s, type * tipo){
+			s += tipo2word[tipo->tipo];
+			switch(tipo->tipo){
+				case TUPLE:
+					s += "<";
+					if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_tuple *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_tuple *)tipo)->p1);
+					}
+					s += ",";
+					if ((((tipo_tuple *)tipo)->p2).tipo == 30 || (((tipo_tuple *)tipo)->p2).tipo == 29 || (((tipo_tuple *)tipo)->p2).tipo == 28 || (((tipo_tuple *)tipo)->p2).tipo == 27 || (((tipo_tuple *)tipo)->p2).tipo == 26){
+						s += tipo2word[(((tipo_tuple *)tipo)->p2).tipo];
+					} else {
+						return tipo2s(s,&((tipo_tuple *)tipo)->p2);
+					}
+					s += ">";
+					return s;
+					break;
+				case LIST:
+					s += "<";
+					if ((((tipo_list *)tipo)->p1).tipo == 30 || (((tipo_list *)tipo)->p1).tipo == 29 || (((tipo_list *)tipo)->p1).tipo == 28 || (((tipo_list *)tipo)->p1).tipo == 27 || (((tipo_list *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_list *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_list *)tipo)->p1);
+					}
+					s += ">";
+					return s;
+					break;
+				case ARRAY:
+					s += "<";
+					if ((((tipo_array *)tipo)->p1).tipo == 30 || (((tipo_array *)tipo)->p1).tipo == 29 || (((tipo_array *)tipo)->p1).tipo == 28 || (((tipo_array *)tipo)->p1).tipo == 27 || (((tipo_array *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_array *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_array *)tipo)->p1);
+					}
+					s += ">";
+					return s;
+					break;
+				case POINTER:
+					s += "<";
+					if ((((tipo_pointer *)tipo)->p1).tipo == 30 || (((tipo_pointer *)tipo)->p1).tipo == 29 || (((tipo_pointer *)tipo)->p1).tipo == 28 || (((tipo_pointer *)tipo)->p1).tipo == 27 || (((tipo_pointer *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_pointer *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_pointer *)tipo)->p1);
+					}
+					s += ">";
+					return s;
+					break;
+				case IDENTIFIER:
+				default:
+					break;
+			}
+			return s;
 		}
 };
 

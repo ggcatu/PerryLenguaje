@@ -1,18 +1,13 @@
-//Error asignando struct distintos
-
-type struct tuct{
-	int hello;
-}
-
-type struct	 tact{
-	int hello;
-}
+//Error de rango de tuplas
 
 main{
 	create{
-		tact hi;
-		tuct ho;
+		tuple (int,bool) tutu;
+		array int [9] b;
+		bool c;
+		string s;
 	} execute{
-		hi = ho;
+		s = "hola";
+		tutu[2] = s;
  	};
 }
