@@ -13,8 +13,8 @@ unit test(int @param, bool param2){
 	execute{
 		if (twoforone[0]){
 			<< "aja";
-		}
-	}
+		};
+	};
 }
 
 main{

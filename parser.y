@@ -8,6 +8,7 @@
 #include "table.h"
 #include "tipos.h"
 #include <sstream>
+#include <vector>
 
 using namespace std;
 
@@ -24,6 +25,10 @@ ArbolSintactico * root_ast;
 sym_table table;
 bool error_sintactico = 0;
 int last_uuid = 1;
+//Funcion que se esta creando actualmente
+string current_id;
+//Numero del parametro que se esta checkeando actualmente
+int current_par;
 
 void yyerror (char const *s) {
 	error_sintactico = 1;
@@ -82,6 +87,15 @@ void declarar_variable(string identificador, int columna){
 	}
 }
 
+void verificar_parametros(type *t1, type *t2){
+	cout << current_id << endl;
+	cout << t1 << endl;
+	cout << t2 << endl;
+	current_par = current_par + 1;
+	if(((tipo_tipo*)t1) != ((tipo_tipo*)t2)){
+		cout <<"ERROR EN PARAMETROS DE FUNCION\n";
+	}
+}
 
 %}
 
@@ -131,8 +145,8 @@ void declarar_variable(string identificador, int columna){
 %token <ch> CHAR
 %token <str> STRING 
 %token <boolean> TRUE FALSE
-%type <arb> S Alias Create Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals Corchetes Parabre Ids_plox Llaveabre LlaveabreSp Llavecierra IdentifierSp ListLlamada
-%type <str> Identifier
+%type <arb> S Alias Create Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals Corchetes Parabre Ids_plox Llaveabre LlaveabreSp Llavecierra IdentifierSp IdentifierFc ListLlamada
+%type <str> Identifier IdentifierPa IdentifierF
 
 
 %%
@@ -152,12 +166,12 @@ Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }
 			| MAIN LLAVEABRE error LLAVECIERRA					{ $$ = (ArbolSintactico*)(NULL); }
 			| MAIN LLAVEABRE error LLAVECIERRA Start			{ $$ = (ArbolSintactico*)(NULL); }
 			
-			| IdentifierSp Parabre Varlist PARCIERRA	LLAVEABRE Sec Llavecierra Start		{ $$ = new funcion($1, $6, $8); }
-			| IdentifierSp Parabre Varlist PARCIERRA 	LLAVEABRE Sec Llavecierra			{ $$ = new funcion($1, $6); }
-			| IdentifierSp Parabre error PARCIERRA		LLAVEABRE Sec Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
-			| IdentifierSp Parabre error PARCIERRA		LLAVEABRE Sec Llavecierra Start		{ $$ = (ArbolSintactico*)(NULL); }
-			| IdentifierSp Parabre Varlist PARCIERRA	LLAVEABRE error Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
-			| IdentifierSp Parabre Varlist PARCIERRA	LLAVEABRE error Llavecierra	Start	{ $$ = (ArbolSintactico*)(NULL); }
+			| IdentifierFc Parabre Varlist PARCIERRA	LLAVEABRE Sec Llavecierra Start		{ $$ = new funcion($1, $6, $8); }
+			| IdentifierFc Parabre Varlist PARCIERRA 	LLAVEABRE Sec Llavecierra			{ $$ = new funcion($1, $6); }
+			| IdentifierFc Parabre error PARCIERRA		LLAVEABRE Sec Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
+			| IdentifierFc Parabre error PARCIERRA		LLAVEABRE Sec Llavecierra Start		{ $$ = (ArbolSintactico*)(NULL); }
+			| IdentifierFc Parabre Varlist PARCIERRA	LLAVEABRE error Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
+			| IdentifierFc Parabre Varlist PARCIERRA	LLAVEABRE error Llavecierra	Start	{ $$ = (ArbolSintactico*)(NULL); }
 
 			| TYPE STRUCT Llaveabre Declist Llavecierra Start 	{ $$ = new skip($6); }
 			| TYPE STRUCT Llaveabre Declist Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
@@ -185,7 +199,7 @@ Llaveabre 	: IDENTIFIER LLAVEABRE 	 							{ declarar_variable($1, yylloc.first_
 Llavecierra : LLAVECIERRA 										{ table.exit_scope(); }
 			;
 
-Parabre 	: PARABRE 											{ table.new_scope(); }
+Parabre 	: PARABRE 											{  current_par = 0;table.new_scope(); }
 			;
 
 Scope 		: Create LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA 	{ $$ = new bloque($3,$7); table.exit_scope(); }
@@ -220,8 +234,8 @@ LlaveabreSp : LLAVEABRE 										{ string u = uuid(); $$ = new identificador(u)
 			; 
 
 
-Varlist 	: IdentifierSp COMA Varlist 						{}
-			| IdentifierSp 										{}
+Varlist 	: IdentifierPa COMA Varlist 						{table.lookup(current_id,-1)->tipo->parametros.push_back(*(table.lookup($1,-1)->tipo));}
+			| IdentifierPa 										{table.lookup(current_id,-1)->tipo->parametros.push_back(*(table.lookup($1,-1)->tipo));}
 			| Typedef REFERENCE IDENTIFIER COMA Varlist			{ declarar_variable($3, yylloc.first_column); asignar_tipo($1, $3); }
 			| Typedef REFERENCE IDENTIFIER						{ declarar_variable($3, yylloc.first_column); asignar_tipo($1, $3); }
 			|													{ $$ = (ArbolSintactico*)(NULL); }
@@ -247,7 +261,7 @@ Inst		: Scope					 							{ $$ = $1; }
 			| FREE PARABRE IDENTIFIER PARCIERRA					{ usar_variable($3, yylloc.first_column); $$ = new memoria(new identificador($3),false); }
 			| SALIDA Exp 										{ $$ = new entrada_salida($2,false); }
 			| ENTRADA Exp  										{ $$ = new entrada_salida($2,true); }
-			| IDENTIFIER PARABRE ListLlamada PARCIERRA 			{ usar_variable($1, yylloc.first_column); $$ = new llamada(new identificador($1),$3); }
+			| IdentifierF Parabre ListLlamada PARCIERRA 			{ usar_variable($1, yylloc.first_column); $$ = new llamada(new identificador($1),$3); }
 			| RETURN Exp										{ $$ = new ret_brk(true, $2); }
 			| BREAK												{ $$ = new ret_brk(false, (ArbolSintactico*)(NULL)); }
 			| 													{ $$ = new skip(); }
@@ -257,6 +271,15 @@ Identifier 	: IDENTIFIER 										{ declarar_variable($1, yylloc.first_column);
 			;
 
 IdentifierSp: Typedef IDENTIFIER 								{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2); $$ = new identificador($2); }
+			;
+
+IdentifierPa: Typedef IDENTIFIER 								{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2); $$ = $2; }
+			;
+
+IdentifierFc: Typedef IDENTIFIER 								{ current_id = $2; cout << current_id << endl;declarar_variable($2, yylloc.first_column); asignar_tipo(new tipedec(*new tipo_funcion(((tipedec *)$1)->tipo),$1), $2); $$ = new identificador($2); }
+			;
+
+IdentifierF : IDENTIFIER 										{ current_id = $1; cout << current_id << endl; $$ = $1;}
 			;
 
 For  		: FOR PARABRE 										{ table.new_scope(); }
@@ -281,7 +304,7 @@ Exp	 		: Exp SUMA Exp										{ $$ = new exp_aritmetica($1,$3,0); }
 			| Exp CONJUNCION Exp								{ $$ = new exp_booleana($1,$3,7); }
 			| NEGACION Exp										{ $$ = new exp_booleana($2,8); }
 
-			| IDENTIFIER PARABRE ListLlamada PARCIERRA 			{ usar_variable($1, yylloc.first_column); $$ = new llamada(new identificador($1),$3); }
+			| IdentifierF Parabre ListLlamada PARCIERRA 		{ usar_variable($1, yylloc.first_column); $$ = new llamada(new identificador($1),$3); }
 
 			| OPTR Ids	 										{ $$ = new exp_point(new ids($2)); }
 			| Literals											{ $$ = $1; }
@@ -317,7 +340,7 @@ List		: Exp COMA List 									{ $$ = new elementos($3,$1); }
 			| 													{ $$ = new elementos();  }
 			;
 
-ListLlamada	: Exp COMA ListLlamada 								{ $$ = new parametros($3,$1); }
-			| Exp 												{ $$ = new parametros($1); }
+ListLlamada	: Exp COMA ListLlamada 								{ $$ = new parametros($3,$1); verificar_parametros($1->get_tipo(),&(table.lookup(current_id,-1)->tipo->parametros[current_par])); }
+			| Exp 												{ $$ = new parametros($1); verificar_parametros($1->get_tipo(),&(table.lookup(current_id,-1)->tipo->parametros[current_par])); }
 			| 													{ $$ = new parametros(); }
 			;

@@ -22,7 +22,6 @@ main{
 		} p;
 	} execute{
 		i = p.enteros;
-		i = 1;
 		j = i;
  	};
 }

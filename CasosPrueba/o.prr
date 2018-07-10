@@ -1,0 +1,24 @@
+//Error tipos en for
+
+type numeritos = int;
+
+int suma(int x, float y, int xx, float yy){
+	return x + y;
+}
+
+int sumas(int x, float y){
+	return x + y;
+}
+		
+int ssuma(int x, float y){
+	return x + y;
+}
+
+main{
+	create{
+		float tomate;
+	} execute{
+		tomate = 1.1;
+		suma(2,tomate,3,3.3);
+ 	};
+}

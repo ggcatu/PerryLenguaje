@@ -20,7 +20,7 @@ main{
 		onion caraota;
 		nonion carraota;
 	} execute{
-		tomate.cebolla = tomate;
 		carraota.cebolla = tomate;
+		tomate.cebolla = tomate;
  	};
 }
