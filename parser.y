@@ -87,14 +87,146 @@ void declarar_variable(string identificador, int columna){
 	}
 }
 
+		bool verificar_aux(type * tipo_var, type * tipo_val){
+			if (tipo_val != 0){
+				switch(tipo_var->tipo){
+					case IDENTIFIER:
+						if (tipo_val->tipo != IDENTIFIER){
+							return true;
+						} else {
+							if (((tipo_identifier *)tipo_var)->p1 != ((tipo_identifier *)tipo_val)->p1){
+								return true;
+							}
+						}
+						return false;
+					case TYPE:
+						if (tipo_val->tipo != TYPE){
+							return true;
+						} else {
+							if (((tipo_tipo *)tipo_var)->p1 != ((tipo_tipo *)tipo_val)->p1){
+								return true;
+							}
+						}
+						return false;
+					case TUPLE:
+						if (tipo_val->tipo != TUPLE){
+							return true;
+						} else {
+							if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1)){
+									return true;
+								}
+							}
+							if (&((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
+								if (verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
+									return true;
+								}
+							}
+						}
+						return false;
+					case ARRAY:
+						if (tipo_val->tipo != ARRAY){
+							return true;
+						} else {
+							if (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
+									return  true;
+								}
+							}
+						}
+						return false;
+					case LIST:
+						if (tipo_val->tipo != LIST){
+							return true;
+						} else {
+							if (&((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
+									return true;
+								}
+							}
+						}
+						return false;
+					default:
+						if (tipo_val != tipo_var){
+							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && (tipo_var != &tipo_string::instance() || tipo_val != &tipo_char::instance()) && tipo_val != &tipo_unit::instance()){
+								return true;
+							}
+						}
+						return false;
+				}
+			}
+			return true;
+		}
+		string tipo2s(string s, type * tipo){
+			s += tipo2word[tipo->tipo];
+			switch(tipo->tipo){
+				case TUPLE:
+					s += "<";
+					if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_tuple *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_tuple *)tipo)->p1);
+					}
+					s += ",";
+					if ((((tipo_tuple *)tipo)->p2).tipo == 30 || (((tipo_tuple *)tipo)->p2).tipo == 29 || (((tipo_tuple *)tipo)->p2).tipo == 28 || (((tipo_tuple *)tipo)->p2).tipo == 27 || (((tipo_tuple *)tipo)->p2).tipo == 26){
+						s += tipo2word[(((tipo_tuple *)tipo)->p2).tipo];
+					} else {
+						return tipo2s(s,&((tipo_tuple *)tipo)->p2);
+					}
+					s += ">";
+					return s;
+					break;
+				case LIST:
+					s += "<";
+					if ((((tipo_list *)tipo)->p1).tipo == 30 || (((tipo_list *)tipo)->p1).tipo == 29 || (((tipo_list *)tipo)->p1).tipo == 28 || (((tipo_list *)tipo)->p1).tipo == 27 || (((tipo_list *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_list *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_list *)tipo)->p1);
+					}
+					s += ">";
+					return s;
+					break;
+				case ARRAY:
+					s += "<";
+					if ((((tipo_array *)tipo)->p1).tipo == 30 || (((tipo_array *)tipo)->p1).tipo == 29 || (((tipo_array *)tipo)->p1).tipo == 28 || (((tipo_array *)tipo)->p1).tipo == 27 || (((tipo_array *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_array *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_array *)tipo)->p1);
+					}
+					s += ">";
+					return s;
+					break;
+				case POINTER:
+					s += "<";
+					if ((((tipo_pointer *)tipo)->p1).tipo == 30 || (((tipo_pointer *)tipo)->p1).tipo == 29 || (((tipo_pointer *)tipo)->p1).tipo == 28 || (((tipo_pointer *)tipo)->p1).tipo == 27 || (((tipo_pointer *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_pointer *)tipo)->p1).tipo];
+					} else {
+						return tipo2s(s,&((tipo_pointer *)tipo)->p1);
+					}
+					s += ">";
+					return s;
+					break;
+				case IDENTIFIER:
+				default:
+					break;
+			}
+			return s;
+		}
+
 void verificar_parametros(type *t1, type *t2){
 	//cout << current_id << endl;
 	//cout << t1 << endl;
 	//cout << t2 << endl;
-	current_par++;
-	if(((tipo_tipo*)t1) != ((tipo_tipo*)t2)){
-		cout <<"ERROR EN PARAMETROS DE FUNCION\n";
-		error_sintactico = 1;
+	if (t2 != NULL && t1 != NULL){
+		current_par++;
+		if(verificar_aux(((tipo_tipo*)t1),((tipo_tipo*)t2))){
+			string s = "En la llamada a función se esperaba el tipo ";
+			s += tipo2s("",((tipo_tipo*)t1));
+			s += " y se tiene el tipo ";
+			s += tipo2s("",((tipo_tipo*)t2));
+			errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext), s, VERIFICACION));
+			error_sintactico = 1;
+		}
 	}
 }
 
