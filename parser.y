@@ -145,7 +145,7 @@ void verificar_parametros(type *t1, type *t2){
 %token <ch> CHAR
 %token <str> STRING 
 %token <boolean> TRUE FALSE
-%type <arb> S Alias Create Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals Corchetes Parabre Ids_plox Llaveabre LlaveabreSp Llavecierra IdentifierSp IdentifierFc ListLlamada
+%type <arb> S Alias Create Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals Corchetes Parabre Llaveabre LlaveabreSp Llavecierra IdentifierSp IdentifierFc ListLlamada
 %type <str> Identifier IdentifierPa IdentifierF
 
 
@@ -323,12 +323,9 @@ Literals	: Ids												{ $$ = $1; }
 			| FALSE 											{ $$ = new booleano($1); }
 			;
 
-Ids 		: Ids_plox Ids										{ $$ = new ids($1,$2); table.exit_scope(); }
+Ids 		: Ids PUNTO Ids										{ $$ = new ids($1,$3); table.exit_scope(); }
 			| IDENTIFIER Corchetes 								{ usar_variable($1, yylloc.first_column); $$ = new ids(new identificador($1),(ArbolSintactico*)(NULL),$2); }
-			| IDENTIFIER 										{ usar_variable($1, yylloc.first_column); $$ = new ids(new identificador($1)); }
-			;
-
-Ids_plox 	: IDENTIFIER PUNTO 									{ usar_variable($1, yylloc.first_column); table.open_scope($1); $$ = new identificador($1); }
+			| IDENTIFIER 										{ table.open_scope($1); usar_variable($1, yylloc.first_column); $$ = new ids(new identificador($1)); }
 			;
 
 Corchetes	: CORCHETEABRE Exp CORCHETECIERRA Corchetes 		{ $$ = new exp_index($2,$4); }

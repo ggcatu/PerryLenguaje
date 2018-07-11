@@ -6,6 +6,7 @@ type struct t{
 
 type struct ar{
 	char hello;
+	int hola;
 }
 
 main{
@@ -13,6 +14,6 @@ main{
 		t ho;
 		array tuple (t,ar) [3] tutu;
 	} execute{
-		tutu[1][1] = ho;
+		tutu[1][1].hola = ho;
  	};
 }
