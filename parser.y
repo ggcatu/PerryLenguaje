@@ -283,10 +283,10 @@ IdentifierSp: Typedef IDENTIFIER 								{ declarar_variable($2, yylloc.first_co
 IdentifierPa: Typedef IDENTIFIER 								{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2); $$ = $2; }
 			;
 
-IdentifierFc: Typedef IDENTIFIER 								{ current_id = $2; cout << current_id << endl;declarar_variable($2, yylloc.first_column); asignar_tipo(new tipedec(*new tipo_funcion(((tipedec *)$1)->tipo),$1), $2); $$ = new identificador($2); }
+IdentifierFc: Typedef IDENTIFIER 								{ current_id = $2; declarar_variable($2, yylloc.first_column); asignar_tipo(new tipedec(*new tipo_funcion(((tipedec *)$1)->tipo),$1), $2); $$ = new identificador($2); }
 			;
 
-IdentifierF : IDENTIFIER 										{ current_id = $1; cout << current_id << endl; $$ = $1;}
+IdentifierF : IDENTIFIER 										{ current_id = $1; $$ = $1;}
 			;
 
 For  		: FOR PARABRE 										{ table.new_scope(); }
