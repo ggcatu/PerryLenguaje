@@ -101,7 +101,7 @@ void verificar_parametros(type *t1, type *t2){
 void parametrizar_funcion(char * str){
 	type * funcion = table.lookup(current_id,-1)->tipo;
 	type * param = table.lookup(str,-1)->tipo;
-	((tipo_funcion *)funcion)->parametros.push_back(*param);
+	funcion->parametros.push_back(param);
 }
 
 %}
@@ -241,8 +241,8 @@ LlaveabreSp : LLAVEABRE 										{ string u = uuid(); $$ = new identificador(u)
 			; 
 
 
-Varlist 	: IdentifierPa COMA Varlist 						{ parametrizar_funcion($1); }
-			| IdentifierPa 										{ parametrizar_funcion($1); }
+Varlist 	: IdentifierPa COMA Varlist 						{parametrizar_funcion($1);}
+			| IdentifierPa 										{parametrizar_funcion($1);}
 			| Typedef REFERENCE IDENTIFIER COMA Varlist			{ declarar_variable($3, yylloc.first_column); asignar_tipo($1, $3); }
 			| Typedef REFERENCE IDENTIFIER						{ declarar_variable($3, yylloc.first_column); asignar_tipo($1, $3); }
 			|													{ $$ = (ArbolSintactico*)(NULL); }
@@ -268,7 +268,7 @@ Inst		: Scope					 							{ $$ = $1; }
 			| FREE PARABRE IDENTIFIER PARCIERRA					{ usar_variable($3, yylloc.first_column); $$ = new memoria(new identificador($3),false); }
 			| SALIDA Exp 										{ $$ = new entrada_salida($2,false); }
 			| ENTRADA Exp  										{ $$ = new entrada_salida($2,true); }
-			| IdentifierF Parabre ListLlamada PARCIERRA 		{ usar_variable($1, yylloc.first_column); $$ = new llamada(new identificador($1),$3); }
+			| IdentifierF Parabre ListLlamada PARCIERRA 			{ usar_variable($1, yylloc.first_column); $$ = new llamada(new identificador($1),$3); }
 			| RETURN Exp										{ $$ = new ret_brk(true, $2); }
 			| BREAK												{ $$ = new ret_brk(false, (ArbolSintactico*)(NULL)); }
 			| 													{ $$ = new skip(); }
@@ -347,7 +347,7 @@ List		: Exp COMA List 									{ $$ = new elementos($3,$1); }
 			| 													{ $$ = new elementos();  }
 			;
 
-ListLlamada	: Exp COMA ListLlamada 								{ $$ = new parametros($1,$3); }
-			| Exp 												{ $$ = new parametros($1);}
+ListLlamada	: Exp COMA ListLlamada 								{ $$ = new parametros($3,$1); verificar_parametros($1->get_tipo(),(table.lookup(current_id,-1)->tipo->parametros[current_par])); }
+			| Exp 												{ $$ = new parametros($1); verificar_parametros($1->get_tipo(),(table.lookup(current_id,-1)->tipo->parametros[current_par])); }
 			| 													{ $$ = new parametros(); }
 			;

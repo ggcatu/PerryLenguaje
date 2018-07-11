@@ -302,7 +302,7 @@ class llamada : public ArbolSintactico {
 	public:
 		ArbolSintactico * parametros;
 		ArbolSintactico * id;
-		llamada(ArbolSintactico * i, ArbolSintactico * p) : id(i), parametros(p) {verificar();}
+		llamada(ArbolSintactico * i, ArbolSintactico * p) : id(i), parametros(p) {}
 
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
