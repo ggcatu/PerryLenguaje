@@ -108,7 +108,7 @@ class tipo_funcion: public CRTP_type<tipo_funcion>{
 	public:
 		type &p1;
 		std::vector<type> parametros;
-		tipo_funcion(type &p) : CRTP_type(FUNC), p1(p) {}; 
+		tipo_funcion(type &p) : CRTP_type(FUNC), p1(p) {};
 };
 
 class tipo_error: public CRTP_type<tipo_error>{

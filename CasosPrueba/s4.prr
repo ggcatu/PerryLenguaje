@@ -5,19 +5,15 @@ unit test(int @param, bool param2){
 		int inte;
 	}
 	execute{
-		inte = 2+2;
 		return inte;
 	};
 }
-
-type numeee = int;
 
 int utest(int @param, bool param2){
 	create{
 		int inte;
 	}
 	execute{
-		inte = 2+2;
 		return inte;
 	};
 }
@@ -26,10 +22,9 @@ main{
 	create{
 		int a;
 		ptr int b;
-		numeee c;
 	}
  	execute{
  		a = &b;
- 		c = 1;
+ 		utest(1,false);
  	};
 }

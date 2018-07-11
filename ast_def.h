@@ -22,6 +22,7 @@ class ArbolSintactico {
 		virtual int get_valor(){};
 		virtual string get_nombre(){};
 		virtual type * get_tipo_index(type * t){};
+		virtual void verificar_llamada(vector<type> parametros, int actual) {};
 };
 
 #endif
