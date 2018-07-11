@@ -302,7 +302,7 @@ class llamada : public ArbolSintactico {
 	public:
 		ArbolSintactico * parametros;
 		ArbolSintactico * id;
-		llamada(ArbolSintactico * i, ArbolSintactico * p) : id(i), parametros(p) {}
+		llamada(ArbolSintactico * i, ArbolSintactico * p) : id(i), parametros(p) {verificar();}
 
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
@@ -319,8 +319,8 @@ class llamada : public ArbolSintactico {
 			table_element * instancia = table.lookup(valor, -1);
 			if (instancia){
 				if (instancia->tipo->tipo == FUNC){
-					vector<type> params = ((tipo_funcion *)(instancia->tipo))->parametros;
-					parametros->verificar_llamada(params,params.size());
+					vector<type *> params = instancia->tipo->parametros;
+					parametros->verificar_llamada(params, params.size()-1);
 				} else {
 					string s = "\"" + valor + "\" no es una función";
 					errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,VERIFICACION));
@@ -1487,16 +1487,16 @@ class parametros : public ArbolSintactico {
 		type * get_tipo(){
 			return val->get_tipo();
 		}
-		virtual void verificar_llamada(vector<type> parametros, int actual){
+		virtual void verificar_llamada(vector<type *> parametros, int actual){
 			int tam = parametros.size();
 			if (val != NULL){
 				cout << 10 << "actual " << IntToString(actual) << "tam " << tam << endl;
 				type * tipo_val = val->get_tipo();
-				cout << 11 << "tipo_param_llamada " << tipo_val->tipo << " tipo_param_vector " << &parametros[actual].tipo << endl;
-				if (verificar_aux(tipo_val,&parametros[actual])){
+				cout << 11 << "tipo_param_llamada " << tipo_val->tipo << " tipo_param_vector " << &parametros[actual]->tipo << endl;
+				if (verificar_aux(tipo_val,parametros[actual])){
 					cout << 12 << endl;
 					string s = "Se esperaba que el argumento "+IntToString(actual)+" sea del tipo ";
-					s += tipo2s("",&parametros[actual]);
+					s += tipo2s("",parametros[actual]);
 					s += " pero se tiene el tipo ";
 					s += tipo2s("",tipo_val);
 					errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,VERIFICACION));

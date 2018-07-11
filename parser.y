@@ -92,10 +92,10 @@ void verificar_parametros(type *t1, type *t2){
 	//cout << t1 << endl;
 	//cout << t2 << endl;
 	current_par++;
-	if(((tipo_tipo*)t1) != ((tipo_tipo*)t2)){
-		cout <<"ERROR EN PARAMETROS DE FUNCION\n";
-		error_sintactico = 1;
-	}
+	//if(((tipo_tipo*)t1) != ((tipo_tipo*)t2)){
+	//	cout <<"ERROR EN PARAMETROS DE FUNCION\n";
+	//	error_sintactico = 1;
+	//}
 }
 
 void parametrizar_funcion(char * str){
