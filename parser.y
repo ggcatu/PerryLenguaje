@@ -243,8 +243,8 @@ LlaveabreSp : LLAVEABRE 										{ string u = uuid(); $$ = new identificador(u)
 
 Varlist 	: IdentifierPa COMA Varlist 						{parametrizar_funcion($1);}
 			| IdentifierPa 										{parametrizar_funcion($1);}
-			| Typedef REFERENCE IDENTIFIER COMA Varlist			{ declarar_variable($3, yylloc.first_column); asignar_tipo($1, $3); }
-			| Typedef REFERENCE IDENTIFIER						{ declarar_variable($3, yylloc.first_column); asignar_tipo($1, $3); }
+			| Typedef REFERENCE IDENTIFIER COMA Varlist			{ declarar_variable($3, yylloc.first_column); asignar_tipo($1, $3); parametrizar_funcion($3); }
+			| Typedef REFERENCE IDENTIFIER						{ declarar_variable($3, yylloc.first_column); asignar_tipo($1, $3); parametrizar_funcion($3); }
 			|													{ $$ = (ArbolSintactico*)(NULL); }
 			;
 
