@@ -90,7 +90,7 @@ void declarar_variable(string identificador, int columna){
 void parametrizar_funcion(char * str){
 	type * funcion = table.lookup(current_id,-1)->tipo;
 	type * param = table.lookup(str,-1)->tipo;
-	funcion->parametros.push_back(param);
+	funcion->parametros.insert(funcion->parametros.begin(), param);
 }
 
 %}
