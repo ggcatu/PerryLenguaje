@@ -88,13 +88,20 @@ void declarar_variable(string identificador, int columna){
 }
 
 void verificar_parametros(type *t1, type *t2){
-	cout << current_id << endl;
-	cout << t1 << endl;
-	cout << t2 << endl;
-	current_par = current_par + 1;
+	//cout << current_id << endl;
+	//cout << t1 << endl;
+	//cout << t2 << endl;
+	current_par++;
 	if(((tipo_tipo*)t1) != ((tipo_tipo*)t2)){
 		cout <<"ERROR EN PARAMETROS DE FUNCION\n";
+		error_sintactico = 1;
 	}
+}
+
+void parametrizar_funcion(char * str){
+	type * funcion = table.lookup(current_id,-1)->tipo;
+	type * param = table.lookup(str,-1)->tipo;
+	funcion->parametros.push_back(param);
 }
 
 %}
@@ -199,7 +206,7 @@ Llaveabre 	: IDENTIFIER LLAVEABRE 	 							{ declarar_variable($1, yylloc.first_
 Llavecierra : LLAVECIERRA 										{ table.exit_scope(); }
 			;
 
-Parabre 	: PARABRE 											{  current_par = 0;table.new_scope(); }
+Parabre 	: PARABRE 											{ current_par = 0; table.new_scope(); }
 			;
 
 Scope 		: Create LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA 	{ $$ = new bloque($3,$7); table.exit_scope(); }
@@ -234,8 +241,8 @@ LlaveabreSp : LLAVEABRE 										{ string u = uuid(); $$ = new identificador(u)
 			; 
 
 
-Varlist 	: IdentifierPa COMA Varlist 						{table.lookup(current_id,-1)->tipo->parametros.push_back(*(table.lookup($1,-1)->tipo));}
-			| IdentifierPa 										{table.lookup(current_id,-1)->tipo->parametros.push_back(*(table.lookup($1,-1)->tipo));}
+Varlist 	: IdentifierPa COMA Varlist 						{parametrizar_funcion($1);}
+			| IdentifierPa 										{parametrizar_funcion($1);}
 			| Typedef REFERENCE IDENTIFIER COMA Varlist			{ declarar_variable($3, yylloc.first_column); asignar_tipo($1, $3); }
 			| Typedef REFERENCE IDENTIFIER						{ declarar_variable($3, yylloc.first_column); asignar_tipo($1, $3); }
 			|													{ $$ = (ArbolSintactico*)(NULL); }
@@ -340,7 +347,7 @@ List		: Exp COMA List 									{ $$ = new elementos($3,$1); }
 			| 													{ $$ = new elementos();  }
 			;
 
-ListLlamada	: Exp COMA ListLlamada 								{ $$ = new parametros($3,$1); verificar_parametros($1->get_tipo(),&(table.lookup(current_id,-1)->tipo->parametros[current_par])); }
-			| Exp 												{ $$ = new parametros($1); verificar_parametros($1->get_tipo(),&(table.lookup(current_id,-1)->tipo->parametros[current_par])); }
+ListLlamada	: Exp COMA ListLlamada 								{ $$ = new parametros($3,$1); verificar_parametros($1->get_tipo(),(table.lookup(current_id,-1)->tipo->parametros[current_par])); }
+			| Exp 												{ $$ = new parametros($1); verificar_parametros($1->get_tipo(),(table.lookup(current_id,-1)->tipo->parametros[current_par])); }
 			| 													{ $$ = new parametros(); }
 			;

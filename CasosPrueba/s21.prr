@@ -1,0 +1,18 @@
+type struct onion{
+	onion cebolla;
+	char cebollaM;
+}
+
+int suma(int x, float y, int xx, float yy){
+	return x + y;
+}
+
+main{
+	create{
+		array onion [3] a;
+	} execute{
+		suma(2,3,3,3.3);
+
+		<< " a" ;
+ 	};
+}
