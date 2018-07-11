@@ -332,6 +332,7 @@ Literals	: Ids												{ $$ = $1; }
 
 Ids 		: Ids_plox Ids										{ $$ = new ids($1,$2); table.exit_scope(); }
 			| IDENTIFIER Corchetes 								{ usar_variable($1, yylloc.first_column); $$ = new ids(new identificador($1),(ArbolSintactico*)(NULL),$2); }
+			| IDENTIFIER Corchetes PUNTO Ids 					{ usar_variable($1, yylloc.first_column); $$ = new ids(new identificador($1),(ArbolSintactico*)(NULL),$2); }
 			| IDENTIFIER 										{ usar_variable($1, yylloc.first_column); $$ = new ids(new identificador($1)); }
 			;
 

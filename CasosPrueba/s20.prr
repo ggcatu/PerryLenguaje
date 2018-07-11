@@ -15,7 +15,7 @@ main{
 		nonion cebollita;
 	} execute{
 		harray[0][0] = 1;
-		harray[1][0] = cebollita;
+		harray[1][1] = cebollita;
 		a[1][1] = 1;
 		a[1] = [1];
 		c = {[(1,2)]} == {[(5,4)]};
