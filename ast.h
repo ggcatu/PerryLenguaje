@@ -1522,7 +1522,7 @@ class parametros : public ArbolSintactico {
 			}			
 		}
 		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
-			cout << "comparacion: tipo_param_llamada " << tipo_var->tipo << " tipo_param_vector " << tipo_val->tipo << endl;
+			// cout << "comparacion: tipo_param_llamada " << tipo_var->tipo << " tipo_param_vector " << tipo_val->tipo << endl;
 			if (tipo_val != 0 && tipo_var != 0){
 				switch(tipo_var->tipo){
 					case IDENTIFIER:

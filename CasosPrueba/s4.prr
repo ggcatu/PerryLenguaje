@@ -25,6 +25,6 @@ main{
 	}
  	execute{
  		a = &b;
- 		utest(1,false);
+ 		utest(a, false);
  	};
 }
