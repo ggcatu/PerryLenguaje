@@ -4,7 +4,7 @@ include "input3.prr"
 include "p2.prr" 
 
 type union onion{
-	string cebolla;
+	onion cebolla;
 	char cebollaM;
 }
 

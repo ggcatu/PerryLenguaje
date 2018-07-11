@@ -62,6 +62,7 @@
     REFERENCE = 60,
     OPTR = 61,
     UNIT = 62,
+    FUNC = 63,
     TYPE_ERROR = 258,
     INT = 259,
     FLOAT = 260,

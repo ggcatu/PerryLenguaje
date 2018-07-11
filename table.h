@@ -53,6 +53,7 @@ class table_element {
 			tipo2word[UNIT] = "UNIT";
 			tipo2word[TYPE] = "TYPE";
 			tipo2word[IDENTIFIER] = "TYPE";
+			tipo2word[FUNC] = "FUNCION";
 		}
 
 		void print(){
@@ -69,6 +70,14 @@ class table_element {
 		void print_tipo(type * tipo){ 
 			std::cout << tipo2word[tipo->tipo];
 			switch(tipo->tipo){
+				case FUNC:
+					std::cout << " <";
+					for (std::vector<type *>::iterator i = tipo->parametros.begin(); i != tipo->parametros.end(); ++i){
+						print_tipo(*i);
+						std::cout << ", ";
+					}
+					std::cout << ">";
+					break;
 				case TUPLE:
 					std::cout << "<";
 					if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){

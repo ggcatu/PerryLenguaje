@@ -6,8 +6,8 @@ int suma(int x, float y, int xx, float yy){
 	return x + y;
 }
 
-int sumas(int x, float y){
-	return x + y;
+int sumas(array int [3] s){
+	return 3;
 }
 		
 int ssuma(int x, float y){
@@ -17,8 +17,10 @@ int ssuma(int x, float y){
 main{
 	create{
 		float tomate;
+		array int [3] s;
 	} execute{
 		tomate = 1.1;
 		suma(2,tomate,3,3.3);
+		sumas(s);
  	};
 }
