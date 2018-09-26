@@ -320,7 +320,7 @@ class llamada : public ArbolSintactico {
 			if (instancia){
 				if (instancia->tipo->tipo == FUNC){
 					vector<type *> params = instancia->tipo->parametros;
-					parametros->verificar_llamada(params, params.size()-1);
+					parametros->verificar_llamada(params, 0);
 				} else {
 					string s = "\"" + valor + "\" no es una función";
 					errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,VERIFICACION));
@@ -329,6 +329,25 @@ class llamada : public ArbolSintactico {
 			} else {
 				tipo = &tipo_error::instance();
 			}
+		}
+		type * get_tipo(){
+			string valor = ((identificador *)id)->valor;
+			table_element * instancia = table.lookup(valor, -1);
+			if (instancia){
+				if (instancia->tipo->tipo == FUNC){
+					if (instancia->tipo->tipo == FUNC){
+						tipo = &((tipo_funcion *)instancia->tipo)->p1;
+					} else {
+						string s = "\"" + valor + "\" no es una función";
+						errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,VERIFICACION));
+						error_sintactico = 1;
+						tipo = &tipo_error::instance();
+					}
+				}
+			} else {
+				tipo = &tipo_error::instance();
+			}
+			return tipo;
 		}
 };
 
@@ -538,6 +557,7 @@ class asignacion : public ArbolSintactico {
 		virtual void verificar(){
 			type * tipo_var = variable->get_tipo();
 			type * tipo_val = valor->get_tipo();
+
 			if (tipo_var != &tipo_error::instance() && tipo_val != &tipo_error::instance()){
 				switch(tipo_var->tipo) {
 					case IDENTIFIER:
@@ -573,6 +593,7 @@ class asignacion : public ArbolSintactico {
 						}
 						break;
 					case TUPLE:
+						/*
 						if (tipo_val->tipo != TUPLE){
 							string s = tipo2s("",tipo_var);
 							s += " != ";
@@ -602,6 +623,7 @@ class asignacion : public ArbolSintactico {
 								}
 							}
 						}
+						*/
 						break;
 					case ARRAY:
 						if (tipo_val->tipo != ARRAY){
@@ -657,6 +679,10 @@ class asignacion : public ArbolSintactico {
 		}
 		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
 			if (tipo_val != 0){
+				if (tipo_val->tipo == FUNC){
+					cout << "hola soy una funcion" << endl;
+					return true;
+				}
 				switch(tipo_var->tipo){
 					case IDENTIFIER:
 						if (tipo_val->tipo != IDENTIFIER){
@@ -1206,20 +1232,7 @@ class exp_index : public ArbolSintactico {
 					case LIST:
 						return indexaciones->get_tipo_index(&((tipo_list *)t)->p1);
 					case TUPLE: {
-						if (ind->get_tipo() == &tipo_int::instance()){
-							int indice = ind->get_valor();
-							if (indice == 0){
-								return indexaciones->get_tipo_index(&((tipo_tuple *)t)->p1);
-							}
-							else if (indice == 1) {
-								return indexaciones->get_tipo_index(&((tipo_tuple *)t)->p2);
-							}
-							else {
-								errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Fuera del rango de las tuplas",VERIFICACION));
-								error_sintactico = 1;
-								return &tipo_error::instance();
-							}
-						} else {
+						if (ind->get_tipo() != &tipo_int::instance()){
 							errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Sólo se puede indexar con enteros. Se esperaba el tipo INT y se tiene el tipo "+tipo2word[ind->get_tipo()->tipo],VERIFICACION));
 							error_sintactico = 1;
 							return &tipo_error::instance();
@@ -1235,20 +1248,7 @@ class exp_index : public ArbolSintactico {
 			case LIST:
 				return &((tipo_list *)t)->p1;
 			case TUPLE: {
-				if (ind->get_tipo() == &tipo_int::instance()){
-					int indice = ind->get_valor();
-					if (indice == 0){
-						return &((tipo_tuple *)t)->p1;
-					}
-					else if (indice == 1) {
-						return &((tipo_tuple *)t)->p2;
-					}
-					else {
-						errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Fuera del rango de las tuplas",VERIFICACION));
-						error_sintactico = 1;
-						return &tipo_error::instance();
-					}
-				} else {
+				if (ind->get_tipo() != &tipo_int::instance()){
 					errors.push_back(new TokenError(1,yylineno, yycolumn-1-strlen(yytext),"Sólo se puede indexar con enteros. Se esperaba el tipo INT y se tiene el tipo "+tipo2word[ind->get_tipo()->tipo],VERIFICACION));
 					error_sintactico = 1;
 					return &tipo_error::instance();
@@ -1257,9 +1257,6 @@ class exp_index : public ArbolSintactico {
 			default:
 				return t;
 			}
-		}
-		int get_valor(){
-			return ind -> get_valor();
 		}
 		virtual void verificar(){
 			if (ind->get_tipo() != &tipo_int::instance()) {
@@ -1357,9 +1354,6 @@ class entero : public ArbolSintactico {
 				for (int j = 0; j < tab; j++) cout << " ";
 				cout << "int: " << valor << endl;
 			}
-		}
-		int get_valor(){
-			return valor;
 		}
 		type * get_tipo(){
 			return tipo;
@@ -1465,7 +1459,7 @@ class parametros : public ArbolSintactico {
 		ArbolSintactico * elems;
 		ArbolSintactico * val;
 		parametros(ArbolSintactico * v) : val(v), elems(NULL) {}
-		parametros(ArbolSintactico * v, ArbolSintactico * e) : val(v), elems(e) {verificar();}
+		parametros(ArbolSintactico * v, ArbolSintactico * e) : val(e), elems(v) {verificar();}
 		parametros() : elems(NULL), val(NULL) {}
 	
 		virtual void imprimir(int tab){
@@ -1478,12 +1472,6 @@ class parametros : public ArbolSintactico {
 				val -> imprimir(tab+1);
 			}
 		}
-		int get_valor(){
-			if (val != NULL){
-				return val->get_valor();
-			}
-			return -1;	
-		}
 		type * get_tipo(){
 			return val->get_tipo();
 		}
@@ -1492,7 +1480,7 @@ class parametros : public ArbolSintactico {
 			if (val != NULL){
 				// cout << 10 << "actual " << IntToString(actual) << "tam " << tam << endl;
 				type * tipo_val = val->get_tipo();
-				// cout << 11 << "tipo_param_llamada " << tipo_val->tipo << " tipo_param_vector " << &parametros[actual]->tipo << endl;
+				// cout << 11 << " tipo_param_llamada " << tipo_val->tipo << " tipo_param_vector " << &parametros[actual]->tipo << endl;
 				if (verificar_aux(tipo_val,parametros[actual])){
 					// cout << 12 << endl;
 					string s = "Se esperaba que el argumento "+IntToString(actual)+" sea del tipo ";
@@ -1503,10 +1491,10 @@ class parametros : public ArbolSintactico {
 					error_sintactico = 1;
 				} else {
 					if (elems != NULL){
-						actual--;
+						actual++;
 						elems->verificar_llamada(parametros,actual);
 					} else {
-						if (actual != 0){
+						if (actual != parametros.size()-1){
 							string s = "Se esperaban "+IntToString(actual)+" argumentos y se tienen "+IntToString(tam);
 							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,VERIFICACION));
 							error_sintactico = 1;
@@ -1514,7 +1502,7 @@ class parametros : public ArbolSintactico {
 					}
 				}
 			} else {
-				if (tam != 0){
+				if (tam != parametros.size()-1){
 					string s = "Se esperaban "+IntToString(actual)+" argumentos y se tienen "+IntToString(tam);
 					errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,VERIFICACION));
 					error_sintactico = 1;
@@ -1525,6 +1513,7 @@ class parametros : public ArbolSintactico {
 			// cout << "comparacion: tipo_param_llamada " << tipo_var->tipo << " tipo_param_vector " << tipo_val->tipo << endl;
 			if (tipo_val != 0 && tipo_var != 0){
 				switch(tipo_var->tipo){
+
 					case IDENTIFIER:
 						if (tipo_val->tipo != IDENTIFIER){
 							return true;
@@ -1667,12 +1656,6 @@ class elementos : public ArbolSintactico {
 				cout << "PARAMETRO:" << endl;
 				val -> imprimir(tab+1);
 			}
-		}
-		int get_valor(){
-			if (val != NULL){
-				return val->get_valor();
-			}
-			return -1;	
 		}
 		type * get_tipo(){
 			if (tipo != NULL){

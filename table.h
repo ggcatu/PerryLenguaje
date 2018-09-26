@@ -71,10 +71,13 @@ class table_element {
 			std::cout << tipo2word[tipo->tipo];
 			switch(tipo->tipo){
 				case FUNC:
-					std::cout << " <";
+					std::cout << "<";
 					for (std::vector<type *>::iterator i = tipo->parametros.begin(); i != tipo->parametros.end(); ++i){
 						print_tipo(*i);
-						std::cout << ", ";
+						std::vector<type *>::iterator j = i;
+						if (++j != tipo->parametros.end()){
+							std::cout << ",";
+						}
 					}
 					std::cout << ">";
 					break;
@@ -218,15 +221,16 @@ class sym_table {
 			    std::cout << "]" << std::endl;
 		    }
 		    
-		    // std::cout << std::endl << std::endl << "Imprimiendo tipos " << std::endl;
-		    // std::cout << "INT: " << &tipo_int::instance() << std::endl;
-		    // std::cout << "BOOL: " << &tipo_bool::instance() << std::endl;
-		    // std::cout << "FLOAT: " << &tipo_float::instance() << std::endl;
-		    // std::cout << "UNIT: " << &tipo_unit::instance() << std::endl;
-		    // std::cout << "CHAR: " << &tipo_char::instance() << std::endl;
-		    // std::cout << "STR: " << &tipo_string::instance() << std::endl;
-		    // std::cout << "ERROR: " << &tipo_error::instance() << std::endl;
-		    
+		    /*
+		    std::cout << std::endl << std::endl << "Imprimiendo tipos " << std::endl;
+		    std::cout << "INT: " << &tipo_int::instance() << std::endl;
+		    std::cout << "BOOL: " << &tipo_bool::instance() << std::endl;
+		    std::cout << "FLOAT: " << &tipo_float::instance() << std::endl;
+		    std::cout << "UNIT: " << &tipo_unit::instance() << std::endl;
+		    std::cout << "CHAR: " << &tipo_char::instance() << std::endl;
+		    std::cout << "STR: " << &tipo_string::instance() << std::endl;
+		    std::cout << "ERROR: " << &tipo_error::instance() << std::endl;
+		    */
 		}
 };
 
