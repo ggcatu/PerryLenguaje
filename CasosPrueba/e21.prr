@@ -2,10 +2,10 @@
 
 main{
 	create{
-		array tuple (int, tuple (int,int)) [2] l;
+		array list int[2] l;
 		string s;
 	} execute{
-		l[1] = {2,2,3};
+		l[1] = [2,2,3];
 		s = '2';
  	};
 }

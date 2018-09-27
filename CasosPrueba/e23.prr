@@ -11,7 +11,7 @@ type struct ar{
 main{
 	create{
 		t ho;
-		array tuple (t,ar) [3] tutu;
+		array array char[3][4] tutu;
 	} execute{
 		tutu[1][1] = ho;
  	};

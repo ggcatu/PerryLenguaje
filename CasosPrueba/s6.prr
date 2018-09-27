@@ -11,7 +11,7 @@ unit test(int @param, bool param2){
 		tuple (bool,float) twoforone;
 	}
 	execute{
-		if (twoforone[0]){
+		if (param2){
 			<< "aja";
 		};
 	};

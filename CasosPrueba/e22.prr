@@ -8,6 +8,7 @@ main{
 		string s;
 	} execute{
 		s = "hola";
-		tutu[2] = s;
+		tutu = (3,true);
+		c = 456;
  	};
 }
