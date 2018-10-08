@@ -10,9 +10,14 @@ type struct ar{
 
 type numeros = int;
 type num = numeros;
+type n = type struct {
+			int enteros;
+		};
 
 main{
 	create{
+		n n;
+		ar m;
 		t hi;
 		ar ho;
 		numeros i;

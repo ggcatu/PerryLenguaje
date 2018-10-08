@@ -189,6 +189,10 @@ class identificador : public ArbolSintactico {
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "id: " << valor << endl;
 		}
+
+		virtual string output_code(){
+			return valor;
+		}
 };
 
 /* Definicion de la clase para la lista de declaraciones */
@@ -816,6 +820,20 @@ class exp_aritmetica : public ArbolSintactico {
 		exp_aritmetica(ArbolSintactico * d, ArbolSintactico * i, int is) : der(i), izq(d), instruccion(static_cast<inst>(is)) {verificar();}
 		exp_aritmetica(ArbolSintactico * d, int is) : der(d), izq(NULL), instruccion(static_cast<inst>(is)) {verificar();}
 
+		virtual string output_code(){
+			string a = der->output_code();
+			string b = "";
+			if (izq != NULL){
+				b = izq->output_code();
+			}
+
+			// generar nuevo new_id
+			string new_id = "5";
+			// output to file
+			return new_id;
+		}
+
+
 		type * get_tipo(){
 			return tipo;
 		};
@@ -1350,6 +1368,9 @@ class entero : public ArbolSintactico {
 		type * get_tipo(){
 			return tipo;
 		}
+		virtual string output_code(){
+			return string(valor);
+		}
 };
 
 
@@ -1367,6 +1388,9 @@ class flotante : public ArbolSintactico {
 		}
 		type * get_tipo(){
 			return tipo;
+		}
+		virtual string output_code(){
+			return string(valor);
 		}
 };
 
@@ -1391,6 +1415,9 @@ class booleano : public ArbolSintactico {
 		type * get_tipo(){
 			return tipo;
 		}
+		virtual string output_code(){
+			return string(valor);
+		}
 };
 
 
@@ -1409,6 +1436,9 @@ class character : public ArbolSintactico {
 		}
 		type * get_tipo(){
 			return tipo;
+		}
+		virtual string output_code(){
+			return string(valor);
 		}
 };
 
@@ -1441,6 +1471,9 @@ class str : public ArbolSintactico {
 		}
 		type * get_tipo(){
 			return tipo;
+		}
+		virtual string output_code(){
+			return valor;
 		}
 };
 

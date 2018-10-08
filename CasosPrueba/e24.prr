@@ -2,8 +2,8 @@
 
 main{
 	create{
-		array int[3] p;
-		array char[3] s;
+		array int[2] p;
+		array array int[2][3] s;
 	} execute{
 		p = s;
  	};

@@ -10,8 +10,8 @@ int sumas(array int [3] s){
 	return 3;
 }
 		
-int ssuma(int x, float y){
-	return x + y;
+bool ssuma(int x, float y){
+	return x + y == 0.0;
 }
 
 main{
@@ -20,6 +20,6 @@ main{
 		array int [3] s;
 	} execute{
 		tomate = 1.1;
-		suma(2,tomate,3,3);
+		ssuma(ssuma(1,2.2),3.3);
  	};
 }
