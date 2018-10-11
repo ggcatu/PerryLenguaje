@@ -1,6 +1,6 @@
 // Prueba no completa para verificar tipos de cosas exoticas
 
-type struct nonion{
+struct nonion{
 	string cebolla;
 	char cebollaM;
 }

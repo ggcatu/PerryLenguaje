@@ -1,6 +1,6 @@
 //Error no definiendo union y funcion con el mismo nombre
 
-type union onion{
+union onion{
 	string cebolla;
 	char cebollaM;
 }

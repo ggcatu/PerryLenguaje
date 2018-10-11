@@ -1,10 +1,10 @@
 //Error con tipos complejos
 
-type struct t{
+struct t{
 	int hello;
 }
 
-type struct ar{
+struct ar{
 	char hello;
 }
 

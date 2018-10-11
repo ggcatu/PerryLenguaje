@@ -5,11 +5,11 @@ include "input2.prr"
 include "input3.prr" 
 include "p2.prr" 
 
-type struct nonion{
+struct nonion{
 	string acebolla;
 	char acebollaM;
 }
-type union onion{
+union onion{
 	string acebolla;
 	char acebollaM;
 }

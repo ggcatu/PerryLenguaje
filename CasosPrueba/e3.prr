@@ -1,6 +1,6 @@
 //Prueba de error recovery
 
-type union onion{
+union onion{
 	string cebolla;+
 	char cebollaM;
 }

@@ -1,7 +1,7 @@
 //Prueba type
 type numeritos = int;
 
-type union onion{
+union onion{
 	int cebolla;
 	float cebollaM;
 }

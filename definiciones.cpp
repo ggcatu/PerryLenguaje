@@ -114,6 +114,7 @@ void init_strings(){
 	tipo2word[UNIT] = "UNIT";
 	tipo2word[TYPE] = "TYPE";
 	tipo2word[IDENTIFIER] = "TYPE"; 
+	tipo2word[TYPE_ERROR] = "ERROR";
 }
 
 // Magia negra sacada de internet, permite pasar de int a string

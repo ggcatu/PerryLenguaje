@@ -1,4 +1,4 @@
-type struct onion{
+struct onion{
 	onion cebolla;
 	char cebollaM;
 }

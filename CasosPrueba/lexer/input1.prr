@@ -19,12 +19,12 @@ main {
 		bool booleanoFalse = false;
 		ptr int apuntadorEntero = entero; 
 
-		type struct struct_fea {
+		struct struct_fea {
 			int entero;
 			float flotante;
 		};
 
-		type union union_bonita {
+		union union_bonita {
 			int id1;
 			float id2;
 		};

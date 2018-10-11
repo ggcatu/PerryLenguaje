@@ -764,13 +764,13 @@ class asignacion : public ArbolSintactico {
 					if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){
 						s += tipo2word[(((tipo_tuple *)tipo)->p1).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_tuple *)tipo)->p1);
+						s = tipo2s(s,&((tipo_tuple *)tipo)->p1);
 					}
 					s += ",";
 					if ((((tipo_tuple *)tipo)->p2).tipo == 30 || (((tipo_tuple *)tipo)->p2).tipo == 29 || (((tipo_tuple *)tipo)->p2).tipo == 28 || (((tipo_tuple *)tipo)->p2).tipo == 27 || (((tipo_tuple *)tipo)->p2).tipo == 26){
 						s += tipo2word[(((tipo_tuple *)tipo)->p2).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_tuple *)tipo)->p2);
+						s = tipo2s(s,&((tipo_tuple *)tipo)->p2);
 					}
 					s += ">";
 					break;
@@ -779,7 +779,7 @@ class asignacion : public ArbolSintactico {
 					if ((((tipo_list *)tipo)->p1).tipo == 30 || (((tipo_list *)tipo)->p1).tipo == 29 || (((tipo_list *)tipo)->p1).tipo == 28 || (((tipo_list *)tipo)->p1).tipo == 27 || (((tipo_list *)tipo)->p1).tipo == 26){
 						s += tipo2word[(((tipo_list *)tipo)->p1).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_list *)tipo)->p1);
+						s = tipo2s(s,&((tipo_list *)tipo)->p1);
 					}
 					s += ">";
 					break;
@@ -788,7 +788,7 @@ class asignacion : public ArbolSintactico {
 					if ((((tipo_array *)tipo)->p1).tipo == 30 || (((tipo_array *)tipo)->p1).tipo == 29 || (((tipo_array *)tipo)->p1).tipo == 28 || (((tipo_array *)tipo)->p1).tipo == 27 || (((tipo_array *)tipo)->p1).tipo == 26){
 						s += tipo2word[(((tipo_array *)tipo)->p1).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_array *)tipo)->p1);
+						s = tipo2s(s,&((tipo_array *)tipo)->p1);
 					}
 					s += ">";
 					break;
@@ -797,7 +797,7 @@ class asignacion : public ArbolSintactico {
 					if ((((tipo_pointer *)tipo)->p1).tipo == 30 || (((tipo_pointer *)tipo)->p1).tipo == 29 || (((tipo_pointer *)tipo)->p1).tipo == 28 || (((tipo_pointer *)tipo)->p1).tipo == 27 || (((tipo_pointer *)tipo)->p1).tipo == 26){
 						s += tipo2word[(((tipo_pointer *)tipo)->p1).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_pointer *)tipo)->p1);
+						s = tipo2s(s,&((tipo_pointer *)tipo)->p1);
 					}
 					s += ">";
 					break;
@@ -1104,13 +1104,13 @@ class exp_booleana : public ArbolSintactico {
 					if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){
 						s += tipo2word[(((tipo_tuple *)tipo)->p1).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_tuple *)tipo)->p1);
+						s = tipo2s(s,&((tipo_tuple *)tipo)->p1);
 					}
 					s += ",";
 					if ((((tipo_tuple *)tipo)->p2).tipo == 30 || (((tipo_tuple *)tipo)->p2).tipo == 29 || (((tipo_tuple *)tipo)->p2).tipo == 28 || (((tipo_tuple *)tipo)->p2).tipo == 27 || (((tipo_tuple *)tipo)->p2).tipo == 26){
 						s += tipo2word[(((tipo_tuple *)tipo)->p2).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_tuple *)tipo)->p2);
+						s = tipo2s(s,&((tipo_tuple *)tipo)->p2);
 					}
 					s += ">";
 					break;
@@ -1119,7 +1119,7 @@ class exp_booleana : public ArbolSintactico {
 					if ((((tipo_list *)tipo)->p1).tipo == 30 || (((tipo_list *)tipo)->p1).tipo == 29 || (((tipo_list *)tipo)->p1).tipo == 28 || (((tipo_list *)tipo)->p1).tipo == 27 || (((tipo_list *)tipo)->p1).tipo == 26){
 						s += tipo2word[(((tipo_list *)tipo)->p1).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_list *)tipo)->p1);
+						s = tipo2s(s,&((tipo_list *)tipo)->p1);
 					}
 					s += ">";
 					break;
@@ -1128,7 +1128,7 @@ class exp_booleana : public ArbolSintactico {
 					if ((((tipo_array *)tipo)->p1).tipo == 30 || (((tipo_array *)tipo)->p1).tipo == 29 || (((tipo_array *)tipo)->p1).tipo == 28 || (((tipo_array *)tipo)->p1).tipo == 27 || (((tipo_array *)tipo)->p1).tipo == 26){
 						s += tipo2word[(((tipo_array *)tipo)->p1).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_array *)tipo)->p1);
+						s = tipo2s(s,&((tipo_array *)tipo)->p1);
 					}
 					s += ">";
 					break;
@@ -1137,7 +1137,7 @@ class exp_booleana : public ArbolSintactico {
 					if ((((tipo_pointer *)tipo)->p1).tipo == 30 || (((tipo_pointer *)tipo)->p1).tipo == 29 || (((tipo_pointer *)tipo)->p1).tipo == 28 || (((tipo_pointer *)tipo)->p1).tipo == 27 || (((tipo_pointer *)tipo)->p1).tipo == 26){
 						s += tipo2word[(((tipo_pointer *)tipo)->p1).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_pointer *)tipo)->p1);
+						s = tipo2s(s,&((tipo_pointer *)tipo)->p1);
 					}
 					s += ">";
 					break;
@@ -1284,46 +1284,61 @@ class ids : public ArbolSintactico {
 		ArbolSintactico * id;
 		ArbolSintactico * idr;
 		ArbolSintactico * indx;
-		ids(ArbolSintactico * i) : id(i), idr(NULL), indx(NULL), ArbolSintactico() {}
-		ids(ArbolSintactico * i, ArbolSintactico * is) : id(i), idr(is), indx(NULL), ArbolSintactico() {}
-		ids(ArbolSintactico * i, ArbolSintactico * is, ArbolSintactico * ix) : id(i), idr(is), indx(ix), ArbolSintactico() {verificar();}
+		bool indx2idr;
+		ids(ArbolSintactico * i) : id(i), idr(NULL), indx(NULL), indx2idr(false), ArbolSintactico() {}
+		ids(ArbolSintactico * i, ArbolSintactico * is) : id(i), idr(is), indx(NULL), indx2idr(false), ArbolSintactico() {}
+		ids(ArbolSintactico * i, ArbolSintactico * is, ArbolSintactico * ix) : id(i), idr(is), indx(ix), indx2idr(true), ArbolSintactico() {verificar();}
 
 		virtual void imprimir(int tab){
-			if (idr != NULL){
-				for (int j = 0; j < tab; j++) cout << " ";
-				cout << "ACCESO: " << endl;
-			}
 			if (id != NULL){
 				for (int j = 0; j < tab+1; j++) cout << " ";
 				cout << "IDENTIFICADOR: " << endl;
 				id -> imprimir(tab+2);
 			}
-			if (idr != NULL){
-				for (int j = 0; j < tab+1; j++) cout << " ";
-				cout << "CAMPO: " << endl;
-				idr -> imprimir(tab+2);
+			if (indx2idr){
+				if (indx != NULL){
+					indx -> imprimir(tab+2);
+				}
+				if (idr != NULL){
+					for (int j = 0; j < tab+1; j++) cout << " ";
+					cout << "CAMPO: " << endl;
+					idr -> imprimir(tab+2);
+				}	
+			} else {
+				if (idr != NULL){
+					for (int j = 0; j < tab+1; j++) cout << " ";
+					cout << "CAMPO: " << endl;
+					idr -> imprimir(tab+2);
+				}
+				if (indx != NULL){
+					indx -> imprimir(tab+2);
+				}
 			}
-			if (indx != NULL){
-				indx -> imprimir(tab+2);
-			}
+			
 		}
 		type * get_tipo(){
 			if (tipo != NULL){
 				return tipo;
-			} 
-			if (idr == NULL){
-				tipo = id->get_tipo();
-				if (indx != NULL){
-					// Hay que sacar el tipo interno
-					tipo = indx->get_tipo_index(tipo);
+			}
+			if (indx2idr){
+				//cout << "HERE" << endl;
+				tipo = indx->get_tipo();
+				if (idr != NULL){
+					tipo = idr->get_tipo();
 				}
 			} else {
-				tipo = idr->get_tipo();
+				if (idr == NULL){
+					tipo = id->get_tipo();
+					if (indx != NULL){
+						// Hay que sacar el tipo interno
+						tipo = indx->get_tipo_index(tipo);
+					}
+				} else {
+					tipo = idr->get_tipo();
+				}
 			}
+			//cout << tipo->tipo << endl;
 			return tipo;
-		}
-		string get_nombre(){
-			return id->get_nombre();
 		}
 		virtual void verificar(){
 			type * t;
@@ -1369,7 +1384,7 @@ class entero : public ArbolSintactico {
 			return tipo;
 		}
 		virtual string output_code(){
-			return string(valor);
+			return IntToString(valor);
 		}
 };
 
@@ -1390,7 +1405,7 @@ class flotante : public ArbolSintactico {
 			return tipo;
 		}
 		virtual string output_code(){
-			return string(valor);
+			return FloatToString(valor);
 		}
 };
 
@@ -1416,7 +1431,12 @@ class booleano : public ArbolSintactico {
 			return tipo;
 		}
 		virtual string output_code(){
-			return string(valor);
+			if (valor){
+				return "true";	
+			} else {
+				return "false";
+			}
+			
 		}
 };
 
@@ -1438,7 +1458,11 @@ class character : public ArbolSintactico {
 			return tipo;
 		}
 		virtual string output_code(){
-			return string(valor);
+			stringstream ss;
+			string s;
+			ss << valor;
+			ss >> s;
+			return s;
 		}
 };
 
@@ -1616,13 +1640,13 @@ class parametros : public ArbolSintactico {
 					if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){
 						s += tipo2word[(((tipo_tuple *)tipo)->p1).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_tuple *)tipo)->p1);
+						s = tipo2s(s,&((tipo_tuple *)tipo)->p1);
 					}
 					s += ",";
 					if ((((tipo_tuple *)tipo)->p2).tipo == 30 || (((tipo_tuple *)tipo)->p2).tipo == 29 || (((tipo_tuple *)tipo)->p2).tipo == 28 || (((tipo_tuple *)tipo)->p2).tipo == 27 || (((tipo_tuple *)tipo)->p2).tipo == 26){
 						s += tipo2word[(((tipo_tuple *)tipo)->p2).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_tuple *)tipo)->p2);
+						s = tipo2s(s,&((tipo_tuple *)tipo)->p2);
 					}
 					s += ">";
 					break;
@@ -1631,7 +1655,7 @@ class parametros : public ArbolSintactico {
 					if ((((tipo_list *)tipo)->p1).tipo == 30 || (((tipo_list *)tipo)->p1).tipo == 29 || (((tipo_list *)tipo)->p1).tipo == 28 || (((tipo_list *)tipo)->p1).tipo == 27 || (((tipo_list *)tipo)->p1).tipo == 26){
 						s += tipo2word[(((tipo_list *)tipo)->p1).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_list *)tipo)->p1);
+						s = tipo2s(s,&((tipo_list *)tipo)->p1);
 					}
 					s += ">";
 					break;
@@ -1640,7 +1664,7 @@ class parametros : public ArbolSintactico {
 					if ((((tipo_array *)tipo)->p1).tipo == 30 || (((tipo_array *)tipo)->p1).tipo == 29 || (((tipo_array *)tipo)->p1).tipo == 28 || (((tipo_array *)tipo)->p1).tipo == 27 || (((tipo_array *)tipo)->p1).tipo == 26){
 						s += tipo2word[(((tipo_array *)tipo)->p1).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_array *)tipo)->p1);
+						s = tipo2s(s,&((tipo_array *)tipo)->p1);
 					}
 					s += ">";
 					break;
@@ -1649,7 +1673,7 @@ class parametros : public ArbolSintactico {
 					if ((((tipo_pointer *)tipo)->p1).tipo == 30 || (((tipo_pointer *)tipo)->p1).tipo == 29 || (((tipo_pointer *)tipo)->p1).tipo == 28 || (((tipo_pointer *)tipo)->p1).tipo == 27 || (((tipo_pointer *)tipo)->p1).tipo == 26){
 						s += tipo2word[(((tipo_pointer *)tipo)->p1).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_pointer *)tipo)->p1);
+						s = tipo2s(s,&((tipo_pointer *)tipo)->p1);
 					}
 					s += ">";
 					break;
@@ -1897,13 +1921,13 @@ class elementos : public ArbolSintactico {
 					if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){
 						s += tipo2word[(((tipo_tuple *)tipo)->p1).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_tuple *)tipo)->p1);
+						s = tipo2s(s,&((tipo_tuple *)tipo)->p1);
 					}
 					s += ",";
 					if ((((tipo_tuple *)tipo)->p2).tipo == 30 || (((tipo_tuple *)tipo)->p2).tipo == 29 || (((tipo_tuple *)tipo)->p2).tipo == 28 || (((tipo_tuple *)tipo)->p2).tipo == 27 || (((tipo_tuple *)tipo)->p2).tipo == 26){
 						s += tipo2word[(((tipo_tuple *)tipo)->p2).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_tuple *)tipo)->p2);
+						s = tipo2s(s,&((tipo_tuple *)tipo)->p2);
 					}
 					s += ">";
 					break;
@@ -1912,7 +1936,7 @@ class elementos : public ArbolSintactico {
 					if ((((tipo_list *)tipo)->p1).tipo == 30 || (((tipo_list *)tipo)->p1).tipo == 29 || (((tipo_list *)tipo)->p1).tipo == 28 || (((tipo_list *)tipo)->p1).tipo == 27 || (((tipo_list *)tipo)->p1).tipo == 26){
 						s += tipo2word[(((tipo_list *)tipo)->p1).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_list *)tipo)->p1);
+						s = tipo2s(s,&((tipo_list *)tipo)->p1);
 					}
 					s += ">";
 					break;
@@ -1921,7 +1945,7 @@ class elementos : public ArbolSintactico {
 					if ((((tipo_array *)tipo)->p1).tipo == 30 || (((tipo_array *)tipo)->p1).tipo == 29 || (((tipo_array *)tipo)->p1).tipo == 28 || (((tipo_array *)tipo)->p1).tipo == 27 || (((tipo_array *)tipo)->p1).tipo == 26){
 						s += tipo2word[(((tipo_array *)tipo)->p1).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_array *)tipo)->p1);
+						s = tipo2s(s,&((tipo_array *)tipo)->p1);
 					}
 					s += ">";
 					break;
@@ -1930,7 +1954,7 @@ class elementos : public ArbolSintactico {
 					if ((((tipo_pointer *)tipo)->p1).tipo == 30 || (((tipo_pointer *)tipo)->p1).tipo == 29 || (((tipo_pointer *)tipo)->p1).tipo == 28 || (((tipo_pointer *)tipo)->p1).tipo == 27 || (((tipo_pointer *)tipo)->p1).tipo == 26){
 						s += tipo2word[(((tipo_pointer *)tipo)->p1).tipo];
 					} else {
-						s += tipo2s(s,&((tipo_pointer *)tipo)->p1);
+						s = tipo2s(s,&((tipo_pointer *)tipo)->p1);
 					}
 					s += ">";
 					break;

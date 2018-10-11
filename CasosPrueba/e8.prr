@@ -1,6 +1,6 @@
 //Error no llamando al union padre
 
-type union onion{
+union onion{
 	string cebolla;
 	char cebollaM;
 }

@@ -54,6 +54,7 @@ class table_element {
 			tipo2word[TYPE] = "TYPE";
 			tipo2word[IDENTIFIER] = "TYPE";
 			tipo2word[FUNC] = "FUNCION";
+			tipo2word[TYPE_ERROR] = "ERROR";
 		}
 
 		void print(){
@@ -148,7 +149,8 @@ class sym_table {
 		void open_scope(std::string x){
 			table_element * scope = lookup(x, -1);
 			if (scope == NULL){
-				std::cout << x << " esta variable no está definida." << std::endl;
+				std::cout << "La variable \"" << x << "\" no está definida." << std::endl;
+				error_sintactico = 1;
 				stack.push_back(-1);
 			}
 			else if (scope->child_scope == -1){

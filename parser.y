@@ -45,7 +45,7 @@ void open_scope(ArbolSintactico * arb) {
 	if(elemento != NULL){
 		elemento->set_child_scope(table.new_scope());
 	} else {
-		cout << b->valor << " no encontrado.";
+		cout << "Id \"" << b->valor << "\" no encontrado.";
 	}
 }
 
@@ -169,15 +169,15 @@ Start 		: MAIN LLAVEABRE Sec LLAVECIERRA Start 				{ $$ = new programa($3,$5); }
 			| IdentifierFc Parabre Varlist PARCIERRA	LLAVEABRE error Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
 			| IdentifierFc Parabre Varlist PARCIERRA	LLAVEABRE error Llavecierra	Start	{ $$ = (ArbolSintactico*)(NULL); }
 
-			| TYPE STRUCT Llaveabre Declist Llavecierra Start 	{ $$ = new skip($6); }
-			| TYPE STRUCT Llaveabre Declist Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
-			| TYPE STRUCT Llaveabre error Llavecierra Start 	{ $$ = (ArbolSintactico*)(NULL); }
-			| TYPE STRUCT Llaveabre error Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
+			| STRUCT Llaveabre Declist Llavecierra Start 		{ $$ = new skip($5); }
+			| STRUCT Llaveabre Declist Llavecierra				{ $$ = (ArbolSintactico*)(NULL); }
+			| STRUCT Llaveabre error Llavecierra Start 			{ $$ = (ArbolSintactico*)(NULL); }
+			| STRUCT Llaveabre error Llavecierra				{ $$ = (ArbolSintactico*)(NULL); }
 			
-			| TYPE UNION Llaveabre Declist Llavecierra Start  	{ $$ = new skip($6); }
-			| TYPE UNION Llaveabre Declist Llavecierra 			{ $$ = (ArbolSintactico*)(NULL); }
-			| TYPE UNION Llaveabre error Llavecierra Start  	{ $$ = (ArbolSintactico*)(NULL); }
-			| TYPE UNION Llaveabre error Llavecierra 			{ $$ = (ArbolSintactico*)(NULL); }
+			| UNION Llaveabre Declist Llavecierra Start  		{ $$ = new skip($5); }
+			| UNION Llaveabre Declist Llavecierra 				{ $$ = (ArbolSintactico*)(NULL); }
+			| UNION Llaveabre error Llavecierra Start  			{ $$ = (ArbolSintactico*)(NULL); }
+			| UNION Llaveabre error Llavecierra 				{ $$ = (ArbolSintactico*)(NULL); }
 			
 			| Alias Start										{ $$ = new skip($2); }
 			| Alias												{ $$ = (ArbolSintactico*)(NULL); }
@@ -215,11 +215,11 @@ Typedef		: BOOL  											{ $$ = new tipedec(tipo_bool::instance()); }
 			| LIST Typedef 										{ $$ = new tipedec(*new tipo_list(((tipedec *)$2)->tipo),$2); }
 			| TUPLE PARABRE Typedef COMA Typedef PARCIERRA  	{ $$ = new tipedec(*new tipo_tuple(((tipedec *)$3)->tipo,((tipedec *)$5)->tipo),$3,$5); }
 			| IDENTIFIER										{ $$ = alias[$1]; }
-			| TYPE STRUCT LlaveabreSp Declist Llavecierra		{ $$ = new tipedec(tipo_identifier::instance(), $3); }
-			| TYPE STRUCT LlaveabreSp error Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
+			| STRUCT LlaveabreSp Declist Llavecierra		{ $$ = new tipedec(tipo_identifier::instance(), $2); }
+			| STRUCT LlaveabreSp error Llavecierra			{ $$ = (ArbolSintactico*)(NULL); }
 			
-			| TYPE UNION LlaveabreSp Declist Llavecierra 		{ $$ = new tipedec(tipo_identifier::instance(), $3); }
-			| TYPE UNION LlaveabreSp error Llavecierra 			{ $$ = (ArbolSintactico*)(NULL); }
+			| UNION LlaveabreSp Declist Llavecierra 		{ $$ = new tipedec(tipo_identifier::instance(), $2); }
+			| UNION LlaveabreSp error Llavecierra 			{ $$ = (ArbolSintactico*)(NULL); }
 
 			| POINTER Typedef  									{ $$ = new tipedec(*new tipo_pointer(((tipedec *)$2)->tipo),$2); }
 			| UNIT 												{ $$ = new tipedec(tipo_unit::instance()); }
@@ -321,7 +321,7 @@ Literals	: Ids												{ $$ = $1; }
 
 Ids 		: Ids_plox Ids										{ $$ = new ids($1,$2); table.exit_scope(); }
 			| IDENTIFIER Corchetes 								{ usar_variable($1, yylloc.first_column); $$ = new ids(new identificador($1),(ArbolSintactico*)(NULL),$2); }
-			| IDENTIFIER Corchetes PUNTO Ids 					{ usar_variable($1, yylloc.first_column); $$ = new ids(new identificador($1),(ArbolSintactico*)(NULL),$2); }
+			| IDENTIFIER Corchetes PUNTO Ids 					{ usar_variable($1, yylloc.first_column); $$ = new ids(new identificador($1),$4,$2); }
 			| IDENTIFIER 										{ usar_variable($1, yylloc.first_column); $$ = new ids(new identificador($1)); }
 			;
 

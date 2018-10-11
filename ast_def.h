@@ -23,7 +23,7 @@ class ArbolSintactico {
 		virtual string get_nombre(){};
 		virtual type * get_tipo_index(type * t){};
 		virtual void verificar_llamada(vector<type *> parametros, int actual) {};
-		virtual string output(){};
+		virtual string output_code(){};
 };
 
 #endif
