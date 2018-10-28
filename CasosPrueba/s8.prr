@@ -3,17 +3,17 @@ include "input2.prr"
 include "input3.prr" 
 include "p2.prr" 
 
-union onion{
-	onion cebolla;
-	char cebollaM;
-}
 
 main{
 	create{
 		string tomate;
-		onion caraota;
 		int cebolla;
+		bool tete;
 	} execute{
-		cebolla = caraota.cebolla + cebolla;
+		cebolla = cebolla + cebolla * 3 ;
+		tete = cebolla < 3;
+		if ( cebolla < 3 ){
+			cebolla = 3;
+		};
  	};
 }

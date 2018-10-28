@@ -59,6 +59,15 @@ class raiz : public ArbolSintactico {
 				}
 			}
 		}
+
+		virtual string output_code(){
+			cout << "Printing TAC" << endl;
+			if (programa != NULL)
+			programa->output_code();
+			if(includes != NULL)
+			includes->output_code();
+			return "";
+		}
 };
 
 
@@ -131,6 +140,14 @@ class programa : public ArbolSintactico {
 				sec -> imprimir(tab+1);
 			}
 		}
+
+		virtual string output_code(){
+			if (program != NULL)
+			program->output_code();
+			if (sec != NULL)
+			sec->output_code();
+			return "";
+		}
 };
 
 
@@ -155,6 +172,12 @@ class bloque : public ArbolSintactico {
 				cout << "INSTRUCCIONES:" << endl;
 				instrucciones -> imprimir(tab+2);
 			}
+		}
+
+		virtual string output_code(){
+			if (instrucciones!=NULL)
+			instrucciones->output_code();
+			return "";
 		}
 };
 
@@ -297,6 +320,14 @@ class instruccion : public ArbolSintactico {
 			if (instrucciones != NULL){
 				instrucciones -> imprimir(tab);
 			}
+		}
+
+		virtual string output_code(){
+			if (inst != NULL)
+			inst->output_code();
+			if (instrucciones != NULL)
+			instrucciones->output_code();
+			return "";
 		}
 };
 
@@ -459,6 +490,15 @@ class inst_guardia : public ArbolSintactico {
 		inst_guardia(ArbolSintactico * c, ArbolSintactico * is, int i) : condicion(c), cuerpo(is), cuerpo_else(NULL), instruccion(static_cast<inst>(i)) {verificar();}
 		inst_guardia(ArbolSintactico * c, ArbolSintactico * is, ArbolSintactico * ie, int i) : condicion(c), cuerpo(is), cuerpo_else(ie), instruccion(static_cast<inst>(i)) {verificar();}
 		
+		virtual string output_code(){
+			switch(instruccion){
+				case IF:
+					cout << "if " << condicion->output_code() << " goto " << endl;
+					cuerpo->output_code();
+			}
+			return "";
+		}
+
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			switch(instruccion){
@@ -528,6 +568,11 @@ class skip : public ArbolSintactico {
 			if (siguiente != NULL)
 				siguiente->imprimir(tab);
 		}
+
+		virtual string output_code(){
+			if (siguiente != NULL)
+				siguiente->output_code();
+		}
 };
 
 
@@ -539,6 +584,11 @@ class asignacion : public ArbolSintactico {
 		ArbolSintactico * siguiente;
 		asignacion(ArbolSintactico * v, ArbolSintactico * b, ArbolSintactico * s) : variable(v), valor(b), siguiente(s) {verificar();}
 		
+		virtual string output_code(){
+			cout <<  variable->output_code() << " : = " << valor->output_code() << endl;
+			return "";
+		}
+
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 				cout << "ASIGNACION: " << endl;
@@ -826,10 +876,29 @@ class exp_aritmetica : public ArbolSintactico {
 			if (izq != NULL){
 				b = izq->output_code();
 			}
-
-			// generar nuevo new_id
-			string new_id = "5";
-			// output to file
+			string new_id = new_uuid();
+			stringstream ss;
+			switch(instruccion){
+				case SUMA:
+					ss << "+";
+					break;
+				case MULT:
+					ss << "*";
+					break;
+				case DIV:
+					ss << "/";
+					break;
+				case RESTA:
+					ss << "-";
+					break;
+				case POW:
+					ss << "**";
+					break;
+				case MOD:
+					ss << "%";
+					break;
+			} 
+			cout <<  new_id << " : = " << a << " " << ss.str() << " " << b << endl;
 			return new_id;
 		}
 
@@ -962,9 +1031,52 @@ class exp_booleana : public ArbolSintactico {
 		exp_booleana(ArbolSintactico * d, ArbolSintactico * i, int is) : der(d), izq(i), instruccion(static_cast<inst>(is)) {verificar();}
 		exp_booleana(ArbolSintactico * d, int is) : der(d), izq(NULL), instruccion(static_cast<inst>(is)) {verificar();}
 
+		virtual string output_code(){
+			string a = der->output_code();
+			string b = "";
+			if (izq != NULL){
+				b = izq->output_code();
+			}
+			string new_id = new_uuid();
+			stringstream ss;
+			switch(instruccion){
+				case IGUALA:
+					ss << "==";
+					break;
+				case DISTINTO:
+					ss << "!=";
+					break;
+				case MENOR:
+					ss << "<";
+					break;
+				case MAYOR:
+					ss << ">";
+					break;
+				case MENORIGUAL:
+					ss << "<=";
+					break;
+				case MAYORIGUAL:
+					ss << ">=";
+					break;
+				case DISYUNCION:
+					ss << "||";
+					break;
+				case CONJUNCION:
+					ss << "&&";
+					break;
+				case NEGACION:
+					ss << "~";
+					break;
+			}
+
+			cout <<  new_id << " : = " << a << " " << ss.str() << " " << b << endl;
+			return new_id;
+		}
+
 		type * get_tipo(){
 			return tipo;
 		}
+
 		void verificar(){
 			type * tipo_der = der->get_tipo();
 			type * tipo_izq = (izq!=NULL) ? izq->get_tipo(): &tipo_unit::instance();
@@ -1196,11 +1308,18 @@ class exp_point : public ArbolSintactico {
 		ArbolSintactico * der;
 		exp_point(ArbolSintactico * d) : der(d) {verificar();}
 
+		virtual string output_code(){
+			stringstream ss;
+			ss << "& " << der->output_code();
+			return ss.str();
+		}
+
 		virtual void imprimir(int tab) {
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "DESREFERENCIACION: " << endl;
 			der -> imprimir(tab+1);
 		}
+
 		type * get_tipo(){
 			type * tipo_der = der->get_tipo();
 			if (tipo_der->tipo != POINTER){
@@ -1220,6 +1339,12 @@ class exp_index : public ArbolSintactico {
 		ArbolSintactico * indexaciones;
 		exp_index(ArbolSintactico * i,ArbolSintactico * ids) : ind(i), indexaciones(ids)  {verificar();}
 		exp_index(ArbolSintactico * i) : ind(i), indexaciones(NULL) {verificar();}
+
+		virtual string output_code(){
+			if (indexaciones == NULL)
+				return ind->output_code();
+
+		}
 
 		virtual void imprimir(int tab) {
 			for (int j = 0; j < tab; j++) cout << " ";
@@ -1288,6 +1413,21 @@ class ids : public ArbolSintactico {
 		ids(ArbolSintactico * i) : id(i), idr(NULL), indx(NULL), indx2idr(false), ArbolSintactico() {}
 		ids(ArbolSintactico * i, ArbolSintactico * is) : id(i), idr(is), indx(NULL), indx2idr(false), ArbolSintactico() {}
 		ids(ArbolSintactico * i, ArbolSintactico * is, ArbolSintactico * ix) : id(i), idr(is), indx(ix), indx2idr(true), ArbolSintactico() {verificar();}
+
+		virtual string output_code(){
+			if (indx2idr){
+				stringstream ss;
+				ss << id->output_code() << "["<< indx->output_code() << "]" ;
+				return ss.str(); 
+			}
+			if (id != NULL)
+				return id->output_code();
+			if (indx != NULL)
+				indx->output_code();
+			if (idr != NULL)
+				idr->output_code();
+			return "";
+		}
 
 		virtual void imprimir(int tab){
 			if (id != NULL){

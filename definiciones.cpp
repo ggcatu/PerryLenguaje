@@ -31,6 +31,13 @@ Por otro lado facilita bastante modificar el to_string de los tokens.
 string nToWord[300];
 string tipo2word[300];
 
+string new_uuid(){
+	static int n = 0;
+	stringstream ss;
+	ss << "_t" << n++;
+	return ss.str();
+}
+
 void init_strings(){
 	nToWord[LLAVEABRE] = "LLAVEABRE"; 
 	nToWord[LLAVECIERRA] = "LLAVECIERRA"; 

@@ -127,6 +127,19 @@ void execute_lexer(){
 
 }
 
+void print_tac(){
+    try {
+		yyparse();
+	}
+	catch(const char* const errorMessage){
+		cout << "Error: " << endl;
+			cout << errorMessage << endl;
+	}
+	
+
+	root_ast->output_code();
+}
+
 void execute_parser(){
 	cout << "Ejecutando parser" << endl;
     
@@ -164,6 +177,9 @@ int main(int argc, char** argv) {
 			}
 			else if (arg == "-p"){
 				execute_parser();
+			}
+			else if (arg == "-t"){
+				print_tac();
 			}
 		}
 	} else {
