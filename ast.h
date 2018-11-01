@@ -619,6 +619,7 @@ class skip : public ArbolSintactico {
 		virtual string output_code(){
 			if (siguiente != NULL)
 				siguiente->output_code();
+			return "";
 		}
 };
 
