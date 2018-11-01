@@ -9,35 +9,6 @@ struct nonion{
 	string acebolla;
 	char acebollaM;
 }
-union onion{
-	string acebolla;
-	char acebollaM;
-}
-
-
-unit test(int @param, bool param2){
-	create{
-		int inte;
-		float floatp;
-		bool boole;
-		char co;
-		string str;
-		array float [5] harray;
-		list int thelist;
-		tuple (bool,float) twoforone;
-		ptr int point;
-		nonion gag;
-	}
-	execute{
-		//test(param,param2);
-		twoforone = (true,4);
-		floatp = 4;
-		harray = [1,2,3];
-		thelist = {1,2,3};
-		harray[0] = 1;
-	};
-}
-
 main{
  	execute{
  		<< "hahaha";

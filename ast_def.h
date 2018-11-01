@@ -13,8 +13,8 @@ class ArbolSintactico {
 		int linea;
 		bool is_type;
 		type * tipo;
-		ArbolSintactico(): tipo(NULL), is_type(0){};
-		ArbolSintactico(type * t): tipo(t), is_type(0) {};
+		ArbolSintactico(): first(NULL), tipo(NULL), is_type(0){};
+		ArbolSintactico(type * t): first(NULL), tipo(t), is_type(0) {};
 		ArbolSintactico(ArbolSintactico * l): tipo(NULL), first(l), is_type(0) {};
 		virtual void imprimir(int i){ if(first != NULL) first->imprimir(i); };
 		virtual void verificar(){};
@@ -24,6 +24,8 @@ class ArbolSintactico {
 		virtual type * get_tipo_index(type * t){};
 		virtual void verificar_llamada(vector<type *> parametros, int actual) {};
 		virtual string output_code(){ if (first) first->output_code(); return "";};
+		virtual string rvalue(){ return output_code(); };
+		virtual string lvalue(){ return output_code(); };
 };
 
 #endif

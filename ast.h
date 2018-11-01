@@ -5,6 +5,8 @@ Contiene la definicion del arbol sintactico asi como la de la tabla de simbolos 
 en el proyecto
 */
 
+#ifndef AST_H
+#define AST_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
@@ -20,6 +22,7 @@ en el proyecto
 #include "definiciones.h"
 #include "ast_def.h"
 #include "table.h"
+#include "TAC.h"
 
 using namespace std;
 
@@ -33,6 +36,7 @@ extern int yyparse();
 extern bool error_sintactico;
 extern vector<Token *> errors;
 extern string tipo2word[300];
+extern TAC intermedio;
 
 /* Definicion de la clase raiz */
 class raiz : public ArbolSintactico {
@@ -79,6 +83,10 @@ class funcion : public ArbolSintactico {
 		ArbolSintactico * funciones;
 		funcion(ArbolSintactico * i, ArbolSintactico * is) :  id(i), instrucciones(is), funciones(NULL) {verificar();}
 		funcion(ArbolSintactico * i, ArbolSintactico * is, ArbolSintactico * fs) : id(i), instrucciones(is), funciones(fs) {verificar();}
+
+		virtual string output_code(){
+			return "";
+		}
 
 		virtual void imprimir(int tab){
 			cout << "FUNCION:" << endl;
@@ -416,6 +424,15 @@ class entrada_salida : public ArbolSintactico {
 		bool entrada;
 		entrada_salida(ArbolSintactico * s, bool e) : exp(s), entrada(e) {verificar();}
 
+		virtual string output_code(){
+			if (entrada){
+				cout << "IN : " <<  exp->output_code() << endl;		
+			} else {
+				cout << "OUT:" << exp->output_code() << endl;
+			}
+			return "";
+		}
+
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			if (entrada){
@@ -491,10 +508,40 @@ class inst_guardia : public ArbolSintactico {
 		inst_guardia(ArbolSintactico * c, ArbolSintactico * is, ArbolSintactico * ie, int i) : condicion(c), cuerpo(is), cuerpo_else(ie), instruccion(static_cast<inst>(i)) {verificar();}
 		
 		virtual string output_code(){
+			string label = new_label();
 			switch(instruccion){
 				case IF:
-					cout << "if " << condicion->output_code() << " goto " << endl;
+				{
+					intermedio.add(new node_if("!"+condicion->output_code(), label));
+					if (cuerpo)
 					cuerpo->output_code();
+					intermedio.add(new node_label(label));
+					break;
+				}
+				case ELSE:
+				{	
+					string label2 = new_label();
+					intermedio.add(new node_if("!"+condicion->output_code(), label));
+					if (cuerpo)
+					cuerpo->output_code();
+					intermedio.add(new node_goto(label2));
+					intermedio.add(new node_label(label));
+					if (cuerpo_else)
+					cuerpo_else->output_code();
+					intermedio.add(new node_label(label2));
+					break;
+				}
+				case WHILE:
+				{
+					string label2 = new_label();
+					intermedio.add(new node_label(label2));
+					intermedio.add(new node_if("!"+condicion->output_code(), label));
+					if (cuerpo)
+					cuerpo->output_code();
+					intermedio.add(new node_goto(label2));
+					intermedio.add(new node_label(label));
+					break;
+				}
 			}
 			return "";
 		}
@@ -585,7 +632,7 @@ class asignacion : public ArbolSintactico {
 		asignacion(ArbolSintactico * v, ArbolSintactico * b, ArbolSintactico * s) : variable(v), valor(b), siguiente(s) {verificar();}
 		
 		virtual string output_code(){
-			cout <<  variable->output_code() << " : = " << valor->output_code() << endl;
+			intermedio.add(new node_assign(variable->lvalue(), valor->rvalue()));
 			return "";
 		}
 
@@ -870,7 +917,8 @@ class exp_aritmetica : public ArbolSintactico {
 		exp_aritmetica(ArbolSintactico * d, ArbolSintactico * i, int is) : der(i), izq(d), instruccion(static_cast<inst>(is)) {verificar();}
 		exp_aritmetica(ArbolSintactico * d, int is) : der(d), izq(NULL), instruccion(static_cast<inst>(is)) {verificar();}
 
-		virtual string output_code(){
+
+		string output_code(){
 			string a = der->output_code();
 			string b = "";
 			if (izq != NULL){
@@ -878,6 +926,7 @@ class exp_aritmetica : public ArbolSintactico {
 			}
 			string new_id = new_uuid();
 			stringstream ss;
+			ss << b << " ";
 			switch(instruccion){
 				case SUMA:
 					ss << "+";
@@ -898,7 +947,8 @@ class exp_aritmetica : public ArbolSintactico {
 					ss << "%";
 					break;
 			} 
-			cout <<  new_id << " : = " << a << " " << ss.str() << " " << b << endl;
+			ss << " " << a;
+			intermedio.add(new node_assign(new_id, ss.str()));
 			return new_id;
 		}
 
@@ -1039,6 +1089,7 @@ class exp_booleana : public ArbolSintactico {
 			}
 			string new_id = new_uuid();
 			stringstream ss;
+			ss << b << " ";
 			switch(instruccion){
 				case IGUALA:
 					ss << "==";
@@ -1068,8 +1119,9 @@ class exp_booleana : public ArbolSintactico {
 					ss << "~";
 					break;
 			}
-
-			cout <<  new_id << " : = " << a << " " << ss.str() << " " << b << endl;
+			ss << " " << a;
+			intermedio.add(new node_assign(new_id, ss.str()));
+			// cout <<  new_id << " : = " << a << " " << ss.str() << " " << b << endl;
 			return new_id;
 		}
 
@@ -1340,6 +1392,12 @@ class exp_index : public ArbolSintactico {
 		exp_index(ArbolSintactico * i,ArbolSintactico * ids) : ind(i), indexaciones(ids)  {verificar();}
 		exp_index(ArbolSintactico * i) : ind(i), indexaciones(NULL) {verificar();}
 
+		string rvalue(){
+			if (indexaciones == NULL){
+				return ind->rvalue();
+			}
+		}
+
 		virtual string output_code(){
 			if (indexaciones == NULL)
 				return ind->output_code();
@@ -1413,6 +1471,39 @@ class ids : public ArbolSintactico {
 		ids(ArbolSintactico * i) : id(i), idr(NULL), indx(NULL), indx2idr(false), ArbolSintactico() {}
 		ids(ArbolSintactico * i, ArbolSintactico * is) : id(i), idr(is), indx(NULL), indx2idr(false), ArbolSintactico() {}
 		ids(ArbolSintactico * i, ArbolSintactico * is, ArbolSintactico * ix) : id(i), idr(is), indx(ix), indx2idr(true), ArbolSintactico() {verificar();}
+
+		virtual string lvalue(){
+			if (indx2idr){
+				stringstream ss;
+				ss << id->output_code() << "["<< indx->rvalue() << "]" ;
+				return ss.str(); 
+			}
+			if (id != NULL)
+				return id->output_code();
+			if (indx != NULL)
+				indx->output_code();
+			if (idr != NULL)
+				idr->output_code();
+			return "";
+		}
+
+		virtual string rvalue(){
+			if (indx2idr){
+				string new_id = new_uuid();
+				stringstream ss;
+				ss << id->output_code() << "["<< indx->rvalue() << "]" ;
+				intermedio.add(new node_assign(new_id, ss.str()));
+				return new_id; 
+			}
+			if (id != NULL)
+				return id->output_code();
+			if (indx != NULL)
+				indx->output_code();
+			if (idr != NULL)
+				idr->output_code();
+			return "";
+		}
+
 
 		virtual string output_code(){
 			if (indx2idr){
@@ -2186,6 +2277,10 @@ class tupla : public ArbolSintactico {
 		ArbolSintactico * valor2;
 		tupla(ArbolSintactico * v1, ArbolSintactico * v2) : valor1(v1), valor2(v2) {verificar();}
 		
+		virtual string output_code(){
+			return valor1->output_code() + ", " + valor2->output_code(); 
+		}
+
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "TUPLA:" << endl;	
@@ -2209,3 +2304,5 @@ class tupla : public ArbolSintactico {
 			return tipo;
 		}
 };
+
+#endif

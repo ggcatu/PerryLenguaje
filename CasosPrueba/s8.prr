@@ -12,8 +12,10 @@ main{
 	} execute{
 		cebolla = cebolla + cebolla * 3 ;
 		tete = cebolla < 3;
-		if ( cebolla < 3 ){
+		while ( cebolla < 3 ){
 			cebolla = 3;
-		};
+		} ;
+		cebolla[cebolla[3]] = cebolla[1] + cebolla[4];
+		cebolla[3] = cebolla[1];
  	};
 }

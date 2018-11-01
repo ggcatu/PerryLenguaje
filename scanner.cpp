@@ -16,6 +16,7 @@ de las clases y funciones implementadas en definiciones.cpp
 #include "ast.h"
 #include "table.h"
 #include "parser.tab.h"
+#include "TAC.h"
 
 using namespace std;
 
@@ -40,7 +41,7 @@ extern sym_table table;
 // Vectores donde se guardarán nuestros resultados de la tokenización
 vector<Token *> tokens;
 vector<Token *> errors;
-
+TAC intermedio;
 
 void imprimir_errores(){
 	if (!errors.empty()){
@@ -136,8 +137,9 @@ void print_tac(){
 			cout << errorMessage << endl;
 	}
 	
-
 	root_ast->output_code();
+	cout << "INTERMEDIO" << endl;
+	intermedio.output_code();
 }
 
 void execute_parser(){

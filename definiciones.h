@@ -27,6 +27,7 @@ extern string tipos2word[];
 string IntToString ( int number );
 string FloatToString (float number);
 string new_uuid();
+string new_label();
 
 struct Token{
 	int identificador,fila,columna;
