@@ -66,6 +66,7 @@ class raiz : public ArbolSintactico {
 
 		virtual string output_code(){
 			cout << "Printing TAC" << endl;
+			intermedio.add(new node_goto("main"));
 			if (programa != NULL)
 			programa->output_code();
 			if(includes != NULL)
@@ -84,10 +85,6 @@ class funcion : public ArbolSintactico {
 		funcion(ArbolSintactico * i, ArbolSintactico * is) :  id(i), instrucciones(is), funciones(NULL) {verificar();}
 		funcion(ArbolSintactico * i, ArbolSintactico * is, ArbolSintactico * fs) : id(i), instrucciones(is), funciones(fs) {verificar();}
 
-		virtual string output_code(){
-			return "";
-		}
-
 		virtual void imprimir(int tab){
 			cout << "FUNCION:" << endl;
 			for (int j = 0; j < tab+1; j++) cout << " ";
@@ -100,6 +97,15 @@ class funcion : public ArbolSintactico {
 			if (funciones != NULL){
 				funciones -> imprimir(tab);
 			}
+		}
+
+		string output_code(){
+			string f = id->output_code();
+			intermedio.add(new node_label(f));
+			instrucciones->output_code();
+			if (funciones)
+				funciones->output_code();
+			return "";
 		}
 };
 
@@ -150,6 +156,7 @@ class programa : public ArbolSintactico {
 		}
 
 		virtual string output_code(){
+			intermedio.add(new node_label("main"));
 			if (program != NULL)
 			program->output_code();
 			if (sec != NULL)
@@ -346,6 +353,12 @@ class llamada : public ArbolSintactico {
 		ArbolSintactico * parametros;
 		ArbolSintactico * id;
 		llamada(ArbolSintactico * i, ArbolSintactico * p) : id(i), parametros(p) {verificar();}
+
+		string output_code(){
+			parametros->output_code();
+			intermedio.add(new node_call(id->output_code()));
+			return "";
+		}
 
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
@@ -1742,7 +1755,14 @@ class parametros : public ArbolSintactico {
 		parametros(ArbolSintactico * v) : val(v), elems(NULL) {}
 		parametros(ArbolSintactico * v, ArbolSintactico * e) : val(e), elems(v) {verificar();}
 		parametros() : elems(NULL), val(NULL) {}
-	
+		
+		string output_code(){
+			intermedio.add(new node_param(val->output_code()));
+			if (elems)
+				elems->output_code();
+			return "";
+		}
+
 		virtual void imprimir(int tab){
 			if (elems != NULL){
 				elems -> imprimir(tab);
@@ -2279,7 +2299,10 @@ class tupla : public ArbolSintactico {
 		tupla(ArbolSintactico * v1, ArbolSintactico * v2) : valor1(v1), valor2(v2) {verificar();}
 		
 		virtual string output_code(){
-			return valor1->output_code() + ", " + valor2->output_code(); 
+			string label = new_label();
+			string value = "(" + valor1->output_code() + ", " + valor2->output_code() + ")";
+			intermedio.add_data(new node_store(label, value));
+			return label ; 
 		}
 
 		virtual void imprimir(int tab){

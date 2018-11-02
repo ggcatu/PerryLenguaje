@@ -49,12 +49,37 @@ class node_goto: public TACNode{
 		void output_code(){ cout << "goto " << label << endl; };
 };
 
+class node_call: public TACNode{
+	string label;
+	public:
+		node_call(string l): TACNode(), label(l){};
+		~node_call(){};	
+		void output_code(){ cout << "call " << label << endl; };
+};
+
+class node_param: public TACNode{
+	string label;
+	public:
+		node_param(string l): TACNode(), label(l){};
+		~node_param(){};	
+		void output_code(){ cout << "param " << label << endl; };
+};
+
+class node_store: public TACNode{
+	string label;
+	string value;
+	public:
+		node_store(string l, string v): TACNode(), label(l), value(v){};
+		~node_store(){};	
+		void output_code(){ cout << "store " << value << " as " << label << endl; };
+};
+
 class TAC {
 	TACNode* first;
 	TACNode* last;
 	TAC* data;
 	public:
-		TAC(): first(NULL), last(0){};
+		TAC(): first(NULL), last(NULL), data(NULL) {};
 		~TAC(){
 			TACNode * tmp = first;
 			while (tmp){
@@ -62,6 +87,7 @@ class TAC {
 				delete(tmp); 
 				tmp = next;
 			}
+			delete(data);
 		};
 		void add(TACNode * node){ 
 			if (!first){
@@ -73,8 +99,17 @@ class TAC {
 			}
 		}
 
+		void add_data(TACNode * node){
+			if (!data)
+				data = new TAC();
+			data->add(node);
+		}
+
 		void output_code(){
 			TACNode * tmp = first;
+			if (data){
+				data->output_code();
+			}
 			while (tmp){
 				tmp->output_code();
 				tmp = tmp->next;

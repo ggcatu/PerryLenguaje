@@ -40,6 +40,7 @@ unit test(int @param, bool param2){
 
 main{
  	execute{
- 		<< "hahaha";
+ 		a = 3;
+ 		test(3, 5);
  	};
 }
