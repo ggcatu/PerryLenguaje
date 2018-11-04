@@ -429,10 +429,12 @@ class memoria : public ArbolSintactico {
 		}
 
 		virtual string output_code(){
+			string idd = id->output_code();
+
 			if (is_new){
-				cout << "NEW: " <<  id->output_code() << endl;		
+				intermedio.add(new node_new(idd));	
 			} else {
-				cout << "FREE: " << id->output_code() << endl;
+				intermedio.add(new node_free(idd));
 			}
 			return "";
 		}
@@ -448,11 +450,10 @@ class entrada_salida : public ArbolSintactico {
 		entrada_salida(ArbolSintactico * s, bool e) : exp(s), entrada(e) {verificar();}
 
 		virtual string output_code(){
-			if (entrada){
-				cout << "IN: " <<  exp->output_code() << endl;		
-			} else {
-				cout << "OUT: " << exp->output_code() << endl;
-			}
+			string e = exp->output_code();
+			if (entrada)
+				intermedio.add(new node_in(e));
+			intermedio.add(new node_out(e));
 			return "";
 		}
 
@@ -649,9 +650,10 @@ class ret_brk : public ArbolSintactico {
 
 		virtual string output_code(){
 			if (ret){
-				cout << "RETURN " << valor->output_code() << endl;
+				string val = valor->output_code();
+				intermedio.add(new node_return(val));
 			} else {
-				cout << "BREAK" << endl;
+				intermedio.add(new node_break());
 			}
 			return "";
 		}
@@ -1756,6 +1758,7 @@ class character : public ArbolSintactico {
 			string s;
 			ss << valor;
 			ss >> s;
+			s = "\'" + s + "\'";
 			return s;
 		}
 };

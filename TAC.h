@@ -92,6 +92,63 @@ class node_store: public TACNode{
 		void output_code(){ cout << "store " << value << " as " << label << endl; };
 };
 
+class node_return: public TACNode{
+	string val;
+	public:
+		node_return(string v): TACNode(), val(v){};
+		~node_return(){};	
+		void output_code(){ cout << "return " << val << endl; };
+};
+
+class node_break: public TACNode{
+	//string label;
+	public:
+		//node_break(string v): TACNode(), val(v){};
+		node_break(): TACNode() {};
+		~node_break(){};	
+		void output_code(){ cout << "break " << endl; };
+};
+
+class node_in: public TACNode{
+	string val;
+	public:
+		node_in(string v): TACNode(), val(v) {};
+		~node_in(){};	
+		void output_code(){ 
+			cout << "read " << val << endl; 
+		};
+};
+
+class node_out: public TACNode{
+	string val;
+	public:
+		node_out(string v): TACNode(), val(v) {};
+		~node_out(){};	
+		void output_code(){ 
+			cout << "write " << val << endl; 
+		};
+};
+
+class node_new: public TACNode{
+	string val;
+	public:
+		node_new(string v): TACNode(), val(v) {};
+		~node_new(){};	
+		void output_code(){ 
+			cout << "new " << val << endl; 
+		};
+};
+
+class node_free: public TACNode{
+	string val;
+	public:
+		node_free(string v): TACNode(), val(v) {};
+		~node_free(){};	
+		void output_code(){ 
+			cout << "free " << val << endl; 
+		};
+};
+
 class TAC {
 	TACNode* first;
 	TACNode* last;
