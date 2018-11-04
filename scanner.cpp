@@ -136,6 +136,8 @@ void print_tac(){
 		cout << "Error: " << endl;
 		cout << errorMessage << endl;
 	}
+	
+	imprimir_errores();
 	if (!error_sintactico){
 		root_ast->output_code();
 		cout << "INTERMEDIO" << endl;

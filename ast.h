@@ -725,10 +725,28 @@ class asignacion : public ArbolSintactico {
 		}
 		virtual void verificar(){
 			type * tipo_var = variable->get_tipo();
+			cout << "tipo_var " << tipo_var->tipo << endl;
 			type * tipo_val = valor->get_tipo();
+			cout << "tipo_val " << tipo_val->tipo << endl;
 
 			if (tipo_var != &tipo_error::instance() && tipo_val != &tipo_error::instance()){
 				switch(tipo_var->tipo) {
+					case POINTER:
+						if (tipo_val->tipo != POINTER){
+							string s = tipo2s("",tipo_var);
+							s += " != ";
+							s += tipo2s("",tipo_val);
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
+							error_sintactico = 1;
+							tipo = &tipo_error::instance();
+						} else {
+							if (&((tipo_pointer *)tipo_var)->p1 != &((tipo_pointer *)tipo_val)->p1){
+								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),((tipo_identifier *)tipo_var)->p1+" != "+((tipo_identifier *)tipo_val)->p1,ASIGNACION));
+								error_sintactico = 1;
+								tipo = &tipo_error::instance();
+							}
+						}
+						break;
 					case IDENTIFIER:
 						if (tipo_val->tipo != IDENTIFIER){
 							string s = tipo2s("",tipo_var);
@@ -853,6 +871,15 @@ class asignacion : public ArbolSintactico {
 					return true;
 				}
 				switch(tipo_var->tipo){
+					case POINTER:
+						if (tipo_val->tipo != POINTER){
+							return true;
+						} else {
+							if (&((tipo_pointer *)tipo_var)->p1 != &((tipo_pointer *)tipo_val)->p1){
+								return true;
+							}
+						}
+						return false;
 					case IDENTIFIER:
 						if (tipo_val->tipo != IDENTIFIER){
 							return true;
@@ -1259,6 +1286,15 @@ class exp_booleana : public ArbolSintactico {
 		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
 			if (tipo_val != 0){
 				switch(tipo_var->tipo){
+					case POINTER:
+						if (tipo_val->tipo != POINTER){
+							return true;
+						} else {
+							if (&((tipo_pointer *)tipo_var)->p1 != &((tipo_pointer *)tipo_val)->p1){
+								return true;
+							}
+						}
+						return false;
 					case IDENTIFIER:
 						if (tipo_val->tipo != IDENTIFIER){
 							return true;
@@ -1448,6 +1484,7 @@ class exp_point : public ArbolSintactico {
 				return &tipo_error::instance();
 			}
 			return &((tipo_pointer *)tipo_der)->p1;
+			//return tipo_der;
 		}
 };
 
@@ -1870,7 +1907,15 @@ class parametros : public ArbolSintactico {
 			// cout << "comparacion: tipo_param_llamada " << tipo_var->tipo << " tipo_param_vector " << tipo_val->tipo << endl;
 			if (tipo_val != 0 && tipo_var != 0){
 				switch(tipo_var->tipo){
-
+					case POINTER:
+						if (tipo_val->tipo != POINTER){
+							return true;
+						} else {
+							if (&((tipo_pointer *)tipo_var)->p1 != &((tipo_pointer *)tipo_val)->p1){
+								return true;
+							}
+						}
+						return false;
 					case IDENTIFIER:
 						if (tipo_val->tipo != IDENTIFIER){
 							return true;
@@ -2041,6 +2086,22 @@ class elementos : public ArbolSintactico {
 			type * tipo_val = elems->get_tipo();
 			if (tipo_var != &tipo_error::instance() && tipo_val != &tipo_error::instance()){
 				switch(tipo_var->tipo) {
+					case POINTER:
+						if (tipo_val->tipo != POINTER){
+							string s = tipo2s("",tipo_var);
+							s += " != ";
+							s += tipo2s("",tipo_val);
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,ASIGNACION));
+							error_sintactico = 1;
+							tipo = &tipo_error::instance();
+						} else {
+							if (&((tipo_pointer *)tipo_var)->p1 != &((tipo_pointer *)tipo_val)->p1){
+								errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),((tipo_identifier *)tipo_var)->p1+" != "+((tipo_identifier *)tipo_val)->p1,ASIGNACION));
+								error_sintactico = 1;
+								tipo = &tipo_error::instance();
+							}
+						}
+						break;
 					case IDENTIFIER:
 						if (tipo_val->tipo != IDENTIFIER){
 							string s = tipo2s("",tipo_var);
@@ -2161,6 +2222,15 @@ class elementos : public ArbolSintactico {
 		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
 			if (tipo_val != 0){
 				switch(tipo_var->tipo){
+					case POINTER:
+						if (tipo_val->tipo != POINTER){
+							return true;
+						} else {
+							if (&((tipo_pointer *)tipo_var)->p1 != &((tipo_pointer *)tipo_val)->p1){
+								return true;
+							}
+						}
+						return false;
 					case IDENTIFIER:
 						if (tipo_val->tipo != IDENTIFIER){
 							return true;
