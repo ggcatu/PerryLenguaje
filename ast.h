@@ -427,6 +427,16 @@ class memoria : public ArbolSintactico {
 			cout << "IDENTIFICADOR:" << endl;
 			id -> imprimir(tab+2);
 		}
+
+		virtual string output_code(){
+			if (is_new){
+				cout << "NEW: " <<  id->output_code() << endl;		
+			} else {
+				cout << "FREE: " << id->output_code() << endl;
+			}
+			return "";
+		}
+
 };
 
 
@@ -439,9 +449,9 @@ class entrada_salida : public ArbolSintactico {
 
 		virtual string output_code(){
 			if (entrada){
-				cout << "IN : " <<  exp->output_code() << endl;		
+				cout << "IN: " <<  exp->output_code() << endl;		
 			} else {
-				cout << "OUT:" << exp->output_code() << endl;
+				cout << "OUT: " << exp->output_code() << endl;
 			}
 			return "";
 		}
@@ -464,12 +474,33 @@ class entrada_salida : public ArbolSintactico {
 /* Definicion de la clase para el for */
 class it_determinada : public ArbolSintactico {
 	public:
+		ArbolSintactico * id;
 		ArbolSintactico * inicio;
 		ArbolSintactico * fin;
 		ArbolSintactico * paso;
 		ArbolSintactico * inst;
-		it_determinada(ArbolSintactico * i, ArbolSintactico * f, ArbolSintactico * p, ArbolSintactico * is) : inicio(i), fin(f), paso(p), inst(is) {verificar();}
-		
+		it_determinada(ArbolSintactico *iid, ArbolSintactico * i, ArbolSintactico * f, ArbolSintactico * p, ArbolSintactico * is) : id(iid), inicio(i), fin(f), paso(p), inst(is) {verificar();}
+
+		virtual string output_code(){
+			string label = new_label();
+			string label_1 = new_label();
+			string iid = id->output_code();
+			string i = inicio->output_code();
+			string f = fin->output_code();
+			string p = paso->output_code();
+			intermedio.add(new node_assign(iid, i));
+			intermedio.add(new node_label(label));
+			intermedio.add(new node_for(iid, f, label_1));
+			if (inst){
+				inst->output_code();
+			}
+			p = iid + " + " +  p;
+			intermedio.add(new node_assign(iid, p));
+			intermedio.add(new node_goto(label));
+			intermedio.add(new node_label(label_1));
+			return "";
+		}
+
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "FOR:" << endl;
@@ -615,6 +646,15 @@ class ret_brk : public ArbolSintactico {
 				cout << "BREAK" << endl;
 			}
 		}
+
+		virtual string output_code(){
+			if (ret){
+				cout << "RETURN " << valor->output_code() << endl;
+			} else {
+				cout << "BREAK" << endl;
+			}
+			return "";
+		}
 };
 
 
@@ -646,7 +686,15 @@ class asignacion : public ArbolSintactico {
 		asignacion(ArbolSintactico * v, ArbolSintactico * b, ArbolSintactico * s) : variable(v), valor(b), siguiente(s) {verificar();}
 		
 		virtual string output_code(){
-			intermedio.add(new node_assign(variable->lvalue(), valor->rvalue()));
+			type * tipo_val = valor->get_tipo();
+			string val = valor->rvalue();
+			string var = variable->lvalue();
+			if (tipo_val->tipo == LSTRING){
+				string label = new_label();
+				intermedio.add_data(new node_store(label, val));
+				val = label;
+			}
+			intermedio.add(new node_assign(var, val));
 			return "";
 		}
 
@@ -795,7 +843,7 @@ class asignacion : public ArbolSintactico {
 		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
 			if (tipo_val != 0){
 				if (tipo_val->tipo == FUNC){
-					cout << "hola soy una funcion" << endl;
+					//cout << "hola soy una funcion" << endl;
 					return true;
 				}
 				switch(tipo_var->tipo){
@@ -1415,6 +1463,7 @@ class exp_index : public ArbolSintactico {
 		virtual string output_code(){
 			if (indexaciones == NULL)
 				return ind->output_code();
+			return "";
 
 		}
 
@@ -1946,6 +1995,15 @@ class elementos : public ArbolSintactico {
 		elementos(ArbolSintactico * e, ArbolSintactico * v) : elems(e), val(v) {verificar();}
 		elementos() : elems(NULL), val(NULL) {}
 		
+		virtual string output_code(){
+			string v = val->output_code();
+			if (elems){
+				v = v + ",";
+				v = v + elems->output_code();
+			}
+			return v;
+		}
+
 		virtual void imprimir(int tab){
 			if (elems != NULL){
 				elems -> imprimir(tab);
@@ -2224,6 +2282,13 @@ class lista : public ArbolSintactico {
 	public:
 		ArbolSintactico * valor;
 		lista( ArbolSintactico * v) :  valor(v) {verificar();}
+
+		virtual string output_code(){
+			string label = new_label();
+			string value = "[" + valor->output_code() + "]";
+			intermedio.add_data(new node_store(label, value));
+			return label; 
+		}
 		
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
@@ -2261,6 +2326,13 @@ class arreglo : public ArbolSintactico {
 		ArbolSintactico * valor;
 		arreglo(ArbolSintactico * v) : valor(v) {verificar();}
 		
+		virtual string output_code(){
+			string label = new_label();
+			string value = "[" + valor->output_code() + "]";
+			intermedio.add_data(new node_store(label, value));
+			return label; 
+		}
+
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "ARREGLO:" << endl;	
@@ -2300,7 +2372,7 @@ class tupla : public ArbolSintactico {
 		
 		virtual string output_code(){
 			string label = new_label();
-			string value = "(" + valor1->output_code() + ", " + valor2->output_code() + ")";
+			string value = "[" + valor1->output_code() + ", " + valor2->output_code() + "]";
 			intermedio.add_data(new node_store(label, value));
 			return label ; 
 		}

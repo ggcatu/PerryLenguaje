@@ -33,6 +33,16 @@ class node_if: public TACNode{
 		void output_code(){ cout << "if (" << condition << ") go to " << label << endl; };
 };
 
+class node_for: public TACNode{
+	string val1;
+	string val2;
+	string label;
+	public:
+		node_for(string v1, string v2, string l): TACNode(), val1(v1), val2(v2), label(l){};
+		~node_for(){};	
+		void output_code(){ cout << "if (" << val1 << " == " << val2 << ") go to " << label << endl; };
+};
+
 class node_label: public TACNode{
 	string label;
 	public:
@@ -63,6 +73,14 @@ class node_param: public TACNode{
 		node_param(string l): TACNode(), label(l){};
 		~node_param(){};	
 		void output_code(){ cout << "param " << label << endl; };
+};
+
+class node_elem: public TACNode{
+	string val;
+	public:
+		node_elem(string v): TACNode(), val(v){};
+		~node_elem(){};
+		void output_code(){ cout << val; };
 };
 
 class node_store: public TACNode{

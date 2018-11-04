@@ -3,10 +3,12 @@
 main{
 	create{
 		float tomate;
+		int a;
 	} execute{
 		tomate = 5.5;
+		a = 0;
 		for(int i, [tomate,2341234], 1){
-			<< tomate;
+			a = a + 1;
 		};
  	};
 }
