@@ -134,12 +134,13 @@ void print_tac(){
 	}
 	catch(const char* const errorMessage){
 		cout << "Error: " << endl;
-			cout << errorMessage << endl;
+		cout << errorMessage << endl;
 	}
-	
-	root_ast->output_code();
-	cout << "INTERMEDIO" << endl;
-	intermedio.output_code();
+	if (!error_sintactico){
+		root_ast->output_code();
+		cout << "INTERMEDIO" << endl;
+		intermedio.output_code();
+	}
 }
 
 void execute_parser(){
@@ -150,7 +151,7 @@ void execute_parser(){
 	}
 	catch(const char* const errorMessage){
 		cout << "Error: " << endl;
-			cout << errorMessage << endl;
+		cout << errorMessage << endl;
 	}
 	
 	cout << "Parseado" << endl;
