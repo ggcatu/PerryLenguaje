@@ -11,7 +11,13 @@ unit test(int @param, bool param2){
 }
 
 main{
- 	execute{
+	create{
+		ptr int x;
+		int y = 1;
+		float o = 3.4;
+	} execute{
+		x = 1;
+		x = &y;
  		<< "hahaha";
  	};
 }

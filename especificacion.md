@@ -265,7 +265,7 @@ is;
 Un `struct` es una estructura de datos que se utiliza para organizar y almacenar distintos tipos de datos. La estructura general es la siguiente:
 
 ``` 
-type struct id{
+struct id{
 	tipo_1 id_1;
 	...
 	tipo_n id_n;
@@ -279,7 +279,7 @@ Donde `id` es el identificador de la estructura y `tipo_i id_i` se refiere al mi
 Un `union` es una estructura de datos que se utiliza para almacenar uno de los tipos de datos presentes en la misma. La estructura general es la siguiente:
 
 ``` 
-type union id{
+union id{
 	tipo_1 id_1;
 	...
 	tipo_n id_n;

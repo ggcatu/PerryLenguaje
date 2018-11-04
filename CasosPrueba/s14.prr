@@ -4,10 +4,11 @@ main{
 	create{
 		float tomate;
 		int a;
+		array int[2] b;
 	} execute{
 		tomate = 5.5;
 		a = 0;
-		for(int i, [tomate,2341234], 1){
+		for(int i, [tomate,23], 1){
 			a = a + 1;
 		};
 		<< 'a';

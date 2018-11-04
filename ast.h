@@ -190,8 +190,10 @@ class bloque : public ArbolSintactico {
 		}
 
 		virtual string output_code(){
+			if (declaraciones!=NULL)
+				declaraciones->output_code();
 			if (instrucciones!=NULL)
-			instrucciones->output_code();
+				instrucciones->output_code();
 			return "";
 		}
 };
@@ -697,6 +699,8 @@ class asignacion : public ArbolSintactico {
 				val = label;
 			}
 			intermedio.add(new node_assign(var, val));
+			if (siguiente != NULL)
+				siguiente->output_code();
 			return "";
 		}
 
