@@ -249,6 +249,7 @@ Sec 		: Inst PUNTOCOMA Sec  								{ $$ = new instruccion($3,$1); }
 
 Inst		: Scope					 							{ $$ = $1; }
 			| Ids IGUAL Exp										{ $$ = new asignacion($1,$3, NULL); }
+			| OPTR Ids IGUAL Exp								{ $$ = new asignacion(new exp_point($2),$4, NULL); }
 			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  									{ $$ = new inst_guardia($3,$6,0); }
 			| IF PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA ELSE LLAVEABRE Sec LLAVECIERRA		{ $$ = new inst_guardia($3,$6,$10,1); }
 			| WHILE PARABRE Exp PARCIERRA LLAVEABRE Sec LLAVECIERRA  								{ $$ = new inst_guardia($3,$6,2); }

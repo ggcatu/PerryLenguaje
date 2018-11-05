@@ -1485,6 +1485,18 @@ class exp_point : public ArbolSintactico {
 			return ss.str();
 		}
 
+		virtual string rvalue(){
+			stringstream ss;
+			ss << "& " << der->output_code();
+			return ss.str();
+		}
+
+		virtual string lvalue(){
+			stringstream ss;
+			ss << "& " << der->output_code();
+			return ss.str();
+		}
+
 		virtual void imprimir(int tab) {
 			for (int j = 0; j < tab; j++) cout << " ";
 			cout << "DESREFERENCIACION: " << endl;

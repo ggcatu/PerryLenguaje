@@ -161,7 +161,7 @@ void execute_parser(){
 	imprimir_arbol();
 
 	imprimir_errores();
-
+	
 	imprimir_tabla();
 
 }

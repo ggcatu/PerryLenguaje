@@ -29,6 +29,7 @@ main{
 		ooo = (4,true);
  		<< "hahaha";
  		u = &x;
+ 		&x = 1;
  	};
  	create{
  		int l = 1;
