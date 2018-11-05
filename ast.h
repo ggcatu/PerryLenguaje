@@ -1639,8 +1639,8 @@ class ids : public ArbolSintactico {
 
 
 		virtual string output_code(){
+			stringstream ss;
 			if (indx2idr){
-				stringstream ss;
 				ss << id->output_code() << "["<< indx->output_code() << "]" ;
 				return ss.str(); 
 			}
@@ -1649,7 +1649,8 @@ class ids : public ArbolSintactico {
 			if (indx != NULL)
 				indx->output_code();
 			if (idr != NULL)
-				return id->output_code() << "_" << idr->output_code();
+				ss << id->output_code() << "_" << idr->output_code();
+				return ss.str(); 
 			return "";
 		}
 
