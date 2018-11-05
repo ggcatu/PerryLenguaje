@@ -26,6 +26,7 @@ class ArbolSintactico {
 		virtual string output_code(){ if (first) first->output_code(); return "";};
 		virtual string rvalue(){ return output_code(); };
 		virtual string lvalue(){ return output_code(); };
+		virtual std::vector<string> values(){ std::vector<string> val; return val; };
 };
 
 #endif

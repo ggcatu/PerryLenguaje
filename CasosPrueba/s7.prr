@@ -15,9 +15,24 @@ main{
 		ptr int x;
 		ptr int y;
 		int u = 1;
+		string ss = "callese viejo lesbiano";
 		float o = 3.4;
+		array int[2] aaa;
+		tuple (int,bool) ooo;
 	} execute{
-		u = &x;
+		create{
+			float jaja = 4.4;
+		} execute{
+			<< jaja;
+		};
+		aaa = [1,2,3];
+		ooo = (4,true);
  		<< "hahaha";
+ 		u = &x;
+ 	};
+ 	create{
+ 		int l = 1;
+ 	} execute {
+ 		<< "hi";
  	};
 }

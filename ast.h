@@ -453,9 +453,11 @@ class entrada_salida : public ArbolSintactico {
 
 		virtual string output_code(){
 			string e = exp->output_code();
-			if (entrada)
+			if (entrada){
 				intermedio.add(new node_in(e));
-			intermedio.add(new node_out(e));
+			} else{
+				intermedio.add(new node_out(e));
+			}
 			return "";
 		}
 
@@ -693,12 +695,27 @@ class asignacion : public ArbolSintactico {
 			type * tipo_val = valor->get_tipo();
 			string val = valor->rvalue();
 			string var = variable->lvalue();
-			if (tipo_val->tipo == LSTRING){
-				string label = new_label();
-				intermedio.add_data(new node_store(label, val));
-				val = label;
+			switch(tipo_val->tipo){
+				case LSTRING:{
+					string label = new_label();
+					intermedio.add_data(new node_store(label, val));
+					intermedio.add(new node_assign(var, label));
+					break;
+				}
+				case TUPLE:
+				case ARRAY:
+				case LIST:{
+					std::vector<string> valores = valor->values();
+					string aux;
+					for (unsigned i=0; i<valores.size(); i++){
+						aux = var + "[" + IntToString(i) + "]";
+						intermedio.add(new node_assign(aux, valores[i]));
+					}
+					break;
+				}
+				default:
+					intermedio.add(new node_assign(var, val));
 			}
-			intermedio.add(new node_assign(var, val));
 			if (siguiente != NULL)
 				siguiente->output_code();
 			return "";
@@ -725,9 +742,7 @@ class asignacion : public ArbolSintactico {
 		}
 		virtual void verificar(){
 			type * tipo_var = variable->get_tipo();
-			cout << "tipo_var " << tipo_var->tipo << endl;
 			type * tipo_val = valor->get_tipo();
-			cout << "tipo_val " << tipo_val->tipo << endl;
 
 			if (tipo_var != &tipo_error::instance() && tipo_val != &tipo_error::instance()){
 				switch(tipo_var->tipo) {
@@ -2047,14 +2062,27 @@ class elementos : public ArbolSintactico {
 		elementos(ArbolSintactico * e, ArbolSintactico * v) : elems(e), val(v) {verificar();}
 		elementos() : elems(NULL), val(NULL) {}
 		
-		virtual string output_code(){
+		virtual std::vector<string> values(){
+			std::vector<string> valores;
+			valores.push_back(val->output_code());
+			if (elems){
+				std::vector<string> v_elems = elems->values();
+				for (unsigned i=0; i<v_elems.size(); i++){
+					valores.push_back(v_elems[i]);
+				}
+				v_elems.clear();
+			}
+			return valores;
+		}
+
+		/*virtual string output_code(){
 			string v = val->output_code();
 			if (elems){
 				v = v + ",";
 				v = v + elems->output_code();
 			}
 			return v;
-		}
+		}*/
 
 		virtual void imprimir(int tab){
 			if (elems != NULL){
@@ -2359,13 +2387,17 @@ class lista : public ArbolSintactico {
 	public:
 		ArbolSintactico * valor;
 		lista( ArbolSintactico * v) :  valor(v) {verificar();}
+		
+		virtual std::vector<string> values(){
+			return valor->values();
+		}
 
-		virtual string output_code(){
+		/*virtual string output_code(){
 			string label = new_label();
 			string value = "[" + valor->output_code() + "]";
 			intermedio.add_data(new node_store(label, value));
 			return label; 
-		}
+		}*/
 		
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
@@ -2403,12 +2435,16 @@ class arreglo : public ArbolSintactico {
 		ArbolSintactico * valor;
 		arreglo(ArbolSintactico * v) : valor(v) {verificar();}
 		
-		virtual string output_code(){
+		virtual std::vector<string> values(){
+			return valor->values();
+		}
+
+		/*virtual string output_code(){
 			string label = new_label();
 			string value = "[" + valor->output_code() + "]";
 			intermedio.add_data(new node_store(label, value));
 			return label; 
-		}
+		}*/
 
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
@@ -2447,12 +2483,19 @@ class tupla : public ArbolSintactico {
 		ArbolSintactico * valor2;
 		tupla(ArbolSintactico * v1, ArbolSintactico * v2) : valor1(v1), valor2(v2) {verificar();}
 		
-		virtual string output_code(){
+		virtual std::vector<string> values(){
+			std::vector<string> valores;
+			valores.push_back(valor1->output_code());
+			valores.push_back(valor1->output_code());
+			return valores;
+		}
+
+		/*virtual string output_code(){
 			string label = new_label();
 			string value = "[" + valor1->output_code() + ", " + valor2->output_code() + "]";
 			intermedio.add_data(new node_store(label, value));
 			return label ; 
-		}
+		}*/
 
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
