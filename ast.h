@@ -1685,15 +1685,16 @@ class ids : public ArbolSintactico {
 			if (tipo != NULL){
 				return tipo;
 			}
+			tipo = id->get_tipo();
 			if (indx2idr){
-				//cout << "HERE" << endl;
-				tipo = indx->get_tipo();
+				if (indx != NULL){
+					tipo = indx->get_tipo_index(tipo);
+				}
 				if (idr != NULL){
 					tipo = idr->get_tipo();
 				}
 			} else {
 				if (idr == NULL){
-					tipo = id->get_tipo();
 					if (indx != NULL){
 						// Hay que sacar el tipo interno
 						tipo = indx->get_tipo_index(tipo);
@@ -2499,7 +2500,7 @@ class tupla : public ArbolSintactico {
 		virtual std::vector<string> values(){
 			std::vector<string> valores;
 			valores.push_back(valor1->output_code());
-			valores.push_back(valor1->output_code());
+			valores.push_back(valor2->output_code());
 			return valores;
 		}
 

@@ -25,7 +25,8 @@ main{
 		} execute{
 			<< jaja;
 		};
-		aaa = [1,2,3];
+		//aaa[9] = [1,2,3];
+		u = aaa[0];
 		ooo = (4,true);
  		<< "hahaha";
  		u = &x;
