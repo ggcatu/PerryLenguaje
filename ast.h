@@ -1649,7 +1649,7 @@ class ids : public ArbolSintactico {
 			if (indx != NULL)
 				indx->output_code();
 			if (idr != NULL)
-				idr->output_code();
+				return id->output_code() << "_" << idr->output_code();
 			return "";
 		}
 
