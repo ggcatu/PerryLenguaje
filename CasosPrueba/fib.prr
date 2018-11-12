@@ -1,0 +1,20 @@
+//Fibonacci
+
+main{
+    create{
+        int i;
+        int n;
+        int t1 = 0;
+        int t2 = 1;
+        int nextTerm;
+    } execute{
+        >>("Enter the number of terms: ");
+        << n;
+        for (int i,[1,n],i + 1){
+            >>(t1);
+            nextTerm = t1 + t2;
+            t1 = t2;
+            t2 = nextTerm;
+        };
+    };
+}
