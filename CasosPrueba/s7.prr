@@ -17,7 +17,7 @@ main{
 		int u = 1;
 		string ss = "callese viejo lesbiano";
 		float o = 3.4;
-		array int[2] aaa;
+		array array int[2][2] aaa;
 		tuple (int,bool) ooo;
 	} execute{
 		create{
@@ -25,11 +25,8 @@ main{
 		} execute{
 			<< jaja;
 		};
-		aaa = [1,2,3];
-		ooo = (4,true);
- 		<< "hahaha";
- 		u = &x;
- 		&x = 1;
+		//aaa[9] = [1,2,3];
+		u = aaa[0][1];
  	};
  	create{
  		int l = 1;

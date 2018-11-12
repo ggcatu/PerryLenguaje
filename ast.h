@@ -705,12 +705,17 @@ class asignacion : public ArbolSintactico {
 				case TUPLE:
 				case ARRAY:
 				case LIST:{
+					string label = new_label();
 					std::vector<string> valores = valor->values();
-					string aux;
+					stringstream aux;
+					aux << "[";
 					for (unsigned i=0; i<valores.size(); i++){
-						aux = var + "[" + IntToString(i) + "]";
-						intermedio.add(new node_assign(aux, valores[i]));
+						aux << valores[i] << ",";
+						//intermedio.add(new node_assign(aux, valores[i]));
 					}
+					aux << "]";
+					intermedio.add_data(new node_store(label, aux.str()));
+					intermedio.add(new node_assign(var, label));
 					break;
 				}
 				default:
@@ -1525,16 +1530,42 @@ class exp_index : public ArbolSintactico {
 		exp_index(ArbolSintactico * i) : ind(i), indexaciones(NULL) {verificar();}
 
 		string rvalue(){
-			if (indexaciones == NULL){
-				return ind->rvalue();
+			stringstream ss;
+			ss << "[" << ind->rvalue() << "]";
+			if (indexaciones){
+				ss << indexaciones->rvalue();
 			}
+			return ss.str();
 		}
 
 		virtual string output_code(){
-			if (indexaciones == NULL)
-				return ind->output_code();
-			return "";
+			stringstream ss;
+			ss << "[" << ind->output_code() << "]";
+			if (indexaciones){
+				ss << indexaciones->output_code();
+			}
+			return ss.str();
+		}
 
+		virtual std::vector<string> values(){
+			std::vector<string> valores;
+			stringstream ss;
+			string s_ind = ind->output_code();
+			if (s_ind != ""){
+				ss << "[" << s_ind << "]";
+				valores.push_back(ss.str());
+			}
+			if (indexaciones){
+				std::vector<string> aux_indx = indexaciones->values();
+				for (unsigned i = 0; i < aux_indx.size(); i++){
+					valores.push_back(aux_indx[i]);
+				}
+			}
+			//for (unsigned i = 0; i < valores.size(); i++){
+			//	cout << valores[i];
+			//}
+			//cout << endl;
+			return valores;
 		}
 
 		virtual void imprimir(int tab) {
@@ -1607,50 +1638,108 @@ class ids : public ArbolSintactico {
 
 		virtual string lvalue(){
 			if (indx2idr){
+				string s_id = id->output_code();
+				if (indx){
+					string new_id = "";
+					std::vector<string> s_indx = indx->values();
+					s_id += s_indx[0];
+					for (unsigned i = 1; i < s_indx.size(); i++){
+						new_id = new_uuid();
+						intermedio.add(new node_assign(new_id, s_id));
+						s_id = new_id + s_indx[i];
+					}
+					if (new_id != ""){
+						s_id = new_id;
+					}
+				}
+				if (idr){
+					s_id += "_" + idr->output_code();
+				}
+				return s_id;
+			}
+			/*if (indx2idr){
 				stringstream ss;
 				ss << id->output_code() << "["<< indx->rvalue() << "]" ;
 				return ss.str(); 
-			}
-			if (id != NULL)
+			}*/
+			if (id != NULL){
 				return id->output_code();
-			if (indx != NULL)
-				indx->output_code();
-			if (idr != NULL)
+			}
+			if (idr != NULL){
 				idr->output_code();
+			}
+			if (indx != NULL){
+				indx->output_code();
+			}
+			
 			return "";
 		}
 
 		virtual string rvalue(){
 			if (indx2idr){
+				string new_id = id->output_code();
+				if (indx){
+					string s_id;
+					std::vector<string> s_indx = indx->values();
+					for (unsigned i = 0; i < s_indx.size(); i++){
+						s_id = new_id + s_indx[i];
+						new_id = new_uuid();
+						intermedio.add(new node_assign(new_id, s_id));
+					}
+				}
+				if (idr){
+					new_id += "_" + idr->output_code();
+				}
+				return new_id;
+			}
+			/*if (indx2idr){
 				string new_id = new_uuid();
 				stringstream ss;
 				ss << id->output_code() << "["<< indx->rvalue() << "]" ;
 				intermedio.add(new node_assign(new_id, ss.str()));
 				return new_id; 
-			}
-			if (id != NULL)
+			}*/
+			if (id != NULL){
 				return id->output_code();
-			if (indx != NULL)
+			}
+			if (indx != NULL){
 				indx->output_code();
-			if (idr != NULL)
+			}
+			if (idr != NULL){
 				idr->output_code();
+			}
 			return "";
 		}
 
 
 		virtual string output_code(){
-			stringstream ss;
 			if (indx2idr){
-				ss << id->output_code() << "["<< indx->output_code() << "]" ;
-				return ss.str(); 
+				string new_id = id->output_code();
+				if (indx){
+					string s_id;
+					std::vector<string> s_indx = indx->values();
+					for (unsigned i = 0; i < s_indx.size(); i++){
+						s_id = new_id + s_indx[i];
+						new_id = new_uuid();
+						intermedio.add(new node_assign(new_id, s_id));
+					}
+				}
+				if (idr){
+					new_id += "_" + idr->output_code();
+				}
+				return new_id;
 			}
-			if (id != NULL)
+			if (id != NULL){
 				return id->output_code();
-			if (indx != NULL)
-				indx->output_code();
-			if (idr != NULL)
+			}
+			if (idr != NULL){
+				stringstream ss;
 				ss << id->output_code() << "_" << idr->output_code();
 				return ss.str(); 
+			}
+			if (indx != NULL){
+				indx->output_code();
+			}
 			return "";
 		}
 
@@ -1685,15 +1774,16 @@ class ids : public ArbolSintactico {
 			if (tipo != NULL){
 				return tipo;
 			}
+			tipo = id->get_tipo();
 			if (indx2idr){
-				//cout << "HERE" << endl;
-				tipo = indx->get_tipo();
+				if (indx != NULL){
+					tipo = indx->get_tipo_index(tipo);
+				}
 				if (idr != NULL){
 					tipo = idr->get_tipo();
 				}
 			} else {
 				if (idr == NULL){
-					tipo = id->get_tipo();
 					if (indx != NULL){
 						// Hay que sacar el tipo interno
 						tipo = indx->get_tipo_index(tipo);
@@ -2076,14 +2166,17 @@ class elementos : public ArbolSintactico {
 		elementos() : elems(NULL), val(NULL) {}
 		
 		virtual std::vector<string> values(){
-			std::vector<string> valores;
-			valores.push_back(val->output_code());
+			std::vector<string> valores = val->values();
+			string ss = val->output_code();
+			if (ss != ""){ // Si no ejecuta la funcion por defecto
+				valores.push_back(val->output_code());
+			}
 			if (elems){
-				std::vector<string> v_elems = elems->values();
-				for (unsigned i=0; i<v_elems.size(); i++){
-					valores.push_back(v_elems[i]);
+				std::vector<string> aux_elems = elems->values();
+				for (unsigned i = 0; i < aux_elems.size(); i++){
+					valores.push_back(aux_elems[i]);
 				}
-				v_elems.clear();
+				aux_elems.clear();
 			}
 			return valores;
 		}
@@ -2497,10 +2590,12 @@ class tupla : public ArbolSintactico {
 		tupla(ArbolSintactico * v1, ArbolSintactico * v2) : valor1(v1), valor2(v2) {verificar();}
 		
 		virtual std::vector<string> values(){
-			std::vector<string> valores;
-			valores.push_back(valor1->output_code());
-			valores.push_back(valor1->output_code());
-			return valores;
+			std::vector<string> v_valor1 = valor1->values(); 
+			std::vector<string> v_valor2 = valor2->values();
+			for (unsigned i = 0; i < v_valor2.size(); i++){
+				v_valor1.push_back(v_valor2[i]);
+			}
+			return v_valor1;
 		}
 
 		/*virtual string output_code(){
