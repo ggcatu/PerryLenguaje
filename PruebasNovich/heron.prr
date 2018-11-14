@@ -1,0 +1,28 @@
+//Heron
+
+int sqr(int x){
+    create{
+        int counter = 0;
+        int l_neu=(l+(x/l))/2;  // l is used for the guessed solution.
+    }
+    execute{
+        if(counter==25){
+            return l_neu;
+        }else{
+            return Heron(x,l_neu);
+        }
+    };
+}
+
+main{
+    create{
+        int n;
+    } execute{
+        while(true){    
+            >>("Igrese número en punto flotante no negativo: ");
+            << n;
+            n = sqr(n);
+            >> n
+        }
+    };
+}

@@ -1,0 +1,35 @@
+//QuickSort
+
+int qs(arr){
+    create{}
+    execute{
+        if (x==0){
+            return 1;
+        }else{
+             return x*rec_fact(x-1);
+        };
+    };
+}
+
+
+main{
+    create{
+        int fact;
+        int n;
+        int i = 0;
+        bool iter;
+        string s;
+    } execute{
+	    	while(true){
+	        >>("Igrese numero de elementos que desea ordenar: ");
+	        << n;
+	        while(i <= n){
+		        >>("Ingrese numero:");
+		        << arr[i];
+		        i = i + 1;
+	        };
+	        i = 0;
+	        >> qs(arr);
+    	}
+    };
+}

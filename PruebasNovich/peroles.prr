@@ -1,0 +1,28 @@
+//Peroles 
+struct elem{
+  int  tipo;
+  union {
+    bool  b;
+    char  c;
+    int   i;
+    float f;
+  }
+}
+
+main{
+    create{
+        string s;
+        array elem[20];
+    } execute{
+        >>("Igrese elemento: ");
+        << s;
+        >>("¿Desea hacer el factorial iterativo? (si o no) ");
+        << s;
+        iter = (s == "si");
+        if (iter){
+            >> iter_fact(n);
+        }else{
+            >> rec_fact(n);
+        };
+    };
+}
