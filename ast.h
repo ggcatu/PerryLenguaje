@@ -203,7 +203,8 @@ class bloque : public ArbolSintactico {
 class identificador : public ArbolSintactico {
 	public:
 		string valor;
-		identificador(string v) : valor(v), ArbolSintactico() { verificar(); }
+		int scope;
+		identificador(string v) : valor(v), ArbolSintactico(), scope(table.current_scope()){ verificar(); }
 
 		void verificar(){
 			get_tipo();
@@ -231,7 +232,9 @@ class identificador : public ArbolSintactico {
 		}
 
 		virtual string output_code(){
-			return valor;
+			stringstream ss;
+			ss << valor << "#" << scope;
+			return ss.str();
 		}
 };
 
@@ -561,11 +564,15 @@ class inst_guardia : public ArbolSintactico {
 			switch(instruccion){
 				case IF:
 				{
-					intermedio.add(new node_if("!"+condicion->output_code(), label));
-					if (cuerpo)
+					this->True = "fall";
+					this->False = label; 
+					// intermedio.add(new node_if("!"+condicion->output_code(), label));
+					// if (cuerpo)
+					condicion->jumping_code(this);
 					cuerpo->output_code();
 					intermedio.add(new node_label(label));
 					break;
+					// break;
 				}
 				case ELSE:
 				{	
@@ -1195,6 +1202,25 @@ class exp_booleana : public ArbolSintactico {
 		inst instruccion;
 		exp_booleana(ArbolSintactico * d, ArbolSintactico * i, int is) : der(d), izq(i), instruccion(static_cast<inst>(is)) {verificar();}
 		exp_booleana(ArbolSintactico * d, int is) : der(d), izq(NULL), instruccion(static_cast<inst>(is)) {verificar();}
+
+		string jumping_code(ArbolSintactico * B){
+			string temp;
+			stringstream ss;
+			switch(instruccion){
+				case NEGACION: {
+					temp = B->False;
+					B->False = B->True;
+					B->True = temp;
+					return der->jumping_code(this);
+				}
+				case MENOR: {
+					intermedio.add(new node_if(this->output_code(), B->True));
+					intermedio.add(new node_goto(B->False));
+					break;
+				}
+			}
+			return "";
+		};
 
 		virtual string output_code(){
 			string a = der->output_code();
@@ -1885,13 +1911,22 @@ class booleano : public ArbolSintactico {
 		type * get_tipo(){
 			return tipo;
 		}
+
 		virtual string output_code(){
 			if (valor){
 				return "true";	
 			} else {
 				return "false";
 			}
-			
+		}
+
+		string jumping_code(ArbolSintactico * B){
+			if (valor){
+				intermedio.add(new node_goto(B->True));
+			} else {
+				intermedio.add(new node_goto(B->False));
+			}
+			return "";	
 		}
 };
 

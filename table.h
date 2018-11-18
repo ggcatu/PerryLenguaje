@@ -146,6 +146,10 @@ class sym_table {
 			return last_scope;
 		}
 
+		int current_scope(){
+			return stack.back();
+		}
+
 		void open_scope(std::string x){
 			table_element * scope = lookup(x, -1);
 			if (scope == NULL){

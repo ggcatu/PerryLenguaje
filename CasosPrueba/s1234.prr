@@ -1,0 +1,11 @@
+
+
+main{
+	create{
+		int a;
+		array tuple (int,bool)[2] ooo;
+	} execute{
+		a = 5;
+		ooo[5] = (3, true);
+ 	};
+}

@@ -1,0 +1,11 @@
+
+main{
+	create{
+		int a;
+	}
+ 	execute{
+ 		if (3 < 5){
+ 			a = 3+3;
+ 		};
+ 	};
+}
