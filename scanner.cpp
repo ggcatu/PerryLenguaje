@@ -11,6 +11,7 @@ de las clases y funciones implementadas en definiciones.cpp
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
 #include <stdlib.h>
 #include "definiciones.h"
 #include "ast.h"
@@ -145,6 +146,32 @@ void print_tac(){
 	}
 }
 
+void machine_code(){
+    try {
+		yyparse();
+	}
+	catch(const char* const errorMessage){
+		cout << "Error: " << endl;
+		cout << errorMessage << endl;
+	}
+	
+	imprimir_errores();
+	if (!error_sintactico){
+		// ofstream out("out.txt");
+	 	//    streambuf *coutbuf = cout.rdbuf(); 
+	 	//    cout.rdbuf(out.rdbuf()); 
+
+		root_ast->output_code();
+
+	    intermedio.output_code();
+	    cout << endl << endl << endl;
+
+		intermedio.output_mips();
+
+	    // cout.rdbuf(coutbuf); 
+	}
+}
+
 void execute_parser(){
 	cout << "Ejecutando parser" << endl;
     
@@ -185,6 +212,9 @@ int main(int argc, char** argv) {
 			}
 			else if (arg == "-t"){
 				print_tac();
+			}
+			else if (arg == "-m"){
+				machine_code();
 			}
 		}
 	} else {

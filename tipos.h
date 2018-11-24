@@ -16,10 +16,16 @@ using namespace std;
 class type {
 	public:
 		std::vector<type *> parametros;
+		std::vector<std::string> variables;
 		yytokentype tipo;
+		int bytes;
 		type(yytokentype t){
 			tipo = t;
 		};
+
+		virtual int size(){
+			return 4;
+		}
 };
 
 template <class T> class CRTP_type : public type {
@@ -72,11 +78,6 @@ class tipo_identifier: public CRTP_type<tipo_identifier>{
 		tipo_identifier() : CRTP_type(IDENTIFIER) {};
 };
 
-class tipo_pointer: public CRTP_type<tipo_pointer>{
-	public:
-		type &p1;
-		tipo_pointer(type &p) : CRTP_type(POINTER), p1(p) {}; 
-};
 
 class tipo_tipo: public CRTP_type<tipo_tipo>{
 	public:
@@ -88,6 +89,14 @@ class tipo_tipo: public CRTP_type<tipo_tipo>{
 class tipo_unit: public CRTP_type<tipo_unit>{
 	friend class CRTP_type<tipo_unit>;
 	tipo_unit() : CRTP_type(UNIT) {}; 
+};
+
+class tipo_pointer: public CRTP_type<tipo_pointer>{
+	public:
+		type &p1;
+		tipo_pointer(type &p) : CRTP_type(POINTER), p1(p) {}; 
+		tipo_pointer() : CRTP_type(POINTER), p1(tipo_unit::instance()) {};
+
 };
 
 class tipo_array: public CRTP_type<tipo_array>{
@@ -107,8 +116,8 @@ class tipo_list: public CRTP_type<tipo_list>{
 class tipo_funcion: public CRTP_type<tipo_funcion>{
 	public:
 		type &p1;
-		std::vector<type> parametros;
 		tipo_funcion(type &p) : CRTP_type(FUNC), p1(p) {};
+		tipo_funcion() : CRTP_type(FUNC), p1(tipo_unit::instance()) {};
 };
 
 class tipo_error: public CRTP_type<tipo_error>{

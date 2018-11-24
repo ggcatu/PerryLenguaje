@@ -1,0 +1,80 @@
+OTCALLING
+store "callese viejo lesbiano" as label_0
+store "hi" as label_1
+goto main
+test#0: 
+free point#2
+return point#2
+main: 
+u#3 := 1
+ss#3 := label_0
+o#3 := 3.4
+jaja#4 := 4.4
+write jaja#4
+_t0 := aaa#3[0]
+_t1 := _t0[1]
+u#3 := _t1
+l#5 := 1
+_t2 := l#5 0 3
+l#5 := _t2
+_t3 := l#5 1 3
+l#5 := _t3
+_t4 := l#5 2 3
+l#5 := _t4
+write label_1
+
+
+
+.data
+	label_0: .asciiz  "callese viejo lesbiano"
+	label_1: .asciiz  "hi"
+.text
+	j main
+LELE
+test#0: 
+LELE
+free point#2
+LELE
+return point#2
+LELE
+main: 
+LELE
+	li $s1, 1
+	add $s0, $s1, $0
+LELE
+ss#3 := label_0
+LELE
+	add.s $s2, $s3, $0
+LELE
+	add.s $s4, $s5, $0
+LELE
+	li	$v0, 4
+	la $a0, jaja#4
+	syscall
+LELE
+_t0 := aaa#3[0]
+LELE
+_t1 := _t0[1]
+LELE
+	add $s0, $s6, $0
+LELE
+	li $s1, 1
+	add $s7, $s1, $0
+LELE
+	add $t0, $s7, $t1
+LELE
+	add $s7, $t0, $0
+LELE
+	sub $t2, $s7, $t1
+LELE
+	add $s7, $t2, $0
+LELE
+	mult $t3, $s7, $t1
+LELE
+	add $s7, $t3, $0
+LELE
+	li	$v0, 4
+	la $a0, label_1
+	syscall
+LELE
+SEACA

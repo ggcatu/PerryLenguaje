@@ -89,8 +89,11 @@ void declarar_variable(string identificador, int columna){
 
 void parametrizar_funcion(char * str){
 	type * funcion = table.lookup(current_id,-1)->tipo;
-	type * param = table.lookup(str,-1)->tipo;
-	funcion->parametros.insert(funcion->parametros.begin(), param);
+	table_element * param = table.lookup(str,-1);
+	funcion->parametros.insert(funcion->parametros.begin(), param->tipo);
+	stringstream ss;
+	ss << str << "#" << param->scope; 
+	funcion->variables.insert(funcion->variables.begin(), ss.str());
 }
 
 %}

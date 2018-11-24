@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include "tipos.h"
+#include "TAC.h"
 
 /* Definicion de la clase base ArbolSintactico */
 class ArbolSintactico {
@@ -21,6 +22,7 @@ class ArbolSintactico {
 		virtual void imprimir(int i){ if(first != NULL) first->imprimir(i); };
 		virtual void verificar(){};
 		virtual type * get_tipo(){};
+		virtual type * get_tipo_real(){return get_tipo();};
 		virtual int get_valor(){};
 		virtual string get_nombre(){};
 		virtual type * get_tipo_index(type * t){};
@@ -29,6 +31,7 @@ class ArbolSintactico {
 		virtual string jumping_code(ArbolSintactico * B){ return output_code(); };
 		virtual string rvalue(){ return output_code(); };
 		virtual string lvalue(){ return output_code(); };
+		virtual TACNode get_node(){};
 		virtual std::vector<string> values(){ std::vector<string> val; return val; };
 };
 

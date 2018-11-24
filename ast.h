@@ -65,7 +65,6 @@ class raiz : public ArbolSintactico {
 		}
 
 		virtual string output_code(){
-			cout << "Printing TAC" << endl;
 			intermedio.add(new node_goto("main"));
 			if (programa != NULL)
 			programa->output_code();
@@ -101,7 +100,14 @@ class funcion : public ArbolSintactico {
 
 		string output_code(){
 			string f = id->output_code();
+			string nombre = id->get_nombre();
+			type * t = table.lookup(nombre,-1)->tipo;
 			intermedio.add(new node_label(f));
+			int offset = 0;
+			for (int i=(t->parametros.size()-1); i >= 0 ; i--){
+				intermedio.add(new node_unparam(new TACObject(t->variables[i], t->parametros[i], offset)));
+				offset += t->parametros[i]->size();
+			}
 			instrucciones->output_code();
 			if (funciones)
 				funciones->output_code();
@@ -204,11 +210,25 @@ class identificador : public ArbolSintactico {
 	public:
 		string valor;
 		int scope;
-		identificador(string v) : valor(v), ArbolSintactico(), scope(table.current_scope()){ verificar(); }
+		identificador(string v) : valor(v), ArbolSintactico(), scope(get_scope()){ verificar(); }
 
 		void verificar(){
 			get_tipo();
 		}
+
+		type * get_tipo_real(){
+			return &tipo_identifier::instance();
+		}
+
+		int get_scope(){
+			table_element * instancia = table.lookup(valor, -1);
+
+			if (instancia){
+				return instancia->scope;
+			}
+			return -1;
+		}
+
 		type * get_tipo(){
 			if (tipo != NULL){
 				return tipo;
@@ -360,8 +380,10 @@ class llamada : public ArbolSintactico {
 		llamada(ArbolSintactico * i, ArbolSintactico * p) : id(i), parametros(p) {verificar();}
 
 		string output_code(){
+			intermedio.add(new node_save_registers());
 			parametros->output_code();
 			intermedio.add(new node_call(id->output_code()));
+			intermedio.add(new node_restore_registers());
 			return "";
 		}
 
@@ -409,6 +431,9 @@ class llamada : public ArbolSintactico {
 				tipo = &tipo_error::instance();
 			}
 			return tipo;
+		}
+		type * get_tipo_real(){
+			return &tipo_funcion::instance();
 		}
 };
 
@@ -566,7 +591,7 @@ class inst_guardia : public ArbolSintactico {
 				{
 					this->True = "fall";
 					this->False = label; 
-					// intermedio.add(new node_if("!"+condicion->output_code(), label));
+					intermedio.add(new node_if("!"+condicion->output_code(), label));
 					// if (cuerpo)
 					condicion->jumping_code(this);
 					cuerpo->output_code();
@@ -700,13 +725,14 @@ class asignacion : public ArbolSintactico {
 		
 		virtual string output_code(){
 			type * tipo_val = valor->get_tipo();
+			type * tipo_real = valor->get_tipo_real();
 			string val = valor->rvalue();
 			string var = variable->lvalue();
 			switch(tipo_val->tipo){
 				case LSTRING:{
-					string label = new_label();
-					intermedio.add_data(new node_store(label, val));
-					intermedio.add(new node_assign(var, label));
+					// string label = new_label();
+					// intermedio.add_data(new node_store(label, val));
+					intermedio.add(new node_assign(var, val));
 					break;
 				}
 				case TUPLE:
@@ -726,7 +752,7 @@ class asignacion : public ArbolSintactico {
 					break;
 				}
 				default:
-					intermedio.add(new node_assign(var, val));
+					intermedio.add(new node_assign(var, new node_op(new TACObject(val, tipo_real))));
 			}
 			if (siguiente != NULL)
 				siguiente->output_code();
@@ -1048,7 +1074,6 @@ class exp_aritmetica : public ArbolSintactico {
 			}
 			string new_id = new_uuid();
 			stringstream ss;
-			ss << b << " ";
 			switch(instruccion){
 				case SUMA:
 					ss << "+";
@@ -1069,12 +1094,13 @@ class exp_aritmetica : public ArbolSintactico {
 					ss << "%";
 					break;
 			} 
-			ss << " " << a;
-			intermedio.add(new node_assign(new_id, ss.str()));
+			intermedio.add(new node_assign(new_id, new node_op(new TACObject(b, izq->get_tipo_real()), instruccion, new TACObject(a, der->get_tipo_real()))));
 			return new_id;
 		}
 
-
+		type * get_tipo_real(){
+			return &tipo_identifier::instance();
+		}
 		type * get_tipo(){
 			return tipo;
 		};
@@ -1544,6 +1570,10 @@ class exp_point : public ArbolSintactico {
 			return &((tipo_pointer *)tipo_der)->p1;
 			//return tipo_der;
 		}
+
+		type * get_tipo_real(){
+			return &tipo_pointer::instance();
+		}
 };
 
 
@@ -1796,6 +1826,32 @@ class ids : public ArbolSintactico {
 			}
 			
 		}
+    	type * get_tipo_real(){
+			// if (tipo != NULL){
+			// 	return tipo;
+			// }
+			tipo = id->get_tipo_real();
+			if (indx2idr){
+				if (indx != NULL){
+					tipo = indx->get_tipo_index(tipo);
+				}
+				if (idr != NULL){
+					tipo = idr->get_tipo_real();
+				}
+			} else {
+				if (idr == NULL){
+					if (indx != NULL){
+						// Hay que sacar el tipo interno
+						tipo = indx->get_tipo_index(tipo);
+					}
+				} else {
+					tipo = idr->get_tipo_real();
+				}
+			}
+			//cout << tipo->tipo << endl;
+			return tipo;
+		}
+
 		type * get_tipo(){
 			if (tipo != NULL){
 				return tipo;
@@ -1988,7 +2044,9 @@ class str : public ArbolSintactico {
 			return tipo;
 		}
 		virtual string output_code(){
-			return valor;
+			string label = new_label();
+			intermedio.add_data(new node_store(label, valor));
+			return label;
 		}
 };
 
@@ -2003,7 +2061,7 @@ class parametros : public ArbolSintactico {
 		parametros() : elems(NULL), val(NULL) {}
 		
 		string output_code(){
-			intermedio.add(new node_param(val->output_code()));
+			intermedio.add(new node_param(new TACObject(val->output_code(), val->get_tipo_real())));
 			if (elems)
 				elems->output_code();
 			return "";

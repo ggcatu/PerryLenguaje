@@ -1,0 +1,17 @@
+//Preuba funcion
+
+int suma(int a, int b){
+	suma(3, 5);
+	return a + b;
+}
+
+main{
+	create{
+		int a;
+		int r;
+	}
+ 	execute{
+ 		a = 5;
+ 		r = suma(a, 3);
+ 	};
+}

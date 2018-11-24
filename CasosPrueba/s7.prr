@@ -31,6 +31,9 @@ main{
  	create{
  		int l = 1;
  	} execute {
+ 		l = l + 3;
+ 		l = l - 3;
+ 		l = l * 3;
  		<< "hi";
  	};
 }
