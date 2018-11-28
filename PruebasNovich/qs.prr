@@ -2,13 +2,7 @@
 
 int qs(arr){
     create{}
-    execute{
-        if (x==0){
-            return 1;
-        }else{
-             return x*rec_fact(x-1);
-        };
-    };
+    execute{};
 }
 
 

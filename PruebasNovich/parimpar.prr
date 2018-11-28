@@ -1,0 +1,61 @@
+//Parimpar
+
+char par(int n){
+    create{}
+    execute{
+        if (n == 0){
+            return true;
+        }else{
+            if(n == 1){
+                return false;
+            }else{
+                return impar(n-1);
+            };
+        };
+    };
+}
+
+char impar(int n){
+    create{}
+    execute{
+        if (n == 0){
+            return false;
+        }else{
+            if(n == 1){
+                return true;
+            }else{
+                return par(n-1);
+            };
+        };
+    };
+}
+
+char parimpar(int x){
+    create{}
+    execute{
+        if (par(x)){
+            return 'p';
+
+        }else{
+             return 'i';
+        };
+    };
+}
+
+
+main{
+    create{
+        int n;
+        bool end;
+        char c;
+    } execute{
+        while(end){
+            >>("¿Desea comprobar la paridad de un numero?()s/n");
+            end = (c == 'n');
+            if(not end){
+                << n;
+                >> parimpar(n);
+            };
+        };
+    };
+}
