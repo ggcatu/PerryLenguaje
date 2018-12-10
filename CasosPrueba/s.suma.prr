@@ -2,7 +2,13 @@
 
 
 int suma(int f, int b){	
-	return f + b;
+	create {
+		int k;
+	} 
+	execute {
+		k = 1;
+		return f + b;
+	};
 }
 
 main{

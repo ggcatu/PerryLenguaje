@@ -21,7 +21,6 @@ extern vector<Token *> errors;
 extern vector<table_element *> vector_parametros;
 extern vector<table_element *> vector_declaraciones;
 
-
 //Map que contiene los alias
 map<string,ArbolSintactico*> alias;
 
@@ -272,7 +271,7 @@ Inst		: Scope					 							{ $$ = $1; }
 			| FREE PARABRE IDENTIFIER PARCIERRA					{ usar_variable($3, yylloc.first_column); $$ = new memoria(new identificador($3),false); }
 			| SALIDA Exp 										{ $$ = new entrada_salida($2,false); }
 			| ENTRADA Exp  										{ $$ = new entrada_salida($2,true); }
-			| IdentifierF Parabre ListLlamada PARCIERRA 			{ usar_variable($1, yylloc.first_column); $$ = new llamada(new identificador($1),$3); }
+			| IdentifierF PARABRE ListLlamada PARCIERRA 		{ usar_variable($1, yylloc.first_column); $$ = new llamada(new identificador($1),$3); }
 			| RETURN Exp										{ $$ = new ret_brk(true, $2); }
 			| BREAK												{ $$ = new ret_brk(false, (ArbolSintactico*)(NULL)); }
 			| 													{ $$ = new skip(); }
@@ -315,7 +314,7 @@ Exp	 		: Exp SUMA Exp										{ $$ = new exp_aritmetica($1,$3,0); }
 			| Exp CONJUNCION Exp								{ $$ = new exp_booleana($1,$3,7); }
 			| NEGACION Exp										{ $$ = new exp_booleana($2,8); }
 
-			| IdentifierF Parabre ListLlamada PARCIERRA 		{ usar_variable($1, yylloc.first_column); $$ = new llamada(new identificador($1),$3); }
+			| IdentifierF PARABRE ListLlamada PARCIERRA 		{ usar_variable($1, yylloc.first_column); $$ = new llamada(new identificador($1),$3); }
 
 			| OPTR Ids	 										{ $$ = new exp_point(new ids($2)); }
 			| Literals											{ $$ = $1; }

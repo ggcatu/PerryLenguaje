@@ -16,6 +16,8 @@ std::vector<table_element *> vector_declaraciones;
 table_element::table_element(std::string i, int s): id(i), scope(s), tipo(NULL), child_scope(-1), offset(0){};
 table_element::table_element(std::string i, int s, type * t): id(i), scope(s), tipo(t), child_scope(-1), offset(0){};
 
+bool compare_table_element(table_element* a, table_element* b) { return (a->scope < b->scope); }
+
 bool table_element::operator==(const table_element & rhs) const { return (this->scope == rhs.scope && this->id == rhs.id);}
 
 void table_element::set_type(type& t){
@@ -125,12 +127,13 @@ void table_element::print_tipo(type * tipo){
 
 
 /* Definicion de la tabla de simbolos */
-sym_table::sym_table() : last_scope(0), off(new offset_table()) {stack.push_back(last_scope);}
+sym_table::sym_table() : last_scope(0), previous_scope(-1), off(new offset_table()) {stack.push_back(last_scope);}
 sym_table::~sym_table(){delete(off);}
 
 int sym_table::new_scope(){
 	previous_scope = current_scope();
 	last_scope++;
+	scope_relation[last_scope] = previous_scope;
 	stack.push_back(last_scope);
 	return last_scope;
 }
@@ -238,6 +241,14 @@ bool sym_table::insert(std::string identifier){
 	return true;
 }
 
+void sym_table::print_scope_relation(){
+	std::map<int, int>::iterator it;	
+	for ( it = scope_relation.begin(); it != scope_relation.end(); it++ ) {
+		cout << it->first  << ", " << it->second << endl;;
+	}
+	return;
+}
+
 void sym_table::print(){
 	std::cout << std::endl << "Imprimiendo tabla de simbolos:" << std::endl; 
     for(std::map<std::string, std::deque<table_element> >::iterator it = tabla.begin(); it != tabla.end(); ++it) {
@@ -262,6 +273,17 @@ void offset_table::increase_offset(int scope, int value){
 		table[scope].push_back(0);
 	}
 	table[scope][0] += value;
+	return;
+};
+
+void offset_table::dual_increase_offset(int scope, int value){
+	if(table.find(scope) == table.end()){
+		table[scope];
+		table[scope].push_back(0);
+		table[scope].push_back(0);
+	}
+	table[scope][0] += value;
+	table[scope][1] += value;
 	return;
 };
 

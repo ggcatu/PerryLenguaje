@@ -185,6 +185,7 @@ class funcion : public ArbolSintactico {
 				offset += t->parametros[i]->size();
 			}
 			instrucciones->output_code();
+			intermedio.add(new node_free_stack(t->scope_params));	
 			if (funciones)
 				funciones->output_code();
 			return "";
@@ -254,8 +255,8 @@ class bloque : public ArbolSintactico {
 		ArbolSintactico * declaraciones;
 		ArbolSintactico * instrucciones;
 		int scope;
-		bloque(ArbolSintactico * d, ArbolSintactico * i) : declaraciones(d), instrucciones(i), scope(table.previous_scope) {verificar();}
-		bloque(ArbolSintactico * i) : instrucciones(i), declaraciones(NULL), scope(table.previous_scope) {verificar();}
+		bloque(ArbolSintactico * d, ArbolSintactico * i) : declaraciones(d), instrucciones(i), scope(table.current_scope()) {verificar();}
+		bloque(ArbolSintactico * i) : instrucciones(i), declaraciones(NULL), scope(table.current_scope()) {verificar();}
 
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
@@ -278,6 +279,7 @@ class bloque : public ArbolSintactico {
 			intermedio.add(new node_malloc(scope));
 			if (instrucciones!=NULL)
 				instrucciones->output_code();
+			intermedio.add(new node_free_stack(scope));
 			return "";
 		}
 };
@@ -1334,7 +1336,7 @@ class exp_aritmetica : public ArbolSintactico {
 					break;
 			} 
 			intermedio.add(new node_assign(sp.str(), new node_op(new TACObject(b, izq->get_tipo_real()), instruccion, new TACObject(a, der->get_tipo_real()))));
-			return new_id;
+			return sp.str();
 		}
 
 		type * get_tipo_real(){
