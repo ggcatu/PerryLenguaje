@@ -1,10 +1,12 @@
 #ifndef TAC_H
 #define TAC_H
+
 #include <stdio.h>
 #include <iostream>
 #include <string>
 #include "RegisterManager.h"
 #include "Classes/TACObject.h"
+#include "Classes/Sym_table.h"
 
 extern RegisterManager regs;
 
@@ -19,11 +21,13 @@ class TACNode {
 		
 		void push(string reg, int w){
 			cout << "\tsubu \t$sp, $sp, " << w << endl;
-			cout << "\tsw \t" << reg << ", ($sp)" << endl;
+			if (reg != "")
+				cout << "\tsw \t" << reg << ", ($sp)" << endl;
 		}
 
 		void pop(string reg, int w){
-			top(reg);
+			if (reg != "")
+				top(reg);
 			cout << "\t" << "addu\t" "$sp, $sp, " << w << endl;
 		}
 
@@ -211,8 +215,19 @@ class node_unparam: public TACNode{
 		void output_mips(){
 			string x = regs.getReg(obj->valor);
 			// No es label, debe ser el registro asociado.
-			cout << "\tlw   \t" << x << ", "<< obj->offset <<"($fp)" << endl;
+			cout << "\tlw   \t" << x << ", "<< obj->offset <<"($sp)" << endl;
 		 };
+};
+
+class node_pop: public TACNode {
+	TACObject * obj;
+	public:
+		node_pop(TACObject * o): TACNode(), obj(o){};
+		~node_pop(){free(obj);};	
+		void output_code(){ cout << "pop " << obj->valor << endl; };
+		void output_mips(){
+			pop("", 4);
+		 };	
 };
 
 class node_elem: public TACNode{
@@ -235,13 +250,14 @@ class node_store: public TACNode{
 
 class node_return: public TACNode{
 	string val;
+	int offset;
 	public:
-		node_return(string v): TACNode(), val(v){};
+		node_return(string v, int o): TACNode(), val(v), offset(o){};
 		~node_return(){};	
 		void output_code(){ cout << "return " << val << endl; };
 		void output_mips(){ 
 			string x = regs.getReg(val);
-			push(x, 4);
+			push(x, offset);
 			cout << "\tjr \t$ra" << endl;
 		};
 };

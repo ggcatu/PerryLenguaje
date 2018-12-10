@@ -1,11 +1,14 @@
-perry: scanner.o lex.yy.c parser.tab.c definiciones.o TAC.o ast.h RegisterManager.o ast.cpp
-	g++ scanner.o definiciones.o TAC.o RegisterManager.o lex.yy.c parser.tab.c ast.cpp -o perry
+perry: scanner.o lex.yy.c parser.tab.c definiciones.o  TAC.o ast.h RegisterManager.o ast.cpp
+	g++ Classes/Sym_table.cpp scanner.o definiciones.o TAC.o  RegisterManager.o lex.yy.c parser.tab.c ast.cpp -o perry
 
 scanner.o: scanner.cpp parser.tab.c definiciones.o
 	g++ -c scanner.cpp definiciones.cpp
 
 TAC.o: TAC.h TAC.cpp
 	g++ -c TAC.cpp 
+
+Sym_table.o: Classes/Sym_table.h Classes/Sym_table.cpp
+	g++ -c Classes/Sym_table.cpp
 
 RegisterManager.o: RegisterManager.cpp RegisterManager.h
 	g++ -c RegisterManager.cpp

@@ -15,7 +15,7 @@ de las clases y funciones implementadas en definiciones.cpp
 #include <stdlib.h>
 #include "definiciones.h"
 #include "ast.h"
-#include "table.h"
+#include "Classes/Sym_table.h"
 #include "parser.tab.h"
 #include "TAC.h"
 
@@ -38,6 +38,8 @@ extern FILE* yyin;
 extern ArbolSintactico * root_ast;
 extern bool error_sintactico;
 extern sym_table table;
+extern sym_table tac_simbolos;
+
 
 // Vectores donde se guardarán nuestros resultados de la tokenización
 vector<Token *> tokens;
@@ -168,6 +170,7 @@ void machine_code(){
 
 		intermedio.output_mips();
 
+		tac_simbolos.print();
 	    // cout.rdbuf(coutbuf); 
 	}
 }

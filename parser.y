@@ -4,9 +4,10 @@
 #include <iostream>
 #include <map>
 #include "definiciones.h"
+
 #include "ast.h"
-#include "table.h"
 #include "tipos.h"
+#include "Classes/Sym_table.h"
 #include <sstream>
 #include <vector>
 
@@ -135,7 +136,7 @@ void parametrizar_funcion(char * str){
 %token ENTER 55 
 %token COMENTARIO 56
 %token TYPE 57 NEW 58 FREE 59
-%token REFERENCE 60 OPTR 61 UNIT 62
+%token REFERENCE 60 OPTR 61 UNIT 62 FUNC 63
 %token TYPE_ERROR 
 
 %token <num> INT

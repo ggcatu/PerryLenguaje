@@ -21,13 +21,14 @@ en el proyecto
 #include <iterator>
 #include "definiciones.h"
 #include "ast_def.h"
-#include "table.h"
+#include "Classes/Sym_table.h"
 #include "TAC.h"
 
 using namespace std;
 
 /* Definiciones externas (parser.y) que permiten compartir el codigo. */
 extern sym_table table;
+extern sym_table tac_simbolos;
 extern int yylineno;
 extern int yycolumn;
 extern char * yytext;
@@ -254,6 +255,7 @@ class identificador : public ArbolSintactico {
 		virtual string output_code(){
 			stringstream ss;
 			ss << valor << "#" << scope;
+			tac_simbolos.insert(ss.str(), scope, get_tipo());
 			return ss.str();
 		}
 };
@@ -371,18 +373,225 @@ class instruccion : public ArbolSintactico {
 		}
 };
 
+/* Definicion de la clase para la lista de parametros de una llamada a funcion */
+class parametros : public ArbolSintactico {
+	public:
+		ArbolSintactico * elems;
+		ArbolSintactico * val;
+		parametros(ArbolSintactico * v) : val(v), elems(NULL) {}
+		parametros(ArbolSintactico * v, ArbolSintactico * e) : val(e), elems(v) {verificar();}
+		parametros() : elems(NULL), val(NULL) {}
+		
+		string output_code(){
+			intermedio.add(new node_param(new TACObject(val->output_code(), val->get_tipo_real())));
+			if (elems)
+				elems->output_code();
+			return "";
+		}
+
+		string output_unparam(){
+			if (elems)
+				((parametros *)elems)->output_unparam();
+			intermedio.add(new node_pop(new TACObject(val->output_code(), val->get_tipo_real())));
+			return "";
+		}
+
+		virtual void imprimir(int tab){
+			if (elems != NULL){
+				elems -> imprimir(tab);
+			}
+			if (val != NULL){
+				for (int j = 0; j < tab; j++) cout << " ";
+				cout << "PARAMETRO:" << endl;
+				val -> imprimir(tab+1);
+			}
+		}
+		type * get_tipo(){
+			return val->get_tipo();
+		}
+		virtual void verificar_llamada(vector<type *> parametros, int actual){
+			int tam = parametros.size();
+			if (val != NULL){
+				// cout << 10 << "actual " << IntToString(actual) << "tam " << tam << endl;
+				type * tipo_val = val->get_tipo();
+				// cout << 11 << " tipo_param_llamada " << tipo_val->tipo << " tipo_param_vector " << &parametros[actual]->tipo << endl;
+				if (verificar_aux(tipo_val,parametros[actual])){
+					// cout << 12 << endl;
+					string s = "Se esperaba que el argumento "+IntToString(actual)+" sea del tipo ";
+					s += tipo2s("",parametros[actual]);
+					s += " pero se tiene el tipo ";
+					s += tipo2s("",tipo_val);
+					errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,VERIFICACION));
+					error_sintactico = 1;
+				} else {
+					if (elems != NULL){
+						actual++;
+						elems->verificar_llamada(parametros,actual);
+					} else {
+						if (actual != parametros.size()-1){
+							string s = "Se esperaban "+IntToString(actual)+" argumentos y se tienen "+IntToString(tam);
+							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,VERIFICACION));
+							error_sintactico = 1;
+						}
+					}
+				}
+			} else {
+				if (tam != parametros.size()-1){
+					string s = "Se esperaban "+IntToString(actual)+" argumentos y se tienen "+IntToString(tam);
+					errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,VERIFICACION));
+					error_sintactico = 1;
+				}
+			}			
+		}
+		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
+			// cout << "comparacion: tipo_param_llamada " << tipo_var->tipo << " tipo_param_vector " << tipo_val->tipo << endl;
+			if (tipo_val != 0 && tipo_var != 0){
+				switch(tipo_var->tipo){
+					case POINTER:
+						if (tipo_val->tipo != POINTER){
+							return true;
+						} else {
+							if (&((tipo_pointer *)tipo_var)->p1 != &((tipo_pointer *)tipo_val)->p1){
+								return true;
+							}
+						}
+						return false;
+					case IDENTIFIER:
+						if (tipo_val->tipo != IDENTIFIER){
+							return true;
+						} else {
+							if (((tipo_identifier *)tipo_var)->p1 != ((tipo_identifier *)tipo_val)->p1){
+								return true;
+							}
+						}
+						return false;
+					case TYPE:
+						if (tipo_val->tipo != TYPE){
+							return true;
+						} else {
+							if (((tipo_tipo *)tipo_var)->p1 != ((tipo_tipo *)tipo_val)->p1){
+								return true;
+							}
+						}
+						return false;
+					case TUPLE:
+						/*
+						if (tipo_val->tipo != TUPLE){
+							return true;
+						} else {
+							if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1)){
+									return true;
+								}
+							}
+							if (&((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
+								if (verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
+									return true;
+								}
+							}
+						}
+						*/
+						return false;
+					case ARRAY:
+						if (tipo_val->tipo != ARRAY){
+							return true;
+						} else {
+							if (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
+									return  true;
+								}
+							}
+						}
+						return false;
+					case LIST:
+						if (tipo_val->tipo != LIST){
+							return true;
+						} else {
+							if (&((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) {
+								if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
+									return true;
+								}
+							}
+						}
+						return false;
+					default:
+						if (tipo_val->tipo != tipo_var->tipo && tipo_val->tipo != TUPLE){
+							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && (tipo_var != &tipo_string::instance() || tipo_val != &tipo_char::instance()) && tipo_val != &tipo_unit::instance()){
+								return true;
+							}
+						}
+						return false;
+				}
+			}
+			return true;
+		}
+		string tipo2s(string s, type * tipo){
+			s += tipo2word[tipo->tipo];
+			switch(tipo->tipo){
+				case TUPLE:
+					s += "<";
+					if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_tuple *)tipo)->p1).tipo];
+					} else {
+						s = tipo2s(s,&((tipo_tuple *)tipo)->p1);
+					}
+					s += ",";
+					if ((((tipo_tuple *)tipo)->p2).tipo == 30 || (((tipo_tuple *)tipo)->p2).tipo == 29 || (((tipo_tuple *)tipo)->p2).tipo == 28 || (((tipo_tuple *)tipo)->p2).tipo == 27 || (((tipo_tuple *)tipo)->p2).tipo == 26){
+						s += tipo2word[(((tipo_tuple *)tipo)->p2).tipo];
+					} else {
+						s = tipo2s(s,&((tipo_tuple *)tipo)->p2);
+					}
+					s += ">";
+					break;
+				case LIST:
+					s += "<";
+					if ((((tipo_list *)tipo)->p1).tipo == 30 || (((tipo_list *)tipo)->p1).tipo == 29 || (((tipo_list *)tipo)->p1).tipo == 28 || (((tipo_list *)tipo)->p1).tipo == 27 || (((tipo_list *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_list *)tipo)->p1).tipo];
+					} else {
+						s = tipo2s(s,&((tipo_list *)tipo)->p1);
+					}
+					s += ">";
+					break;
+				case ARRAY:
+					s += "<";
+					if ((((tipo_array *)tipo)->p1).tipo == 30 || (((tipo_array *)tipo)->p1).tipo == 29 || (((tipo_array *)tipo)->p1).tipo == 28 || (((tipo_array *)tipo)->p1).tipo == 27 || (((tipo_array *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_array *)tipo)->p1).tipo];
+					} else {
+						s = tipo2s(s,&((tipo_array *)tipo)->p1);
+					}
+					s += ">";
+					break;
+				case POINTER:
+					s += "<";
+					if ((((tipo_pointer *)tipo)->p1).tipo == 30 || (((tipo_pointer *)tipo)->p1).tipo == 29 || (((tipo_pointer *)tipo)->p1).tipo == 28 || (((tipo_pointer *)tipo)->p1).tipo == 27 || (((tipo_pointer *)tipo)->p1).tipo == 26){
+						s += tipo2word[(((tipo_pointer *)tipo)->p1).tipo];
+					} else {
+						s = tipo2s(s,&((tipo_pointer *)tipo)->p1);
+					}
+					s += ">";
+					break;
+				case IDENTIFIER:
+				default:
+					break;
+			}
+			return s;
+		}
+};
 
 /* Definicion de la clase para la llamada a una funcion */
 class llamada : public ArbolSintactico {
 	public:
-		ArbolSintactico * parametros;
+		ArbolSintactico * param;
 		ArbolSintactico * id;
-		llamada(ArbolSintactico * i, ArbolSintactico * p) : id(i), parametros(p) {verificar();}
+		llamada(ArbolSintactico * i, ArbolSintactico * p) : id(i), param(p) {verificar();}
 
 		string output_code(){
 			intermedio.add(new node_save_registers());
-			parametros->output_code();
+			type * t = get_tipo();
+			intermedio.add(new node_param(new TACObject("", t)));
+			param->output_code();
 			intermedio.add(new node_call(id->output_code()));
+			((parametros *)param)->output_unparam();
 			intermedio.add(new node_restore_registers());
 			return "";
 		}
@@ -395,7 +604,7 @@ class llamada : public ArbolSintactico {
 			id -> imprimir(tab+2);
 			for (int j = 0; j < tab+1; j++) cout << " ";
 			cout << "PARAMETROS:" << endl;
-			parametros -> imprimir(tab+2);
+			param -> imprimir(tab+2);
 		}
 		virtual void verificar(){
 			string valor = ((identificador *)id)->valor;
@@ -403,7 +612,7 @@ class llamada : public ArbolSintactico {
 			if (instancia){
 				if (instancia->tipo->tipo == FUNC){
 					vector<type *> params = instancia->tipo->parametros;
-					parametros->verificar_llamada(params, 0);
+					param->verificar_llamada(params, 0);
 				} else {
 					string s = "\"" + valor + "\" no es una función";
 					errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,VERIFICACION));
@@ -672,7 +881,9 @@ class ret_brk : public ArbolSintactico {
 	public:
 		bool ret;
 		ArbolSintactico * valor;
-		ret_brk(bool r, ArbolSintactico * v) : ret(r), valor(v) {verificar();}
+		int scope;
+
+		ret_brk(bool r, ArbolSintactico * v) : ret(r), valor(v), scope(table.current_scope()) {verificar();}
 		
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab+1; j++) cout << " ";
@@ -687,7 +898,7 @@ class ret_brk : public ArbolSintactico {
 		virtual string output_code(){
 			if (ret){
 				string val = valor->output_code();
-				intermedio.add(new node_return(val));
+				intermedio.add(new node_return(val, tac_simbolos.off->get_offset(scope)));
 			} else {
 				intermedio.add(new node_break());
 			}
@@ -1062,8 +1273,9 @@ class exp_aritmetica : public ArbolSintactico {
 		ArbolSintactico * der;
 		ArbolSintactico * izq;
 		inst instruccion;
-		exp_aritmetica(ArbolSintactico * d, ArbolSintactico * i, int is) : der(i), izq(d), instruccion(static_cast<inst>(is)) {verificar();}
-		exp_aritmetica(ArbolSintactico * d, int is) : der(d), izq(NULL), instruccion(static_cast<inst>(is)) {verificar();}
+		int scope;
+		exp_aritmetica(ArbolSintactico * d, ArbolSintactico * i, int is) : der(i), izq(d), instruccion(static_cast<inst>(is)), scope(table.current_scope()) {verificar();}
+		exp_aritmetica(ArbolSintactico * d, int is) : der(d), izq(NULL), instruccion(static_cast<inst>(is)), scope(table.current_scope()) {verificar();}
 
 
 		string output_code(){
@@ -1073,6 +1285,7 @@ class exp_aritmetica : public ArbolSintactico {
 				b = izq->output_code();
 			}
 			string new_id = new_uuid();
+			tac_simbolos.insert(new_id, scope, get_tipo());
 			stringstream ss;
 			switch(instruccion){
 				case SUMA:
@@ -2050,204 +2263,6 @@ class str : public ArbolSintactico {
 		}
 };
 
-
-/* Definicion de la clase para la lista de parametros de una llamada a funcion */
-class parametros : public ArbolSintactico {
-	public:
-		ArbolSintactico * elems;
-		ArbolSintactico * val;
-		parametros(ArbolSintactico * v) : val(v), elems(NULL) {}
-		parametros(ArbolSintactico * v, ArbolSintactico * e) : val(e), elems(v) {verificar();}
-		parametros() : elems(NULL), val(NULL) {}
-		
-		string output_code(){
-			intermedio.add(new node_param(new TACObject(val->output_code(), val->get_tipo_real())));
-			if (elems)
-				elems->output_code();
-			return "";
-		}
-
-		virtual void imprimir(int tab){
-			if (elems != NULL){
-				elems -> imprimir(tab);
-			}
-			if (val != NULL){
-				for (int j = 0; j < tab; j++) cout << " ";
-				cout << "PARAMETRO:" << endl;
-				val -> imprimir(tab+1);
-			}
-		}
-		type * get_tipo(){
-			return val->get_tipo();
-		}
-		virtual void verificar_llamada(vector<type *> parametros, int actual){
-			int tam = parametros.size();
-			if (val != NULL){
-				// cout << 10 << "actual " << IntToString(actual) << "tam " << tam << endl;
-				type * tipo_val = val->get_tipo();
-				// cout << 11 << " tipo_param_llamada " << tipo_val->tipo << " tipo_param_vector " << &parametros[actual]->tipo << endl;
-				if (verificar_aux(tipo_val,parametros[actual])){
-					// cout << 12 << endl;
-					string s = "Se esperaba que el argumento "+IntToString(actual)+" sea del tipo ";
-					s += tipo2s("",parametros[actual]);
-					s += " pero se tiene el tipo ";
-					s += tipo2s("",tipo_val);
-					errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,VERIFICACION));
-					error_sintactico = 1;
-				} else {
-					if (elems != NULL){
-						actual++;
-						elems->verificar_llamada(parametros,actual);
-					} else {
-						if (actual != parametros.size()-1){
-							string s = "Se esperaban "+IntToString(actual)+" argumentos y se tienen "+IntToString(tam);
-							errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,VERIFICACION));
-							error_sintactico = 1;
-						}
-					}
-				}
-			} else {
-				if (tam != parametros.size()-1){
-					string s = "Se esperaban "+IntToString(actual)+" argumentos y se tienen "+IntToString(tam);
-					errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,VERIFICACION));
-					error_sintactico = 1;
-				}
-			}			
-		}
-		virtual bool verificar_aux(type * tipo_var, type * tipo_val){
-			// cout << "comparacion: tipo_param_llamada " << tipo_var->tipo << " tipo_param_vector " << tipo_val->tipo << endl;
-			if (tipo_val != 0 && tipo_var != 0){
-				switch(tipo_var->tipo){
-					case POINTER:
-						if (tipo_val->tipo != POINTER){
-							return true;
-						} else {
-							if (&((tipo_pointer *)tipo_var)->p1 != &((tipo_pointer *)tipo_val)->p1){
-								return true;
-							}
-						}
-						return false;
-					case IDENTIFIER:
-						if (tipo_val->tipo != IDENTIFIER){
-							return true;
-						} else {
-							if (((tipo_identifier *)tipo_var)->p1 != ((tipo_identifier *)tipo_val)->p1){
-								return true;
-							}
-						}
-						return false;
-					case TYPE:
-						if (tipo_val->tipo != TYPE){
-							return true;
-						} else {
-							if (((tipo_tipo *)tipo_var)->p1 != ((tipo_tipo *)tipo_val)->p1){
-								return true;
-							}
-						}
-						return false;
-					case TUPLE:
-						/*
-						if (tipo_val->tipo != TUPLE){
-							return true;
-						} else {
-							if (&((tipo_tuple *)tipo_var)->p1 != &((tipo_tuple *)tipo_val)->p1) {
-								if (verificar_aux(&((tipo_tuple *)tipo_var)->p1,&((tipo_tuple *)tipo_val)->p1)){
-									return true;
-								}
-							}
-							if (&((tipo_tuple *)tipo_var)->p2 != &((tipo_tuple *)tipo_val)->p2) {
-								if (verificar_aux(&((tipo_tuple *)tipo_var)->p2,&((tipo_tuple *)tipo_val)->p2)){
-									return true;
-								}
-							}
-						}
-						*/
-						return false;
-					case ARRAY:
-						if (tipo_val->tipo != ARRAY){
-							return true;
-						} else {
-							if (&((tipo_array *)tipo_var)->p1 != &((tipo_array *)tipo_val)->p1) {
-								if (verificar_aux(&((tipo_array *)tipo_var)->p1,&((tipo_array *)tipo_val)->p1)){
-									return  true;
-								}
-							}
-						}
-						return false;
-					case LIST:
-						if (tipo_val->tipo != LIST){
-							return true;
-						} else {
-							if (&((tipo_list *)tipo_var)->p1 != &((tipo_list *)tipo_val)->p1) {
-								if (verificar_aux(&((tipo_list *)tipo_var)->p1,&((tipo_list *)tipo_val)->p1)){
-									return true;
-								}
-							}
-						}
-						return false;
-					default:
-						if (tipo_val->tipo != tipo_var->tipo && tipo_val->tipo != TUPLE){
-							if ((tipo_var != &tipo_float::instance() || tipo_val != &tipo_int::instance()) && (tipo_var != &tipo_string::instance() || tipo_val != &tipo_char::instance()) && tipo_val != &tipo_unit::instance()){
-								return true;
-							}
-						}
-						return false;
-				}
-			}
-			return true;
-		}
-		string tipo2s(string s, type * tipo){
-			s += tipo2word[tipo->tipo];
-			switch(tipo->tipo){
-				case TUPLE:
-					s += "<";
-					if ((((tipo_tuple *)tipo)->p1).tipo == 30 || (((tipo_tuple *)tipo)->p1).tipo == 29 || (((tipo_tuple *)tipo)->p1).tipo == 28 || (((tipo_tuple *)tipo)->p1).tipo == 27 || (((tipo_tuple *)tipo)->p1).tipo == 26){
-						s += tipo2word[(((tipo_tuple *)tipo)->p1).tipo];
-					} else {
-						s = tipo2s(s,&((tipo_tuple *)tipo)->p1);
-					}
-					s += ",";
-					if ((((tipo_tuple *)tipo)->p2).tipo == 30 || (((tipo_tuple *)tipo)->p2).tipo == 29 || (((tipo_tuple *)tipo)->p2).tipo == 28 || (((tipo_tuple *)tipo)->p2).tipo == 27 || (((tipo_tuple *)tipo)->p2).tipo == 26){
-						s += tipo2word[(((tipo_tuple *)tipo)->p2).tipo];
-					} else {
-						s = tipo2s(s,&((tipo_tuple *)tipo)->p2);
-					}
-					s += ">";
-					break;
-				case LIST:
-					s += "<";
-					if ((((tipo_list *)tipo)->p1).tipo == 30 || (((tipo_list *)tipo)->p1).tipo == 29 || (((tipo_list *)tipo)->p1).tipo == 28 || (((tipo_list *)tipo)->p1).tipo == 27 || (((tipo_list *)tipo)->p1).tipo == 26){
-						s += tipo2word[(((tipo_list *)tipo)->p1).tipo];
-					} else {
-						s = tipo2s(s,&((tipo_list *)tipo)->p1);
-					}
-					s += ">";
-					break;
-				case ARRAY:
-					s += "<";
-					if ((((tipo_array *)tipo)->p1).tipo == 30 || (((tipo_array *)tipo)->p1).tipo == 29 || (((tipo_array *)tipo)->p1).tipo == 28 || (((tipo_array *)tipo)->p1).tipo == 27 || (((tipo_array *)tipo)->p1).tipo == 26){
-						s += tipo2word[(((tipo_array *)tipo)->p1).tipo];
-					} else {
-						s = tipo2s(s,&((tipo_array *)tipo)->p1);
-					}
-					s += ">";
-					break;
-				case POINTER:
-					s += "<";
-					if ((((tipo_pointer *)tipo)->p1).tipo == 30 || (((tipo_pointer *)tipo)->p1).tipo == 29 || (((tipo_pointer *)tipo)->p1).tipo == 28 || (((tipo_pointer *)tipo)->p1).tipo == 27 || (((tipo_pointer *)tipo)->p1).tipo == 26){
-						s += tipo2word[(((tipo_pointer *)tipo)->p1).tipo];
-					} else {
-						s = tipo2s(s,&((tipo_pointer *)tipo)->p1);
-					}
-					s += ">";
-					break;
-				case IDENTIFIER:
-				default:
-					break;
-			}
-			return s;
-		}
-};
 
 /* Definicion de la clase para la lista de elementos de una lista o arreglo */
 class elementos : public ArbolSintactico {
