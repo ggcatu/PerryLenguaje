@@ -325,8 +325,9 @@ class node_malloc: public TACNode{
 		node_malloc(int v): val(v){};
 		~node_malloc();
 		void output_mips(){
+			int v = tac_simbolos.off->get_malloc(val);
 			cout << "# Reservando espacio de memoria de scope " << endl;
-			cout << "sub $sp $sp " << val << endl;
+			cout << "sub $sp $sp " << v << endl;
 		}
 };
 

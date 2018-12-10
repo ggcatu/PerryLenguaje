@@ -56,6 +56,7 @@ class sym_table {
 		std::vector<int> stack;
 		int last_scope;
 	public:
+		int previous_scope;
 		offset_table * off;
 		sym_table();
 		~sym_table();

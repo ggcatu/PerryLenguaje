@@ -177,7 +177,7 @@ class funcion : public ArbolSintactico {
 			string nombre = id->get_nombre();
 			type * t = table.lookup(nombre,-1)->tipo;
 			intermedio.add(new node_label(f));
-			intermedio.add(new node_malloc(tac_simbolos.off->get_malloc(t->scope_params)));
+			intermedio.add(new node_malloc(t->scope_params));	
 			tac_simbolos.off->increase_offset(t->scope_params, get_tipo()->size());
 			int offset = 0;
 			for (int i=(t->parametros.size()-1); i >= 0 ; i--){
@@ -254,8 +254,8 @@ class bloque : public ArbolSintactico {
 		ArbolSintactico * declaraciones;
 		ArbolSintactico * instrucciones;
 		int scope;
-		bloque(ArbolSintactico * d, ArbolSintactico * i) : declaraciones(d), instrucciones(i), scope(table.current_scope()) {verificar();}
-		bloque(ArbolSintactico * i) : instrucciones(i), declaraciones(NULL), scope(table.current_scope()) {verificar();}
+		bloque(ArbolSintactico * d, ArbolSintactico * i) : declaraciones(d), instrucciones(i), scope(table.previous_scope) {verificar();}
+		bloque(ArbolSintactico * i) : instrucciones(i), declaraciones(NULL), scope(table.previous_scope) {verificar();}
 
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
@@ -275,7 +275,7 @@ class bloque : public ArbolSintactico {
 		virtual string output_code(){
 			if (declaraciones!=NULL)
 				declaraciones->output_code();
-			intermedio.add(new node_malloc(tac_simbolos.off->get_malloc(scope)));
+			intermedio.add(new node_malloc(scope));
 			if (instrucciones!=NULL)
 				instrucciones->output_code();
 			return "";

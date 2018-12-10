@@ -129,6 +129,7 @@ sym_table::sym_table() : last_scope(0), off(new offset_table()) {stack.push_back
 sym_table::~sym_table(){delete(off);}
 
 int sym_table::new_scope(){
+	previous_scope = current_scope();
 	last_scope++;
 	stack.push_back(last_scope);
 	return last_scope;
@@ -155,6 +156,7 @@ void sym_table::open_scope(std::string x){
 }
 
 void sym_table::exit_scope(){
+	previous_scope = current_scope();
 	if (!stack.empty())
 		stack.pop_back();
 }
@@ -254,6 +256,11 @@ offset_table::offset_table(){};
 offset_table::~offset_table(){};
 
 void offset_table::increase_offset(int scope, int value){
+	if(table.find(scope) == table.end()){
+		table[scope];
+		table[scope].push_back(0);
+		table[scope].push_back(0);
+	}
 	table[scope][0] += value;
 	return;
 };
