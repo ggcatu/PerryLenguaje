@@ -18,6 +18,9 @@ extern int yycolumn;
 extern int yylineno;
 extern char * yytext;
 extern vector<Token *> errors;
+extern vector<table_element *> vector_parametros;
+extern vector<table_element *> vector_declaraciones;
+
 
 //Map que contiene los alias
 map<string,ArbolSintactico*> alias;
@@ -88,12 +91,19 @@ void declarar_variable(string identificador, int columna){
 	}
 }
 
+void calcular_offset(string id){
+	table_element * param = table.lookup(id,-1);
+	vector_declaraciones.push_back(param);
+}
+
 void parametrizar_funcion(char * str){
 	type * funcion = table.lookup(current_id,-1)->tipo;
 	table_element * param = table.lookup(str,-1);
+	vector_parametros.push_back(param);
 	funcion->parametros.insert(funcion->parametros.begin(), param->tipo);
 	stringstream ss;
 	ss << str << "#" << param->scope; 
+	funcion->scope_params = param->scope;
 	funcion->variables.insert(funcion->variables.begin(), ss.str());
 }
 
@@ -271,7 +281,7 @@ Inst		: Scope					 							{ $$ = $1; }
 Identifier 	: IDENTIFIER 										{ declarar_variable($1, yylloc.first_column); $$ = $1; }
 			;
 
-IdentifierSp: Typedef IDENTIFIER 								{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2); $$ = new identificador($2); }
+IdentifierSp: Typedef IDENTIFIER 								{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2); calcular_offset($2); $$ = new identificador($2); }
 			;
 
 IdentifierPa: Typedef IDENTIFIER 								{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2); $$ = $2; }

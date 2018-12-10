@@ -75,6 +75,59 @@ class raiz : public ArbolSintactico {
 		}
 };
 
+/* Definicion de la clase para los identificadores */
+class identificador : public ArbolSintactico {
+	public:
+		string valor;
+		int scope;
+		identificador(string v) : valor(v), ArbolSintactico(), scope(get_scope()){ verificar(); }
+
+		void verificar(){
+			get_tipo();
+		}
+
+		type * get_tipo_real(){
+			return &tipo_identifier::instance();
+		}
+
+		int get_scope(){
+			table_element * instancia = table.lookup(valor, -1);
+
+			if (instancia){
+				return instancia->scope;
+			}
+			return -1;
+		}
+
+		type * get_tipo(){
+			if (tipo != NULL){
+				return tipo;
+			}
+			table_element * instancia = table.lookup(valor, -1);
+			// cout << "Busqueda de " << valor <<endl;
+			// table.print();
+			if (instancia){
+				tipo = instancia->tipo;
+				// cout << "#" << valor << " " << instancia->tipo << endl;
+				return tipo;
+			}
+			return &tipo_error::instance();
+		}
+		string get_nombre(){
+			return valor;
+		}
+		virtual void imprimir(int tab) {
+			for (int j = 0; j < tab; j++) cout << " ";
+			cout << "id: " << valor << endl;
+		}
+
+		virtual string output_code(){
+			stringstream ss;
+			ss << valor << "#" << scope;
+			return ss.str();
+		}
+};
+
 
 /* Definicion de la clase para una lista de funciones declaradas */
 class funcion : public ArbolSintactico {
@@ -82,7 +135,7 @@ class funcion : public ArbolSintactico {
 		ArbolSintactico * id;
 		ArbolSintactico * instrucciones;
 		ArbolSintactico * funciones;
-		funcion(ArbolSintactico * i, ArbolSintactico * is) :  id(i), instrucciones(is), funciones(NULL) {verificar();}
+		funcion(ArbolSintactico * i, ArbolSintactico * is) :  id(i), instrucciones(is), funciones(NULL)  {verificar();}
 		funcion(ArbolSintactico * i, ArbolSintactico * is, ArbolSintactico * fs) : id(i), instrucciones(is), funciones(fs) {verificar();}
 
 		virtual void imprimir(int tab){
@@ -99,11 +152,33 @@ class funcion : public ArbolSintactico {
 			}
 		}
 
+		type * get_tipo(){
+			string valor = ((identificador *)id)->valor;
+			table_element * instancia = table.lookup(valor, -1);
+			if (instancia){
+				if (instancia->tipo->tipo == FUNC){
+					if (instancia->tipo->tipo == FUNC){
+						tipo = &((tipo_funcion *)instancia->tipo)->p1;
+					} else {
+						string s = "\"" + valor + "\" no es una función";
+						errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,VERIFICACION));
+						error_sintactico = 1;
+						tipo = &tipo_error::instance();
+					}
+				}
+			} else {
+				tipo = &tipo_error::instance();
+			}
+			return tipo;
+		}
+
 		string output_code(){
 			string f = id->output_code();
 			string nombre = id->get_nombre();
 			type * t = table.lookup(nombre,-1)->tipo;
 			intermedio.add(new node_label(f));
+			intermedio.add(new node_malloc(tac_simbolos.off->get_malloc(t->scope_params)));
+			tac_simbolos.off->increase_offset(t->scope_params, get_tipo()->size());
 			int offset = 0;
 			for (int i=(t->parametros.size()-1); i >= 0 ; i--){
 				intermedio.add(new node_unparam(new TACObject(t->variables[i], t->parametros[i], offset)));
@@ -178,8 +253,9 @@ class bloque : public ArbolSintactico {
 	public:
 		ArbolSintactico * declaraciones;
 		ArbolSintactico * instrucciones;
-		bloque(ArbolSintactico * d, ArbolSintactico * i) : declaraciones(d), instrucciones(i) {verificar();}
-		bloque(ArbolSintactico * i) : instrucciones(i), declaraciones(NULL) {verificar();}
+		int scope;
+		bloque(ArbolSintactico * d, ArbolSintactico * i) : declaraciones(d), instrucciones(i), scope(table.current_scope()) {verificar();}
+		bloque(ArbolSintactico * i) : instrucciones(i), declaraciones(NULL), scope(table.current_scope()) {verificar();}
 
 		virtual void imprimir(int tab){
 			for (int j = 0; j < tab; j++) cout << " ";
@@ -199,66 +275,13 @@ class bloque : public ArbolSintactico {
 		virtual string output_code(){
 			if (declaraciones!=NULL)
 				declaraciones->output_code();
+			intermedio.add(new node_malloc(tac_simbolos.off->get_malloc(scope)));
 			if (instrucciones!=NULL)
 				instrucciones->output_code();
 			return "";
 		}
 };
 
-
-/* Definicion de la clase para los identificadores */
-class identificador : public ArbolSintactico {
-	public:
-		string valor;
-		int scope;
-		identificador(string v) : valor(v), ArbolSintactico(), scope(get_scope()){ verificar(); }
-
-		void verificar(){
-			get_tipo();
-		}
-
-		type * get_tipo_real(){
-			return &tipo_identifier::instance();
-		}
-
-		int get_scope(){
-			table_element * instancia = table.lookup(valor, -1);
-
-			if (instancia){
-				return instancia->scope;
-			}
-			return -1;
-		}
-
-		type * get_tipo(){
-			if (tipo != NULL){
-				return tipo;
-			}
-			table_element * instancia = table.lookup(valor, -1);
-			// cout << "Busqueda de " << valor <<endl;
-			// table.print();
-			if (instancia){
-				tipo = instancia->tipo;
-				// cout << "#" << valor << " " << instancia->tipo << endl;
-				return tipo;
-			}
-			return &tipo_error::instance();
-		}
-		string get_nombre(){
-			return valor;
-		}
-		virtual void imprimir(int tab) {
-			for (int j = 0; j < tab; j++) cout << " ";
-			cout << "id: " << valor << endl;
-		}
-
-		virtual string output_code(){
-			stringstream ss;
-			ss << valor << "#" << scope;
-			tac_simbolos.insert(ss.str(), scope, get_tipo());
-			return ss.str();
-		}
-};
 
 /* Definicion de la clase para la lista de declaraciones */
 class tipedec : public ArbolSintactico {
@@ -1285,7 +1308,10 @@ class exp_aritmetica : public ArbolSintactico {
 				b = izq->output_code();
 			}
 			string new_id = new_uuid();
-			tac_simbolos.insert(new_id, scope, get_tipo());
+			stringstream sp;
+			sp << new_id << "#" << scope;
+			vector_declaraciones.push_back(new table_element(new_id, scope, get_tipo()));
+			// tac_simbolos.insert(new_id, scope, get_tipo());
 			stringstream ss;
 			switch(instruccion){
 				case SUMA:
@@ -1307,7 +1333,7 @@ class exp_aritmetica : public ArbolSintactico {
 					ss << "%";
 					break;
 			} 
-			intermedio.add(new node_assign(new_id, new node_op(new TACObject(b, izq->get_tipo_real()), instruccion, new TACObject(a, der->get_tipo_real()))));
+			intermedio.add(new node_assign(sp.str(), new node_op(new TACObject(b, izq->get_tipo_real()), instruccion, new TACObject(a, der->get_tipo_real()))));
 			return new_id;
 		}
 

@@ -10,6 +10,9 @@
 
 extern bool error_sintactico;
 
+std::vector<table_element *> vector_parametros;
+std::vector<table_element *> vector_declaraciones;
+
 table_element::table_element(std::string i, int s): id(i), scope(s), tipo(NULL), child_scope(-1), offset(0){};
 table_element::table_element(std::string i, int s, type * t): id(i), scope(s), tipo(t), child_scope(-1), offset(0){};
 
@@ -187,6 +190,22 @@ table_element * sym_table::lookup_top(std::string x){
 	return NULL;
 }
 
+bool sym_table::insert(table_element * ele){
+	stringstream ss;
+	ss << ele->id << "#" << ele->scope;
+	string id = ss.str();
+	if(tabla.find(id) == tabla.end()){
+		tabla[id];
+	}
+	table_element tmp = table_element(id, ele->scope, ele->tipo);
+
+	tmp.offset = off->get_offset(ele->scope);
+	off->increase_offset(ele->scope, ele->tipo->size());
+	
+ 	tabla[id].push_front(tmp);
+	return true;
+}
+
 bool sym_table::insert(std::string identifier, int scope, type * tipo){
 	if(tabla.find(identifier) == tabla.end()){
 		tabla[identifier];
@@ -235,13 +254,49 @@ offset_table::offset_table(){};
 offset_table::~offset_table(){};
 
 void offset_table::increase_offset(int scope, int value){
-	table[scope] += value;
+	table[scope][0] += value;
 	return;
 };
 
 int offset_table::get_offset(int scope){
 	if(table.find(scope) == table.end()){
-		table[scope] = 0;
+		table[scope];
+		table[scope].push_back(0);
+		table[scope].push_back(0);
 	}
-	return table[scope];
+	return table[scope][0];
+};
+
+void offset_table::copy_value(){
+	std::map<int, std::vector<int> >::iterator it;	
+	for ( it = table.begin(); it != table.end(); it++ ) {
+		it->second[1] = it->second[0];
+	}
+	return;
+};
+
+void offset_table::print(){
+
+	std::map<int, std::vector<int> >::iterator it;	
+	for ( it = table.begin(); it != table.end(); it++ ) {
+		cout << it->first << " : (" << it->second[0] << ", " << it->second[1]<<")"<< endl;
+	}
+	return;
+};
+
+void offset_table::subs_value(){
+	std::map<int, std::vector<int> >::iterator it;	
+	for ( it = table.begin(); it != table.end(); it++ ) {
+		it->second[1] = it->second[0] - it->second[1];
+	}
+	return;
+};
+
+int offset_table::get_malloc(int scope){
+	if(table.find(scope) == table.end()){
+		table[scope];
+		table[scope].push_back(0);
+		table[scope].push_back(0);
+	}
+	return table[scope][1];
 };

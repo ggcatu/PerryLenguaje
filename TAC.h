@@ -9,6 +9,9 @@
 #include "Classes/Sym_table.h"
 
 extern RegisterManager regs;
+extern sym_table tac_simbolos;
+extern vector<table_element *> vector_parametros;
+extern vector<table_element *> vector_declaraciones;
 
 using namespace std;
 
@@ -257,7 +260,7 @@ class node_return: public TACNode{
 		void output_code(){ cout << "return " << val << endl; };
 		void output_mips(){ 
 			string x = regs.getReg(val);
-			push(x, offset);
+			push(x, 0);
 			cout << "\tjr \t$ra" << endl;
 		};
 };
@@ -316,6 +319,17 @@ class node_free: public TACNode{
 		};
 };
 
+class node_malloc: public TACNode{
+	int val;
+	public:
+		node_malloc(int v): val(v){};
+		~node_malloc();
+		void output_mips(){
+			cout << "# Reservando espacio de memoria de scope " << endl;
+			cout << "sub $sp $sp " << val << endl;
+		}
+};
+
 class TAC {
 	TACNode* first;
 	TACNode* last;
@@ -347,7 +361,21 @@ class TAC {
 			data->add(node);
 		}
 
+		void calculate_offsets(){
+			for (std::vector<table_element *>::iterator i = vector_parametros.begin(); i != vector_parametros.end(); ++i) {
+				tac_simbolos.insert( (*i) );
+			}
+			tac_simbolos.off->copy_value();
+			for (std::vector<table_element *>::iterator i = vector_declaraciones.begin(); i != vector_declaraciones.end(); ++i) {
+				tac_simbolos.insert( (*i) );
+			}
+			tac_simbolos.off->subs_value();
+			tac_simbolos.off->print();
+		}	
+
 		void output_mips(){
+			// Calcular tabla de offsets
+			calculate_offsets();
 			cout << ".data" << endl;
 			output_data();
 			cout << ".text" << endl;

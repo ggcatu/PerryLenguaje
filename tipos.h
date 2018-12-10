@@ -18,8 +18,9 @@ class type {
 		std::vector<type *> parametros;
 		std::vector<std::string> variables;
 		yytokentype tipo;
+		int scope_params;
 		int bytes;
-		type(yytokentype t){
+		type(yytokentype t): scope_params(0){
 			tipo = t;
 		};
 

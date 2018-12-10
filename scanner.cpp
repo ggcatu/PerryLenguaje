@@ -171,6 +171,7 @@ void machine_code(){
 		intermedio.output_mips();
 
 		tac_simbolos.print();
+
 	    // cout.rdbuf(coutbuf); 
 	}
 }

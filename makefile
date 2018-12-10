@@ -1,4 +1,4 @@
-perry: scanner.o lex.yy.c parser.tab.c definiciones.o  TAC.o ast.h RegisterManager.o ast.cpp
+perry: scanner.o lex.yy.c parser.tab.c Sym_table.o definiciones.o  TAC.o ast.h RegisterManager.o ast.cpp
 	g++ Classes/Sym_table.cpp scanner.o definiciones.o TAC.o  RegisterManager.o lex.yy.c parser.tab.c ast.cpp -o perry
 
 scanner.o: scanner.cpp parser.tab.c definiciones.o
@@ -23,4 +23,4 @@ parser.tab.c: parser.y
 	bison -d --report=state parser.y
 
 clean:
-	rm lex.yy.c parser.tab.* parser.output scanner.o definiciones.o perry
+	rm lex.yy.c parser.tab.* parser.output scanner.o definiciones.o *.o *.gch perry

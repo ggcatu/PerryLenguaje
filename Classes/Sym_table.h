@@ -36,12 +36,16 @@ class table_element {
 
 class offset_table {
 	private:
-		std::map<int, int> table;	
+		std::map<int, std::vector<int> > table;	
 	public:
 		offset_table();
 		~offset_table();
 		void increase_offset(int scope, int value);
+		void copy_value(); 
+		void subs_value();
+		void print();
 		int get_offset(int scope);
+		int get_malloc(int scope);
 };
 
 
@@ -61,6 +65,7 @@ class sym_table {
 		void exit_scope();
 		table_element * lookup(std::string x, int scope);
 		table_element * lookup_top(std::string x);
+		bool insert(table_element * ele);
 		bool insert(std::string identifier, int scope, type * tipo);
 		bool insert(std::string identifier);
 		void print();
