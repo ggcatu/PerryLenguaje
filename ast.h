@@ -403,7 +403,8 @@ class llamada : public ArbolSintactico {
 			if (instancia){
 				if (instancia->tipo->tipo == FUNC){
 					vector<type *> params = instancia->tipo->parametros;
-					parametros->verificar_llamada(params, 0);
+					vector<bool> tipo_param = instancia->tipo->tipo_param;
+					parametros->verificar_llamada(params, tipo_param, 0);
 				} else {
 					string s = "\"" + valor + "\" no es una función";
 					errors.push_back(new TokenError(1,yylineno,yycolumn-1-strlen(yytext),s,VERIFICACION));
@@ -740,15 +741,15 @@ class asignacion : public ArbolSintactico {
 				case LIST:{
 					string label = new_label();
 					std::vector<string> valores = valor->values();
-					stringstream aux;
-					aux << "[";
-					for (unsigned i=0; i<valores.size(); i++){
-						aux << valores[i] << ",";
-						//intermedio.add(new node_assign(aux, valores[i]));
-					}
-					aux << "]";
-					intermedio.add_data(new node_store(label, aux.str()));
-					intermedio.add(new node_assign(var, label));
+					//stringstream aux;
+					//aux << "[";
+					//for (unsigned i=0; i<valores.size(); i++){
+					//	aux << valores[i] << ",";
+					//	//intermedio.add(new node_assign(aux, valores[i]));
+					//}
+					//aux << "]";
+					//intermedio.add_data(new node_store(label, aux.str()));
+					//intermedio.add(new node_assign(var, label));
 					break;
 				}
 				default:
@@ -2056,12 +2057,13 @@ class parametros : public ArbolSintactico {
 	public:
 		ArbolSintactico * elems;
 		ArbolSintactico * val;
+		bool ref;
 		parametros(ArbolSintactico * v) : val(v), elems(NULL) {}
 		parametros(ArbolSintactico * v, ArbolSintactico * e) : val(e), elems(v) {verificar();}
 		parametros() : elems(NULL), val(NULL) {}
 		
 		string output_code(){
-			intermedio.add(new node_param(new TACObject(val->output_code(), val->get_tipo_real())));
+			intermedio.add(new node_param(new TACObject(val->output_code(), val->get_tipo_real()),ref));
 			if (elems)
 				elems->output_code();
 			return "";
@@ -2080,9 +2082,10 @@ class parametros : public ArbolSintactico {
 		type * get_tipo(){
 			return val->get_tipo();
 		}
-		virtual void verificar_llamada(vector<type *> parametros, int actual){
+		virtual void verificar_llamada(vector<type *> parametros, vector<bool> tipo_param, int actual){
 			int tam = parametros.size();
 			if (val != NULL){
+				ref = tipo_param[actual];
 				// cout << 10 << "actual " << IntToString(actual) << "tam " << tam << endl;
 				type * tipo_val = val->get_tipo();
 				// cout << 11 << " tipo_param_llamada " << tipo_val->tipo << " tipo_param_vector " << &parametros[actual]->tipo << endl;
@@ -2097,7 +2100,7 @@ class parametros : public ArbolSintactico {
 				} else {
 					if (elems != NULL){
 						actual++;
-						elems->verificar_llamada(parametros,actual);
+						elems->verificar_llamada(parametros, tipo_param, actual);
 					} else {
 						if (actual != parametros.size()-1){
 							string s = "Se esperaban "+IntToString(actual)+" argumentos y se tienen "+IntToString(tam);

@@ -87,13 +87,14 @@ void declarar_variable(string identificador, int columna){
 	}
 }
 
-void parametrizar_funcion(char * str){
+void parametrizar_funcion(char * str, bool ref){
 	type * funcion = table.lookup(current_id,-1)->tipo;
 	table_element * param = table.lookup(str,-1);
 	funcion->parametros.insert(funcion->parametros.begin(), param->tipo);
 	stringstream ss;
 	ss << str << "#" << param->scope; 
 	funcion->variables.insert(funcion->variables.begin(), ss.str());
+	funcion->tipo_param.insert(funcion->tipo_param.begin(), ref);
 }
 
 %}
@@ -233,10 +234,10 @@ LlaveabreSp : LLAVEABRE 										{ string u = uuid(); $$ = new identificador(u)
 			; 
 
 
-Varlist 	: IdentifierPa COMA Varlist 						{parametrizar_funcion($1);}
-			| IdentifierPa 										{parametrizar_funcion($1);}
-			| Typedef REFERENCE IDENTIFIER COMA Varlist			{ declarar_variable($3, yylloc.first_column); asignar_tipo($1, $3); parametrizar_funcion($3); }
-			| Typedef REFERENCE IDENTIFIER						{ declarar_variable($3, yylloc.first_column); asignar_tipo($1, $3); parametrizar_funcion($3); }
+Varlist 	: IdentifierPa COMA Varlist 						{parametrizar_funcion($1,false);}
+			| IdentifierPa 										{parametrizar_funcion($1,false);}
+			| Typedef REFERENCE IDENTIFIER COMA Varlist			{ declarar_variable($3, yylloc.first_column); asignar_tipo($1, $3); parametrizar_funcion($3,true); }
+			| Typedef REFERENCE IDENTIFIER						{ declarar_variable($3, yylloc.first_column); asignar_tipo($1, $3); parametrizar_funcion($3,true); }
 			|													{ $$ = (ArbolSintactico*)(NULL); }
 			;
 

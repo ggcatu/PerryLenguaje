@@ -191,8 +191,9 @@ class node_call: public TACNode{
 
 class node_param: public TACNode{
 	TACObject * obj;
+	bool type_param;
 	public:
-		node_param(TACObject * o): TACNode(), obj(o){};
+		node_param(TACObject * o, bool t): TACNode(), obj(o), type_param(t) {};
 		~node_param(){free(obj);};	
 		void output_code(){ cout << "param " << obj->valor << endl; };
 		void output_mips(){

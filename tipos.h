@@ -16,6 +16,7 @@ using namespace std;
 class type {
 	public:
 		std::vector<type *> parametros;
+		std::vector<bool> tipo_param;
 		std::vector<std::string> variables;
 		yytokentype tipo;
 		int bytes;
@@ -116,6 +117,8 @@ class tipo_list: public CRTP_type<tipo_list>{
 class tipo_funcion: public CRTP_type<tipo_funcion>{
 	public:
 		type &p1;
+		std::vector<type *> parametros;
+		std::vector<bool> tipo_param;
 		tipo_funcion(type &p) : CRTP_type(FUNC), p1(p) {};
 		tipo_funcion() : CRTP_type(FUNC), p1(tipo_unit::instance()) {};
 };
