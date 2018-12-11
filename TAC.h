@@ -1,12 +1,18 @@
 #ifndef TAC_H
 #define TAC_H
+
 #include <stdio.h>
 #include <iostream>
 #include <string>
 #include "RegisterManager.h"
 #include "Classes/TACObject.h"
+#include "Classes/Sym_table.h"
 
 extern RegisterManager regs;
+extern sym_table table;
+extern sym_table tac_simbolos;
+extern vector<table_element *> vector_parametros;
+extern vector<table_element *> vector_declaraciones;
 
 using namespace std;
 
@@ -19,11 +25,13 @@ class TACNode {
 		
 		void push(string reg, int w){
 			cout << "\tsubu \t$sp, $sp, " << w << endl;
-			cout << "\tsw \t" << reg << ", ($sp)" << endl;
+			if (reg != "")
+				cout << "\tsw \t" << reg << ", ($sp)" << endl;
 		}
 
 		void pop(string reg, int w){
-			top(reg);
+			if (reg != "")
+				top(reg);
 			cout << "\t" << "addu\t" "$sp, $sp, " << w << endl;
 		}
 
@@ -210,10 +218,21 @@ class node_unparam: public TACNode{
 		~node_unparam(){free(obj);};	
 		void output_code(){ cout << "unparam " << obj->valor << endl; };
 		void output_mips(){
-			string x = regs.getReg(obj->valor);
+			// string x = regs.getReg(obj->valor);
 			// No es label, debe ser el registro asociado.
-			cout << "\tlw   \t" << x << ", "<< obj->offset <<"($fp)" << endl;
+			// cout << "\tlw   \t" << x << ", "<< obj->offset <<"($sp)" << endl;
 		 };
+};
+
+class node_pop: public TACNode {
+	TACObject * obj;
+	public:
+		node_pop(TACObject * o): TACNode(), obj(o){};
+		~node_pop(){free(obj);};	
+		void output_code(){ cout << "pop " << obj->valor << endl; };
+		void output_mips(){
+			pop("", 4);
+		 };	
 };
 
 class node_elem: public TACNode{
@@ -236,13 +255,14 @@ class node_store: public TACNode{
 
 class node_return: public TACNode{
 	string val;
+	int offset;
 	public:
-		node_return(string v): TACNode(), val(v){};
+		node_return(string v, int o): TACNode(), val(v), offset(o){};
 		~node_return(){};	
 		void output_code(){ cout << "return " << val << endl; };
 		void output_mips(){ 
 			string x = regs.getReg(val);
-			push(x, 4);
+			cout << "\tsw \t" << x << ", ($fp)" << endl;
 			cout << "\tjr \t$ra" << endl;
 		};
 };
@@ -301,6 +321,35 @@ class node_free: public TACNode{
 		};
 };
 
+class node_malloc: public TACNode{
+	int val;
+	public:
+		node_malloc(int v): val(v){};
+		~node_malloc();
+		void output_mips(){
+			int v = tac_simbolos.off->get_malloc(val);
+			if (v != 0){
+				cout << "# Reservando espacio de memoria de scope " << endl;
+				cout << "sub $sp $sp " << v << endl;
+			}
+		}
+};
+
+class node_free_stack: public TACNode{
+	int val;
+	public:
+		node_free_stack(int v): val(v){};
+		~node_free_stack();
+		void output_mips(){
+			int v = tac_simbolos.off->get_malloc(val);
+			if ( v != 0){
+				cout << "# Liberando espacio de memoria de scope " << endl;
+				cout << "add $sp $sp " << v << endl;
+			}
+		}
+};
+
+
 class TAC {
 	TACNode* first;
 	TACNode* last;
@@ -332,7 +381,34 @@ class TAC {
 			data->add(node);
 		}
 
+		void calculate_offsets(){
+			int last_scope = -1;
+			int father;
+			for (std::vector<table_element *>::iterator i = vector_parametros.begin(); i != vector_parametros.end(); ++i) {
+				tac_simbolos.insert( (*i) );
+			}
+			tac_simbolos.off->copy_value();
+
+			std::sort(vector_declaraciones.begin(), vector_declaraciones.end(), compare_table_element);
+			
+			for (std::vector<table_element *>::iterator i = vector_declaraciones.begin(); i != vector_declaraciones.end(); ++i) {
+				if ( (*i)->scope != last_scope ){
+					father = table.scope_relation[(*i)->scope];
+					if (father != 0){
+						tac_simbolos.off->dual_increase_offset((*i)->scope, tac_simbolos.off->get_offset(father));
+					}
+				}
+				last_scope = (*i)->scope;
+				tac_simbolos.insert( (*i) );
+			}
+			tac_simbolos.off->subs_value();
+			// tac_simbolos.off->print();
+			// table.print_scope_relation();
+		}	
+
 		void output_mips(){
+			// Calcular tabla de offsets
+			calculate_offsets();
 			cout << ".data" << endl;
 			output_data();
 			cout << ".text" << endl;

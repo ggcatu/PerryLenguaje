@@ -1,8 +1,14 @@
 //Preuba funcion
 
-int suma(int a, int b){
-	suma(3, 5);
-	return a + b;
+
+int suma(int f, int b){	
+	create {
+		int k;
+	} 
+	execute {
+		k = 1;
+		return f + b;
+	};
 }
 
 main{

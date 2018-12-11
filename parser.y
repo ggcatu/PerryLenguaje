@@ -4,9 +4,10 @@
 #include <iostream>
 #include <map>
 #include "definiciones.h"
+
 #include "ast.h"
-#include "table.h"
 #include "tipos.h"
+#include "Classes/Sym_table.h"
 #include <sstream>
 #include <vector>
 
@@ -17,6 +18,8 @@ extern int yycolumn;
 extern int yylineno;
 extern char * yytext;
 extern vector<Token *> errors;
+extern vector<table_element *> vector_parametros;
+extern vector<table_element *> vector_declaraciones;
 
 //Map que contiene los alias
 map<string,ArbolSintactico*> alias;
@@ -87,12 +90,23 @@ void declarar_variable(string identificador, int columna){
 	}
 }
 
+<<<<<<< HEAD
 void parametrizar_funcion(char * str, bool ref){
+=======
+void calcular_offset(string id){
+	table_element * param = table.lookup(id,-1);
+	vector_declaraciones.push_back(param);
+}
+
+void parametrizar_funcion(char * str){
+>>>>>>> 22bad9c0cd9b63a5d5c736956dc8cb9ef54426b0
 	type * funcion = table.lookup(current_id,-1)->tipo;
 	table_element * param = table.lookup(str,-1);
+	vector_parametros.push_back(param);
 	funcion->parametros.insert(funcion->parametros.begin(), param->tipo);
 	stringstream ss;
 	ss << str << "#" << param->scope; 
+	funcion->scope_params = param->scope;
 	funcion->variables.insert(funcion->variables.begin(), ss.str());
 	funcion->tipo_param.insert(funcion->tipo_param.begin(), ref);
 }
@@ -136,7 +150,7 @@ void parametrizar_funcion(char * str, bool ref){
 %token ENTER 55 
 %token COMENTARIO 56
 %token TYPE 57 NEW 58 FREE 59
-%token REFERENCE 60 OPTR 61 UNIT 62
+%token REFERENCE 60 OPTR 61 UNIT 62 FUNC 63
 %token TYPE_ERROR 
 
 %token <num> INT
@@ -262,7 +276,7 @@ Inst		: Scope					 							{ $$ = $1; }
 			| FREE PARABRE IDENTIFIER PARCIERRA					{ usar_variable($3, yylloc.first_column); $$ = new memoria(new identificador($3),false); }
 			| SALIDA Exp 										{ $$ = new entrada_salida($2,false); }
 			| ENTRADA Exp  										{ $$ = new entrada_salida($2,true); }
-			| IdentifierF Parabre ListLlamada PARCIERRA 			{ usar_variable($1, yylloc.first_column); $$ = new llamada(new identificador($1),$3); }
+			| IdentifierF PARABRE ListLlamada PARCIERRA 		{ usar_variable($1, yylloc.first_column); $$ = new llamada(new identificador($1),$3); }
 			| RETURN Exp										{ $$ = new ret_brk(true, $2); }
 			| BREAK												{ $$ = new ret_brk(false, (ArbolSintactico*)(NULL)); }
 			| 													{ $$ = new skip(); }
@@ -271,7 +285,7 @@ Inst		: Scope					 							{ $$ = $1; }
 Identifier 	: IDENTIFIER 										{ declarar_variable($1, yylloc.first_column); $$ = $1; }
 			;
 
-IdentifierSp: Typedef IDENTIFIER 								{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2); $$ = new identificador($2); }
+IdentifierSp: Typedef IDENTIFIER 								{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2); calcular_offset($2); $$ = new identificador($2); }
 			;
 
 IdentifierPa: Typedef IDENTIFIER 								{ declarar_variable($2, yylloc.first_column); asignar_tipo($1, $2); $$ = $2; }
@@ -305,7 +319,7 @@ Exp	 		: Exp SUMA Exp										{ $$ = new exp_aritmetica($1,$3,0); }
 			| Exp CONJUNCION Exp								{ $$ = new exp_booleana($1,$3,7); }
 			| NEGACION Exp										{ $$ = new exp_booleana($2,8); }
 
-			| IdentifierF Parabre ListLlamada PARCIERRA 		{ usar_variable($1, yylloc.first_column); $$ = new llamada(new identificador($1),$3); }
+			| IdentifierF PARABRE ListLlamada PARCIERRA 		{ usar_variable($1, yylloc.first_column); $$ = new llamada(new identificador($1),$3); }
 
 			| OPTR Ids	 										{ $$ = new exp_point(new ids($2)); }
 			| Literals											{ $$ = $1; }
