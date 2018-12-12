@@ -26,7 +26,8 @@ class ArbolSintactico {
 		virtual int get_valor(){};
 		virtual string get_nombre(){};
 		virtual type * get_tipo_index(type * t){};
-		virtual void verificar_llamada(vector<type *> parametros, int actual) {};
+		virtual void verificar_llamada(vector<type *> parametros, vector<bool> tipo_param, int actual) {};
+		//virtual void verificar_llamada(vector<type *> parametros, int actual) {};
 		virtual string output_code(){ if (first) first->output_code(); return "";};
 		virtual string jumping_code(ArbolSintactico * B){ return output_code(); };
 		virtual string rvalue(){ return output_code(); };
