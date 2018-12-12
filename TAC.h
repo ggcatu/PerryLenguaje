@@ -83,7 +83,10 @@ class node_assign: public TACNode{
 
 		string load_value(TACObject * r){
 			if(r->t->tipo == IDENTIFIER){
-				string x; regs.getReg(left);
+				vector<string> v;
+				string s = "";
+				v = regs.getReg(left,s,s);
+				string x; 
 			} else if (r->t->tipo == LINT) {
 
 			}; 
@@ -95,8 +98,10 @@ class node_assign: public TACNode{
 			// Codigo cancer para chequeos
 
 			if (right_node != NULL ){
-				string x = regs.getReg(left);
-				string y = regs.getReg(right_node->left);
+				string s = "";
+				vector<string> v = regs.getReg(left,right_node->left->valor,s);
+				string x = v[0];
+				string y = v[1];
 				string z = "$0";
 				if (right_node->right == NULL){
 					if (right_node->left->t->tipo == LINT){
@@ -111,7 +116,9 @@ class node_assign: public TACNode{
 						cout << "\t" << "add " << "\t" <<  x << ", " << y << ", $0" << endl;
 					}
 				} else {
-					z = regs.getReg(right_node->right->valor);
+					string s = "";
+					vector<string> v = regs.getReg(right_node->right->valor,s,s);
+					z = v[0];
 					switch(right_node->op){
 						case SUMA:
 							if (right_node->left->t->tipo == LINT && right_node->right->t->tipo == LINT){
@@ -147,7 +154,9 @@ class node_if: public TACNode{
 		~node_if(){};	
 		void output_code(){ cout << "if (" << condition << ") go to " << label << endl; };
 		void output_mips(){ 
-			string x = regs.getReg(condition);
+			string s = "";
+			vector<string> v = regs.getReg(condition,s,s);
+			string x = v[0];
 			cout << "\tbgtz \t" << x << ", " << label << endl; };
 };
 
@@ -196,7 +205,9 @@ class node_param: public TACNode{
 		~node_param(){free(obj);};	
 		void output_code(){ cout << "param " << obj->valor << endl; };
 		void output_mips(){
-			string x = regs.getReg(obj);
+			string s = "";
+			vector<string> v = regs.getReg(obj->valor,s,s);
+			string x = v[0];
 			// No es label, debe ser el registro asociado.
 			push(x, 4);
 		 };
@@ -209,7 +220,9 @@ class node_unparam: public TACNode{
 		~node_unparam(){free(obj);};	
 		void output_code(){ cout << "unparam " << obj->valor << endl; };
 		void output_mips(){
-			string x = regs.getReg(obj->valor);
+			string s = "";
+			vector<string> v = regs.getReg(obj->valor,s,s);
+			string x = v[0];
 			// No es label, debe ser el registro asociado.
 			cout << "\tlw   \t" << x << ", "<< obj->offset <<"($fp)" << endl;
 		 };
@@ -239,8 +252,10 @@ class node_return: public TACNode{
 		node_return(string v): TACNode(), val(v){};
 		~node_return(){};	
 		void output_code(){ cout << "return " << val << endl; };
-		void output_mips(){ 
-			string x = regs.getReg(val);
+		void output_mips(){
+			string s = "";
+			vector<string> v = regs.getReg(val,s,s); 
+			string x = v[0];
 			push(x, 4);
 			cout << "\tjr \t$ra" << endl;
 		};

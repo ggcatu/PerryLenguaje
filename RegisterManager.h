@@ -13,12 +13,14 @@ class RegisterManager {
 		~RegisterManager();
 		std::string getFreeRegister();
 
-		std::string getReg(TACObject * obj);
-		std::string getReg(std::string var);
+		std::vector<std::string> getReg(std::string v1, std::string v2, std::string v3);
 
 	private:
 		std::map<std::string, std::vector<std::string> > m;
 		std::map<std::string, std::string> vars;
+		bool spill[];
+		std::vector<std::string> v;
+		std::string registers[];
 };
 
 #endif

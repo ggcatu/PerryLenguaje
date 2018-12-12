@@ -1,0 +1,5 @@
+a := b + c
+c := b - d
+j := m * s
+c := f / d
+print j

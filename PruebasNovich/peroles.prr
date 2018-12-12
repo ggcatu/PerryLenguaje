@@ -1,28 +1,72 @@
 //Peroles 
-struct elem{
-  int  tipo;
-  union {
+union elem{
     bool  b;
     char  c;
     int   i;
     float f;
-  }
 }
 
 main{
     create{
-        string s;
-        array elem[20];
+        int n;
+        int i;
+        string tipo;
+        array elem[20] elementos;
+        array bool[20] bl;
+        array char[20] ch;
+        array int[20] in;
+        array float[20] fl;
+        int bln = 0;
+        int chn = 0;
+        int inn = 0;
+        int fln = 0;
     } execute{
-        >>("Igrese elemento: ");
-        << s;
-        >>("¿Desea hacer el factorial iterativo? (si o no) ");
-        << s;
-        iter = (s == "si");
-        if (iter){
-            >> iter_fact(n);
-        }else{
-            >> rec_fact(n);
+        while(true){
+            >>("Igrese el numero de elementos: ");
+            << n;
+            i = 0;
+            while(i < n){
+                >>("Igrese tipo del elemento: ");
+                << tipo;
+                >>("Ingrese el elemento ");
+                if(tipo == "bool"){
+                    << bl[bln];
+                    bln = bln + 1;
+                };
+                if(tipo == "int"){
+                    << in[inn];
+                    inn = inn + 1;
+                };
+                if(tipo == "float"){
+                    << fl[fln];
+                    fln = fln + 1;
+                };
+                if(tipo == "char"){
+                    << ch[chn];
+                    chn = chn + 1;
+                };
+                i = i + 1;
+            };
+            i = 0;
+            while(i<bln){
+                elementos[i].b = bl[bln];
+                i = i + 1;
+            };
+            i = 0;
+            while(i<chn){
+                elementos[i].c = ch[chn];
+                i = i + 1;
+            };
+            i = 0;
+            while(i<inn){
+                elementos[i].i = in[inn];
+                i = i + 1;
+            };
+            i = 0;
+            while(i<fln){
+                elementos[i].f = fl[fln];
+                i = i + 1;
+            };
         };
     };
 }

@@ -1,0 +1,75 @@
+//Calculo de estadisticos
+float sqr(float x, float l){
+    create{
+        float counter = 0;
+        float l_neu;  // l is used for the guessed solution.
+    }
+    execute{
+        l_neu=(l+(x/l))/2;
+        if(counter==25.0){
+            return l_neu;
+        }else{
+            return sqr(x,l_neu);
+        };
+    };
+}
+
+main{
+    create{
+        float tot;
+        float media;
+        float varianza;
+        int n;
+        int i;
+        array float[2000] arr;
+        bool iter;
+        string s;
+    } execute{
+        while(true){
+            >>("Igrese numero de elementos que desea ordenar: ");
+            << n;
+            while(i <= n){
+                >>("Ingrese numero: ");
+                << arr[i];
+                i = i + 1;
+            };
+            >>("Cantidad de muestras: ");
+            >> n;
+            i = 0;
+            while(i < n){
+                media = media + arr[i];
+                i = i + 1;
+            };
+            media = media/n;
+            >>("Promedio de las muestras: ");
+            >>(media);
+            i = 0;
+            while(i < n){
+                varianza = varianza + ((arr[i] - media)**2)/n-1;
+                i = i + 1;
+            };  
+            >>("Varianza de las muestras: ");
+            >>(varianza);
+            >>("Desviacion estandar de las muestras: ");
+            >>(sqr(varianza,1000.0));
+            i = 0;
+            tot = 0;
+            while(i < n){
+                if(arr[i] > tot){
+                    tot = arr[i];
+                };
+                i = i + 1;
+            };
+            >>("Valor maximo de las muestras: ");
+            >>(tot);   
+            while(i < n){
+                if(arr[i] < tot){
+                    tot = arr[i];
+                };
+                i = i + 1;
+            }; 
+            >>("Valor minimo de las muestras: ");
+            >>(tot);   
+        };
+    };
+}

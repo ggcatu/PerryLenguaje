@@ -1,20 +1,57 @@
 //QuickSort
 
-int qs(arr){
-    create{}
-    execute{};
+int qs(array a, int m, int n){
+    create{
+        int i;
+        int j;
+        int v;
+        int x;
+    }
+    execute{
+        create{
+            int i;
+        }execute{
+            j = i + 1;
+        }
+        create{
+            int i;
+        }execute{
+            i = i + 1;
+        }
+        if(n <= m){
+            return;
+        };
+        i = m -1;
+        j = n; 
+        v = a [ n ];
+        while(true){
+            while(a[i] < v){
+                i = i +1;
+            };
+        while(a[j] > v){
+            j = j -1; 
+        };
+        if(i >= j){
+            break;
+        };
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+        }
+        x = a[i];
+        a[i] = a[n];
+        a[n] = x ;
+        qs(m,j); qs(i+1,n);};
 }
 
 
 main{
     create{
-        int fact;
         int n;
         int i = 0;
-        bool iter;
-        string s;
+        array int[1000] arr
     } execute{
-	    	while(true){
+	    while(true){
 	        >>("Igrese numero de elementos que desea ordenar: ");
 	        << n;
 	        while(i <= n){

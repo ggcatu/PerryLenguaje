@@ -160,7 +160,7 @@ void machine_code(){
 		// ofstream out("out.txt");
 	 	//    streambuf *coutbuf = cout.rdbuf(); 
 	 	//    cout.rdbuf(out.rdbuf()); 
-
+		cout << "QUECARAJ" << endl;
 		root_ast->output_code();
 
 	    intermedio.output_code();

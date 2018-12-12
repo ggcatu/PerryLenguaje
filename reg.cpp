@@ -33,19 +33,31 @@ void split(const std::string& s, char c,std::vector<std::string>& v) {
 	}
 }
 
-int getreg(std::string var_n, std::string file, int spll){
+std::vector<std::string> getReg(std::string v1, std::string v2, std::string v3){
+
+	std::string registers[] = { 
+		"$t0", "$t1", "$t2",
+		"$t3", "$t4", "$t5",
+		"$t6", "$t7", "$t8",
+		"$s0", "$s1", "$s2",
+		"$s3", "$s4", "$s5",
+		"$s6", "$s7", "$a0",
+		"$a1"
+	};
+
     int lines = 0;
-	std::ifstream infile("prueba");
+	std::ifstream infile("PruebasNovich/prueba");
 	std::string line;
 	int i = 0;
 	int j = 0;
-	//std::string keywrd[6];
-	//keywrd = ["+","*","-","=","/","print"];
+	std::string keywrd[] = {
+		"+","*","-",":=","/","print"
+	};
 	std::vector<std::string> v;
 	while (std::getline(infile, line)){
 		lines = lines + 1;
 	}
-	std::ifstream newfile("prueba");
+	std::ifstream newfile("PruebasNovich/prueba");
 	std::string m[lines][3];
 	while(j<lines){
 		for (int y = 0; y < 3; ++y) {
@@ -54,12 +66,11 @@ int getreg(std::string var_n, std::string file, int spll){
 		j = j + 1;
 	}
 	while (std::getline(newfile, line)){
-		remove_sub(line,"*");
-		remove_sub(line,"/");
-		remove_sub(line,"=");
-		remove_sub(line,"+");
-		remove_sub(line,"-");
-		remove_sub(line,"print");
+		j = 0;
+		while(j < 6){
+			remove_sub(line,keywrd[j]);
+			j = j + 1;
+		}
 		split(line,' ',v);
 		j = 0;
 		for (int y = 0; y < v.size(); ++y) {
@@ -151,7 +162,7 @@ int getreg(std::string var_n, std::string file, int spll){
 		}
 		i = i + 1;
 	}
-	//Chequeamos si el grafo es 19-coloreable
+	//Chequeamos si el grafo es k-coloreable
 	std::vector< std::vector<int> > grafo_v;
 	std::vector<int> dummy;
 	i = 0;
@@ -170,7 +181,7 @@ int getreg(std::string var_n, std::string file, int spll){
 	int k = 0;
 	int x = 0;
 	int aristas;
-	int n_col = 6;
+	int n_col = 19;
 	bool kcolor = false;
 	while(kcolor){
 		//Hay maximo n_var iteraciones en el ciclo
@@ -206,18 +217,83 @@ int getreg(std::string var_n, std::string file, int spll){
 	i = 0;
 	bool spill[n_vars];
 	while(i<n_vars){
-		if(i<n_col){
-			spill[i] = true;
+		if(i<n_col-1){
+			spill[i] = false;
 		}
 		else{
-			spill[i] = false;
+			spill[i] = true;
 		}
 		i = i + 1;
 	}
-	if(spll == 0){
-		return std::distance(v.begin(),std::find(v.begin(), v.end(), var_n));
+	int iv1;
+	int iv2;
+	int iv3;
+	bool sp1;
+	bool sp2;
+	bool sp3;
+
+	iv1 = std::distance(v.begin(),std::find(v.begin(), v.end(), v1));
+	if(v2 != ""){
+		iv2 = std::distance(v.begin(),std::find(v.begin(), v.end(), v2));
+	}else{
+		iv2=-1;
 	}
-	else{
-		return spill[std::distance(v.begin(),std::find(v.begin(), v.end(), var_n))];
+	if(v3 != ""){
+		iv3 = std::distance(v.begin(),std::find(v.begin(), v.end(), v3));
+	}else{
+		iv3=-1;
+	}
+	sp1 = spill[iv1];
+	sp2 = spill[iv2];
+	sp3 = spill[iv3];
+	while(iv3 == iv2 || iv1 == iv3){
+		iv3 = iv3 + 1;
+		sp3 = true;
+	}
+	while(iv2 == iv1 || iv2 == iv3){
+		iv2 = iv2 + 1;
+		sp2 = true;
+	}
+	while(iv1 == iv2 || iv1 == iv3){
+		iv1 = iv1 + 1;
+		sp1 = true;
+	}
+	std::vector<std::string> ret;
+	ret.push_back(registers[iv1]);
+	if(iv2 != -1){
+		ret.push_back(registers[iv2]);
+	}else{
+		ret.push_back("");
+	}
+	if(iv3 != -1){
+		ret.push_back(registers[iv3]);	
+	}else{
+		ret.push_back("");
+	}
+	if(sp1){
+		ret.push_back("1");
+	}else{
+		ret.push_back("0");
+	}
+	if(sp2){
+		ret.push_back("1");
+	}else{
+		ret.push_back("0");
+	}
+	if(sp3){
+		ret.push_back("1");
+	}else{
+		ret.push_back("0");
+	}
+	return ret;
+}
+
+int main(){
+	std::vector<std::string> vals;
+	vals = getreg("a","b","s");
+	int i = 0;
+	while(i<6){
+		std::cout << vals[i] << std::endl;
+		i = i + 1;
 	}
 }

@@ -144,7 +144,7 @@ void parametrizar_funcion(char * str){
 %token <ch> CHAR
 %token <str> STRING 
 %token <boolean> TRUE FALSE
-%type <arb> S Alias Create Includelist Start Typedef Scope Varlist Declist Ids Sec Inst Exp List Literals Corchetes Parabre Ids_plox Llaveabre LlaveabreSp Llavecierra IdentifierSp IdentifierFc ListLlamada
+%type <arb> S Alias Create Includelist Start Typedef Scope ScopeList Varlist Declist Ids Sec Inst Exp List Literals Corchetes Parabre Ids_plox Llaveabre LlaveabreSp Llavecierra IdentifierSp IdentifierFc ListLlamada
 %type <str> Identifier IdentifierPa IdentifierF
 
 
@@ -201,7 +201,7 @@ Llavecierra : LLAVECIERRA 										{ table.exit_scope(); }
 Parabre 	: PARABRE 											{ current_par = 0; table.new_scope(); }
 			;
 
-Scope 		: Create LLAVEABRE Declist LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA 	{ $$ = new bloque($3,$7); table.exit_scope(); }
+Scope 		: Create LLAVEABRE ScopeList LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA 	{ $$ = new bloque($3,$7); table.exit_scope(); }
 			| Create LLAVEABRE LLAVECIERRA EXECUTE LLAVEABRE Sec LLAVECIERRA  			{ $$ = new bloque($6); table.exit_scope(); }
 			| EXECUTE LLAVEABRE Sec LLAVECIERRA  										{ $$ = new bloque($3); }
 			;
@@ -245,6 +245,11 @@ Declist 	: IdentifierSp PUNTOCOMA Declist					{$$ = new skip($3); }
 			| IdentifierSp PUNTOCOMA 							{$$ = new skip(); }
 			| IdentifierSp IGUAL Exp PUNTOCOMA 					{$$ = new asignacion($1, $3, NULL); }
 			;
+
+ScopeList 	: IdentifierSp PUNTOCOMA ScopeList					{$$ = new skip($3); }
+			| IdentifierSp IGUAL Exp PUNTOCOMA ScopeList			{$$ = new asignacion($1, $3, $5); }
+			| IdentifierSp PUNTOCOMA 							{$$ = new skip(); }
+			| IdentifierSp IGUAL Exp PUNTOCOMA 					{$$ = new asignacion($1, $3, NULL); }
 
 Sec 		: Inst PUNTOCOMA Sec  								{ $$ = new instruccion($3,$1); }
 			| Inst PUNTOCOMA									{ $$ = new instruccion($1); }

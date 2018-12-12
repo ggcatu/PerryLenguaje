@@ -1,0 +1,64 @@
+//Calculadora interactiva
+main{
+    create{
+    	int i;
+    	array float[26] vars; 
+    	array string[26] let; 
+        string input;
+        string dummy;
+        string var1;
+        string var2;
+        string var3;
+        string op;
+        float val3;
+        int val1;
+        float val2;
+    } execute{
+        while(true){
+            >>("Igrese calculo que desea realizar: ");
+            << input;
+            let = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+            i = 0;
+            while(i<26){
+            	vars[i] = 0.0;
+            };
+            var1 = input[0];
+            i = 0;
+            while(dummy != var1){
+            	dummy = let[i];
+            	i = i + 1;
+            };
+            val1 = i;
+            var2 = input[4];
+            i = 0;
+            while(dummy != var2){
+            	dummy = let[i];
+            	i = i + 1;
+            };
+            val2 = vars[i];
+            var3 = input[8];
+            i = 0;
+            while(dummy != var3){
+            	dummy = let[i];
+            	i = i + 1;
+            };
+            val3 = vars[i];
+            op = input[6];
+            if(op == "+"){
+            	vars[val1] = val2 + val3;
+            };
+            if(op == "-"){
+            	vars[val1] = val2 - val3;
+            };
+            if(op == "*"){
+            	vars[val1] = val2 * val3;
+            };
+            if(op == "/"){
+            	vars[val1] = val2 / val3;
+            };
+            if(op == ""){
+            	vars[val1] = val2;
+            };
+        };
+    };
+}
