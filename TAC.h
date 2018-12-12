@@ -330,7 +330,7 @@ class node_malloc: public TACNode{
 			int v = tac_simbolos.off->get_malloc(val);
 			if (v != 0){
 				cout << "# Reservando espacio de memoria de scope " << endl;
-				cout << "sub $sp $sp " << v << endl;
+				cout << "sub $sp, $sp, " << v << endl;
 			}
 		}
 };
@@ -344,11 +344,35 @@ class node_free_stack: public TACNode{
 			int v = tac_simbolos.off->get_malloc(val);
 			if ( v != 0){
 				cout << "# Liberando espacio de memoria de scope " << endl;
-				cout << "add $sp $sp " << v << endl;
+				cout << "add $sp, $sp, " << v << endl;
 			}
 		}
 };
 
+class node_array: public TACNode{
+	vector<string> elems;
+	string left;
+	public:
+		node_array(vector<string> e, string v): elems(e), left(v) {};
+		~node_array();
+		void output_code(){
+			string x = regs.getReg(left);
+			string y = regs.getFreeRegister(); // necesito un registro bien
+			cout << "la " << x << " " << left << endl;
+			for (unsigned i=0; i<elems.size(); i++){
+				cout << "li " << y << ", " << elems[i] << endl;
+				cout << "sw " << y << ", " << IntToString((i+1)*4) << "(" << x << ")" << endl;
+			}
+			cout << "mul " << x << ", " << x << ", " << "4" << endl; // deberia ir el length de la cosa
+			cout << "move $a0, " << x << endl;
+			cout << "li $v0, 9" << endl;
+			cout << "syscall" << endl;
+			cout << "sw $v0, " << left;
+		}
+		void output_mips(){
+			output_code();
+		}
+};
 
 class TAC {
 	TACNode* first;
@@ -427,7 +451,7 @@ class TAC {
 				tmp->output_mips();
 				tmp = tmp->next;
 			}			
-			cout << "\tli \t$v0,10\t\t # system call code for exit" << endl;
+			cout << "\tli \t$v0, 10\t\t # system call code for exit" << endl;
 			cout << "\tsyscall" << endl;
 			return;
 		}

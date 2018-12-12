@@ -90,16 +90,12 @@ void declarar_variable(string identificador, int columna){
 	}
 }
 
-<<<<<<< HEAD
-void parametrizar_funcion(char * str, bool ref){
-=======
 void calcular_offset(string id){
 	table_element * param = table.lookup(id,-1);
 	vector_declaraciones.push_back(param);
 }
 
-void parametrizar_funcion(char * str){
->>>>>>> 22bad9c0cd9b63a5d5c736956dc8cb9ef54426b0
+void parametrizar_funcion(char * str, bool ref){
 	type * funcion = table.lookup(current_id,-1)->tipo;
 	table_element * param = table.lookup(str,-1);
 	vector_parametros.push_back(param);
